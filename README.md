@@ -1,3 +1,5 @@
+TODO(sachi/mia): Describe this package.
+
 ## NOTICE
 
 This repository contains the public FTC SDK for the Ultimate Goal (2020-2021) competition season.
