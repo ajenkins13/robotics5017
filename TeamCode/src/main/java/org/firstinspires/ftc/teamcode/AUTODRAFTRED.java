@@ -14,9 +14,9 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
-@Autonomous(name = "AUTODRAFTBLUE", group = "") //name of the file
+@Autonomous(name = "AUTODRAFTRED", group = "") //name of the file
 
-public class AUTODRAFTBLUE extends LinearOpMode { //creating public class, extension of linear opmode
+public class AUTODRAFTRED extends LinearOpMode { //creating public class, extension of linear opmode
 
     //creating motors, touch sensors, and servos
     private DcMotor RIGHTFRONT;
@@ -45,7 +45,7 @@ public class AUTODRAFTBLUE extends LinearOpMode { //creating public class, exten
         if (opModeIsActive()) {
 
             //move right
-            CrabForTime(0.7, 1000);
+            CrabForTime(-0.7, 1000);
             stopEverything();
             sleep(1000);
             resetEncoders();
@@ -57,7 +57,7 @@ public class AUTODRAFTBLUE extends LinearOpMode { //creating public class, exten
             resetEncoders();
 
             //move right
-            CrabForTime(-0.7, 1000);
+            CrabForTime(0.7, 1000);
             stopEverything();
             sleep(1000);
             resetEncoders();
