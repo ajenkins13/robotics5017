@@ -14,15 +14,17 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
-@Autonomous(name = "AUTODRAFTRED", group = "") //name of the file
+@Autonomous(name = "AUTOSHOOTv0", group = "") //name of the file
 
-public class AUTODRAFTRED extends LinearOpMode { //creating public class, extension of linear opmode
+public class AUTOSHOOTv0 extends LinearOpMode { //creating public class, extension of linear opmode
 
     //creating motors, touch sensors, and servos
     private DcMotor RIGHTFRONT;
     private DcMotor RIGHTBACK;
     private DcMotor LEFTFRONT;
     private DcMotor LEFTBACK;
+    private DcMotor SHOOTER;
+    private Servo FLICKER;
 
     @Override
     public void runOpMode() {
@@ -30,6 +32,11 @@ public class AUTODRAFTRED extends LinearOpMode { //creating public class, extens
         RIGHTBACK = hardwareMap.dcMotor.get("RIGHTBACK");
         LEFTFRONT = hardwareMap.dcMotor.get("LEFTFRONT");
         LEFTBACK = hardwareMap.dcMotor.get("LEFTBACK");
+        SHOOTER = hardwareMap.dcMotor.get("SHOOTER");
+        //WOBBLE = hardwareMap.dcMotor.get("WOBBLE");
+        //INTAKE = hardwareMap.dcMotor.get("INTAKE");
+
+        FLICKER = hardwareMap.servo.get("FLICKER");
 
         // Reverse one of the drive motors.
         // You will have to determine which motor to reverse for your robot.
@@ -41,24 +48,24 @@ public class AUTODRAFTRED extends LinearOpMode { //creating public class, extens
         waitForStart();
 
         if (opModeIsActive()) {
+            BackwardForTime(1,500);
 
-            //move right
-            CrabForTime(-0.7, 1000);
-            stopEverything();
-            sleep(1000);
-            resetEncoders();
+            SHOOTER.setDirection(DcMotorSimple.Direction.REVERSE);
+            SHOOTER.setPower(1); //maybe max?
+            sleep(500);
+            FLICKER.setPosition(.2);
+            sleep(500);
+            FLICKER.setPosition(1);
 
-            //move forward to launch line
-            ForwardForTime(0.7, 2000);
-            stopEverything();
             sleep(1000);
-            resetEncoders();
+            FLICKER.setPosition(.2);
+            sleep(500);
+            FLICKER.setPosition(1);
 
-            //move right
-            CrabForTime(0.7, 1000);
-            stopEverything();
             sleep(1000);
-            resetEncoders();
+            FLICKER.setPosition(.2);
+            sleep(500);
+            FLICKER.setPosition(1);
 
         }
     }
@@ -90,9 +97,9 @@ public class AUTODRAFTRED extends LinearOpMode { //creating public class, extens
         LEFTBACK.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         RIGHTFRONT.setPower(power);
-        LEFTFRONT.setPower(-power);
+        LEFTFRONT.setPower(power);
         RIGHTBACK.setPower(power);
-        LEFTBACK.setPower(-power);
+        LEFTBACK.setPower(power);
         sleep(time);
     }
 
@@ -116,9 +123,9 @@ public class AUTODRAFTRED extends LinearOpMode { //creating public class, extens
         LEFTBACK.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         RIGHTFRONT.setPower(power);
-        LEFTFRONT.setPower(-power);
+        LEFTFRONT.setPower(power);
         RIGHTBACK.setPower(power);
-        LEFTBACK.setPower(-power);
+        LEFTBACK.setPower(power);
         sleep(time);
     }
 

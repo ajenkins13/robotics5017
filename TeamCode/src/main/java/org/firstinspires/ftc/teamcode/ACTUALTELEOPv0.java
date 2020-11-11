@@ -12,10 +12,10 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
-@TeleOp(name = "TELEOP2021", group = "") //name of file
+@TeleOp(name = "ACTUALTELEOPv0", group = "") //name of file
 
 
-public class TELEOP2021 extends LinearOpMode { //declaring class for whole program
+public class ACTUALTELEOPv0 extends LinearOpMode { //declaring class for whole program
 
     //initialize instance variables
     private DcMotor LEFTFRONT; //2:0
@@ -23,7 +23,9 @@ public class TELEOP2021 extends LinearOpMode { //declaring class for whole progr
     private DcMotor RIGHTFRONT; //1:0
     private DcMotor RIGHTBACK; //1:1
     private DcMotor SHOOTER; //1:1
-    //private Servo FLICKER;
+    private DcMotor WOBBLE;
+    private DcMotor INTAKE;
+    private Servo FLICKER;
 
 
     @Override
@@ -33,9 +35,10 @@ public class TELEOP2021 extends LinearOpMode { //declaring class for whole progr
         RIGHTFRONT = hardwareMap.dcMotor.get("RIGHTFRONT");
         RIGHTBACK = hardwareMap.dcMotor.get("RIGHTBACK");
         SHOOTER = hardwareMap.dcMotor.get("SHOOTER");
-        //FLICKER = hardwareMap.servo.get("FLICKER");
+        WOBBLE = hardwareMap.dcMotor.get("WOBBLE");
+        INTAKE = hardwareMap.dcMotor.get("INTAKE");
 
-        //TME = hardwareMap.crservo.get("TME");
+        FLICKER = hardwareMap.servo.get("FLICKER");
 
         sleep(1000);
 
@@ -44,9 +47,6 @@ public class TELEOP2021 extends LinearOpMode { //declaring class for whole progr
         if (opModeIsActive()) {
 
             while (opModeIsActive()) { //looking for values, waiting for controller to send values
-                // Reverse one of the drive motors.
-                LEFTFRONT.setDirection(DcMotorSimple.Direction.REVERSE);
-                LEFTBACK.setDirection(DcMotorSimple.Direction.REVERSE);
 
                 if (Math.abs(gamepad1.left_stick_y) > 0.1 || Math.abs(gamepad1.right_stick_y) > 0.1) { //if left stick or right stick is pushed a significant amount
 
@@ -84,22 +84,35 @@ public class TELEOP2021 extends LinearOpMode { //declaring class for whole progr
                 }
 
                 if (gamepad1.y) { //shoot for highest goal
-                    SHOOTER.setDirection(DcMotorSimple.Direction.FORWARD);
-                    SHOOTER.setPower(.5); //maybe max?
-                    sleep(1000);
-                    //FLICKER.setPosition(1);
-                    //FLICKER.setPosition(0);
-                } else if (gamepad1.a) { //shoot for mid goal/powershot
-                    SHOOTER.setDirection(DcMotorSimple.Direction.FORWARD);
-                    SHOOTER.setPower(0.3);
-                    sleep(1000);
-                    //FLICKER.setPosition(1);
-                    //FLICKER.setPosition(0);
+                    SHOOTER.setDirection(DcMotorSimple.Direction.REVERSE);
+                    SHOOTER.setPower(1); //maybe max?
+                    sleep(500);
+                    FLICKER.setPosition(.2);
+                    sleep(500);
+                    FLICKER.setPosition(1);
+                 } else if (gamepad1.a) { //shoot for mid goal/powershot
+                    WOBBLE.setDirection(DcMotorSimple.Direction.FORWARD);
+                    WOBBLE.setPower(.5); //maybe max?
+                    sleep(500);
+                    WOBBLE.setPower(0); //maybe max?
                 } else if (gamepad1.x) {  // resets all motors (cancels everything).
                     SHOOTER.setPower(0);
-                    //FLICKER.setPosition(0);
-
+                    FLICKER.setPosition(0.5);
+                    INTAKE.setPower(0);
+                } else if (gamepad1.b) {  // resets all motors (cancels everything).
+                    INTAKE.setDirection(DcMotorSimple.Direction.FORWARD);
+                    INTAKE.setPower(1);
+                } else if (gamepad2.y) {
+                    //puts shooter at medium power to hit power shot target
+                    SHOOTER.setDirection(DcMotorSimple.Direction.REVERSE);
+                    SHOOTER.setPower(0.7); //maybe max?
+                    sleep(500);
+                    FLICKER.setPosition(.2);
+                    sleep(500);
+                    FLICKER.setPosition(1);
                 }
+                //LEFT BUMPER TO RUN INTAKE BACKWARDS?
+
 
             }
         }
