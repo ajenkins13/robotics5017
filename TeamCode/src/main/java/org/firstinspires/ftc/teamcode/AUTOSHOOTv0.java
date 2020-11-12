@@ -48,7 +48,13 @@ public class AUTOSHOOTv0 extends LinearOpMode { //creating public class, extensi
         waitForStart();
 
         if (opModeIsActive()) {
-            BackwardForTime(1,500);
+            BackwardForTime(0.5,400);
+
+            //ForwardForTime(0.1,200);
+//            TurnLForTime(0.2,200);
+//            sleep(500);
+//            TurnRForTime(0.2,200);
+
 
             SHOOTER.setDirection(DcMotorSimple.Direction.REVERSE);
             SHOOTER.setPower(1); //maybe max?
@@ -66,6 +72,8 @@ public class AUTOSHOOTv0 extends LinearOpMode { //creating public class, extensi
             FLICKER.setPosition(.2);
             sleep(500);
             FLICKER.setPosition(1);
+            sleep(500);
+            FLICKER.setPosition(.2);
 
         }
     }
@@ -101,6 +109,7 @@ public class AUTOSHOOTv0 extends LinearOpMode { //creating public class, extensi
         RIGHTBACK.setPower(power);
         LEFTBACK.setPower(power);
         sleep(time);
+        stopEverything();
     }
 
     private void BackwardForTime(double power, long time) { //FIXED
@@ -127,6 +136,7 @@ public class AUTOSHOOTv0 extends LinearOpMode { //creating public class, extensi
         RIGHTBACK.setPower(power);
         LEFTBACK.setPower(power);
         sleep(time);
+        stopEverything();
     }
 
     private void CrabForTime(double power, long time) {
@@ -152,9 +162,10 @@ public class AUTOSHOOTv0 extends LinearOpMode { //creating public class, extensi
 
         RIGHTFRONT.setPower(power);
         LEFTFRONT.setPower(power);
-        RIGHTBACK.setPower(-power);
-        LEFTBACK.setPower(-power);
+        RIGHTBACK.setPower(power);
+        LEFTBACK.setPower(power);
         sleep(time);
+        stopEverything();
     }
 
     private void TurnLForTime(double power, long time) {
@@ -177,10 +188,11 @@ public class AUTOSHOOTv0 extends LinearOpMode { //creating public class, extensi
         LEFTBACK.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         RIGHTFRONT.setPower(power);
-        LEFTFRONT.setPower(-power);
+        LEFTFRONT.setPower(power);
         RIGHTBACK.setPower(power);
-        LEFTBACK.setPower(-power);
+        LEFTBACK.setPower(power);
         sleep(time);
+        stopEverything();
     }
 
     private void TurnRForTime(double power, long time) {
@@ -203,10 +215,11 @@ public class AUTOSHOOTv0 extends LinearOpMode { //creating public class, extensi
         LEFTBACK.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         RIGHTFRONT.setPower(power);
-        LEFTFRONT.setPower(-power);
+        LEFTFRONT.setPower(power);
         RIGHTBACK.setPower(power);
-        LEFTBACK.setPower(-power);
+        LEFTBACK.setPower(power);
         sleep(time);
+        stopEverything();
     }
 
     private void resetEncoders() {
