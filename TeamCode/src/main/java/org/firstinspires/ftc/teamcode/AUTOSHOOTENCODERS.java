@@ -15,9 +15,9 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
-@Autonomous(name = "AUTOSHOOTv0", group = "") //name of the file
+@Autonomous(name = "AUTOSHOOTENCODERS", group = "") //name of the file
 
-public class AUTOSHOOTv0 extends LinearOpMode { //creating public class, extension of linear opmode
+public class AUTOSHOOTENCODERS extends LinearOpMode { //creating public class, extension of linear opmode
 
     //creating motors, touch sensors, and servos
     private DcMotor RIGHTFRONT;
@@ -26,6 +26,8 @@ public class AUTOSHOOTv0 extends LinearOpMode { //creating public class, extensi
     private DcMotor LEFTBACK;
     private DcMotor SHOOTER;
     private Servo FLICKER;
+
+    final int encRotation = 538;
 
     @Override
     public void runOpMode() {
@@ -36,49 +38,14 @@ public class AUTOSHOOTv0 extends LinearOpMode { //creating public class, extensi
         SHOOTER = hardwareMap.dcMotor.get("SHOOTER");
         //WOBBLE = hardwareMap.dcMotor.get("WOBBLE");
         //INTAKE = hardwareMap.dcMotor.get("INTAKE");
-
         FLICKER = hardwareMap.servo.get("FLICKER");
 
-        // Reverse one of the drive motors.
-        // You will have to determine which motor to reverse for your robot.
-        // In this example, the right motor was reversed so that positive
-        // applied power makes it move the robot in the forward direction.
         RIGHTFRONT.setDirection(DcMotorSimple.Direction.REVERSE);
         RIGHTBACK.setDirection(DcMotorSimple.Direction.REVERSE);
 
         waitForStart();
 
         if (opModeIsActive()) {
-            BackwardForTime(0.1,400);
-            sleep(500);
-            CrabForTime(0.1,600);
-            sleep(500);
-            //CrabForTime(-0.2,500);
-
-            //ForwardForTime(0.1,200);
-//            TurnLForTime(0.2,200);
-//            sleep(500);
-//            TurnRForTime(0.2,200);
-
-            //WOBBLE.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            SHOOTER.setDirection(DcMotorSimple.Direction.REVERSE);
-            SHOOTER.setPower(1); //maybe max?
-            sleep(500);
-            FLICKER.setPosition(.2);
-            sleep(500);
-            FLICKER.setPosition(1);
-
-            sleep(1000);
-            FLICKER.setPosition(.2);
-            sleep(500);
-            FLICKER.setPosition(1);
-
-            sleep(1000);
-            FLICKER.setPosition(.2);
-            sleep(500);
-            FLICKER.setPosition(1);
-            sleep(500);
-            FLICKER.setPosition(.2);
 
         }
     }
@@ -90,10 +57,10 @@ public class AUTOSHOOTv0 extends LinearOpMode { //creating public class, extensi
         RIGHTBACK.setPower(0);
     }
 
-    private void ForwardForTime(double power, long time) { //FIXED
-        // You will have to determine which motor to reverse for your robot.
-        // In this example, the right motor was reversed so that positive
-        // applied power makes it move the robot in the forward direction.
+    // SHOULD USE ENCODERS PROPERLY, TEST ON TUESDAY
+    private void ForwardForTime(double power, double revolutions) {
+        int denc = (int)Math.round(revolutions * encRotation);
+
         RIGHTFRONT.setDirection(DcMotorSimple.Direction.FORWARD);
         LEFTFRONT.setDirection(DcMotorSimple.Direction.REVERSE);
         RIGHTBACK.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -109,11 +76,21 @@ public class AUTOSHOOTv0 extends LinearOpMode { //creating public class, extensi
         RIGHTBACK.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         LEFTBACK.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
+        RIGHTFRONT.setTargetPosition(denc);
+        LEFTBACK.setTargetPosition(denc);
+        RIGHTBACK.setTargetPosition(denc);
+        LEFTBACK.setTargetPosition(denc);
+
+        RIGHTFRONT.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        LEFTFRONT.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        RIGHTBACK.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        LEFTBACK.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
         RIGHTFRONT.setPower(power);
         LEFTFRONT.setPower(power);
         RIGHTBACK.setPower(power);
         LEFTBACK.setPower(power);
-        sleep(time);
+
         stopEverything();
     }
 
