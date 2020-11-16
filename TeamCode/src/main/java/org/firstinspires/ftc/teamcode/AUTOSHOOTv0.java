@@ -1,4 +1,5 @@
 //comment out attachments since this is for this year
+//FORWARD means REVERSE for the left wheels
 
 package org.firstinspires.ftc.teamcode; //importing OUR package
 
@@ -49,6 +50,10 @@ public class AUTOSHOOTv0 extends LinearOpMode { //creating public class, extensi
 
         if (opModeIsActive()) {
             BackwardForTime(0.5,400);
+            sleep(500);
+            CrabForTime(0.4,600);
+            sleep(500);
+            //CrabForTime(-0.2,500);
 
             //ForwardForTime(0.1,200);
 //            TurnLForTime(0.2,200);
@@ -91,8 +96,8 @@ public class AUTOSHOOTv0 extends LinearOpMode { //creating public class, extensi
         // applied power makes it move the robot in the forward direction.
         RIGHTFRONT.setDirection(DcMotorSimple.Direction.FORWARD);
         LEFTFRONT.setDirection(DcMotorSimple.Direction.REVERSE);
-        RIGHTBACK.setDirection(DcMotorSimple.Direction.FORWARD);
-        LEFTBACK.setDirection(DcMotorSimple.Direction.REVERSE);
+        RIGHTBACK.setDirection(DcMotorSimple.Direction.REVERSE);
+        LEFTBACK.setDirection(DcMotorSimple.Direction.FORWARD);
 
         RIGHTFRONT.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         LEFTFRONT.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -145,9 +150,10 @@ public class AUTOSHOOTv0 extends LinearOpMode { //creating public class, extensi
         // You will have to determine which motor to reverse for your robot.
         // In this example, the right motor was reversed so that positive
         // applied power makes it move the robot in the forward direction.
+        // THIS SHOULD GO RIGHT.
         RIGHTFRONT.setDirection(DcMotorSimple.Direction.REVERSE);
-        LEFTFRONT.setDirection(DcMotorSimple.Direction.FORWARD);
-        RIGHTBACK.setDirection(DcMotorSimple.Direction.REVERSE);
+        LEFTFRONT.setDirection(DcMotorSimple.Direction.REVERSE);
+        RIGHTBACK.setDirection(DcMotorSimple.Direction.FORWARD);
         LEFTBACK.setDirection(DcMotorSimple.Direction.FORWARD);
 
         RIGHTFRONT.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);

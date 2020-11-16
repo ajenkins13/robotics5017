@@ -91,9 +91,9 @@ public class ACTUALTELEOPv0 extends LinearOpMode { //declaring class for whole p
                     sleep(500);
                     FLICKER.setPosition(1);
                  } else if (gamepad1.a) { //shoot for mid goal/powershot
-                    WOBBLE.setDirection(DcMotorSimple.Direction.FORWARD);
+                    WOBBLE.setDirection(DcMotorSimple.Direction.REVERSE);
                     WOBBLE.setPower(.5); //maybe max?
-                    sleep(500);
+                    sleep(100);
                     WOBBLE.setPower(0); //maybe max?
                 } else if (gamepad1.x) {  // resets all motors (cancels everything).
                     SHOOTER.setPower(0);
