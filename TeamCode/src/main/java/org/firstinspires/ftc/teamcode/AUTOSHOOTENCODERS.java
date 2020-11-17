@@ -46,7 +46,7 @@ public class AUTOSHOOTENCODERS extends LinearOpMode { //creating public class, e
         waitForStart();
 
         if (opModeIsActive()) {
-
+            ForwardForDist(0.5,2);
         }
     }
 
@@ -58,7 +58,7 @@ public class AUTOSHOOTENCODERS extends LinearOpMode { //creating public class, e
     }
 
     // SHOULD USE ENCODERS PROPERLY, TEST ON TUESDAY
-    private void ForwardForTime(double power, double revolutions) {
+    private void ForwardForDist(double power, double revolutions) {
         int denc = (int)Math.round(revolutions * encRotation);
 
         RIGHTFRONT.setDirection(DcMotorSimple.Direction.FORWARD);
@@ -71,10 +71,10 @@ public class AUTOSHOOTENCODERS extends LinearOpMode { //creating public class, e
         RIGHTBACK.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         LEFTBACK.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        RIGHTFRONT.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        LEFTFRONT.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        RIGHTBACK.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        LEFTBACK.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        RIGHTFRONT.setPower(power);
+        LEFTFRONT.setPower(power);
+        RIGHTBACK.setPower(power);
+        LEFTBACK.setPower(power);
 
         RIGHTFRONT.setTargetPosition(denc);
         LEFTBACK.setTargetPosition(denc);
@@ -86,124 +86,12 @@ public class AUTOSHOOTENCODERS extends LinearOpMode { //creating public class, e
         RIGHTBACK.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         LEFTBACK.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        RIGHTFRONT.setPower(power);
-        LEFTFRONT.setPower(power);
-        RIGHTBACK.setPower(power);
-        LEFTBACK.setPower(power);
-
+        while (RIGHTBACK.isBusy()) {
+            sleep(100);
+        }
         stopEverything();
     }
 
-    private void BackwardForTime(double power, long time) { //FIXED
-        // You will have to determine which motor to reverse for your robot.
-        // In this example, the right motor was reversed so that positive
-        // applied power makes it move the robot in the forward direction.
-        RIGHTFRONT.setDirection(DcMotorSimple.Direction.REVERSE);
-        LEFTFRONT.setDirection(DcMotorSimple.Direction.FORWARD);
-        RIGHTBACK.setDirection(DcMotorSimple.Direction.REVERSE);
-        LEFTBACK.setDirection(DcMotorSimple.Direction.FORWARD);
-
-        RIGHTFRONT.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        LEFTFRONT.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        RIGHTBACK.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        LEFTBACK.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        RIGHTFRONT.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        LEFTFRONT.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        RIGHTBACK.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        LEFTBACK.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        RIGHTFRONT.setPower(power);
-        LEFTFRONT.setPower(power);
-        RIGHTBACK.setPower(power);
-        LEFTBACK.setPower(power);
-        sleep(time);
-        stopEverything();
-    }
-
-    private void CrabForTime(double power, long time) {
-        //positive power = right
-        //negative power = left
-        // You will have to determine which motor to reverse for your robot.
-        // In this example, the right motor was reversed so that positive
-        // applied power makes it move the robot in the forward direction.
-        // THIS SHOULD GO RIGHT.
-        RIGHTFRONT.setDirection(DcMotorSimple.Direction.REVERSE);
-        LEFTFRONT.setDirection(DcMotorSimple.Direction.REVERSE);
-        RIGHTBACK.setDirection(DcMotorSimple.Direction.FORWARD);
-        LEFTBACK.setDirection(DcMotorSimple.Direction.FORWARD);
-
-        RIGHTFRONT.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        LEFTFRONT.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        RIGHTBACK.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        LEFTBACK.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        RIGHTFRONT.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        LEFTFRONT.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        RIGHTBACK.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        LEFTBACK.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        RIGHTFRONT.setPower(power);
-        LEFTFRONT.setPower(power);
-        RIGHTBACK.setPower(power);
-        LEFTBACK.setPower(power);
-        sleep(time);
-        stopEverything();
-    }
-
-    private void TurnLForTime(double power, long time) {
-        // You will have to determine which motor to reverse for your robot.
-        // In this example, the right motor was reversed so that positive
-        // applied power makes it move the robot in the forward direction.
-        RIGHTFRONT.setDirection(DcMotorSimple.Direction.FORWARD);
-        LEFTFRONT.setDirection(DcMotorSimple.Direction.FORWARD);
-        RIGHTBACK.setDirection(DcMotorSimple.Direction.FORWARD);
-        LEFTBACK.setDirection(DcMotorSimple.Direction.FORWARD);
-
-        RIGHTFRONT.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        LEFTFRONT.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        RIGHTBACK.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        LEFTBACK.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        RIGHTFRONT.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        LEFTFRONT.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        RIGHTBACK.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        LEFTBACK.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        RIGHTFRONT.setPower(power);
-        LEFTFRONT.setPower(power);
-        RIGHTBACK.setPower(power);
-        LEFTBACK.setPower(power);
-        sleep(time);
-        stopEverything();
-    }
-
-    private void TurnRForTime(double power, long time) {
-        // You will have to determine which motor to reverse for your robot.
-        // In this example, the right motor was reversed so that positive
-        // applied power makes it move the robot in the forward direction.
-        RIGHTFRONT.setDirection(DcMotorSimple.Direction.REVERSE);
-        LEFTFRONT.setDirection(DcMotorSimple.Direction.REVERSE);
-        RIGHTBACK.setDirection(DcMotorSimple.Direction.REVERSE);
-        LEFTBACK.setDirection(DcMotorSimple.Direction.REVERSE);
-
-        RIGHTFRONT.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        LEFTFRONT.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        RIGHTBACK.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        LEFTBACK.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        RIGHTFRONT.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        LEFTFRONT.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        RIGHTBACK.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        LEFTBACK.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        RIGHTFRONT.setPower(power);
-        LEFTFRONT.setPower(power);
-        RIGHTBACK.setPower(power);
-        LEFTBACK.setPower(power);
-        sleep(time);
-        stopEverything();
-    }
 
     private void resetEncoders() {
         LEFTFRONT.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
