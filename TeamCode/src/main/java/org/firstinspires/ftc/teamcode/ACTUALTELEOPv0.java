@@ -26,6 +26,8 @@ public class ACTUALTELEOPv0 extends LinearOpMode { //declaring class for whole p
     private DcMotor WOBBLE;
     private DcMotor INTAKE;
     private Servo FLICKER;
+    private Servo WOBBLEBLOCK;
+    private CRServo POPUP;
 
 
     @Override
@@ -37,7 +39,8 @@ public class ACTUALTELEOPv0 extends LinearOpMode { //declaring class for whole p
         SHOOTER = hardwareMap.dcMotor.get("SHOOTER");
         WOBBLE = hardwareMap.dcMotor.get("WOBBLE");
         INTAKE = hardwareMap.dcMotor.get("INTAKE");
-
+        WOBBLEBLOCK = hardwareMap.servo.get("WOBBLEBLOCK");
+        POPUP = hardwareMap.crservo.get("POPUP");
         FLICKER = hardwareMap.servo.get("FLICKER");
 
         sleep(1000);
@@ -49,7 +52,6 @@ public class ACTUALTELEOPv0 extends LinearOpMode { //declaring class for whole p
             while (opModeIsActive()) { //looking for values, waiting for controller to send values
 
                 if (Math.abs(gamepad1.left_stick_y) > 0.1 || Math.abs(gamepad1.right_stick_y) > 0.1) { //if left stick or right stick is pushed a significant amount
-
                     // Forward/Reverse Drive
                     RIGHTFRONT.setPower(-gamepad1.right_stick_y);
                     RIGHTBACK.setPower(-gamepad1.right_stick_y);
@@ -90,13 +92,7 @@ public class ACTUALTELEOPv0 extends LinearOpMode { //declaring class for whole p
                     FLICKER.setPosition(.2);
                     sleep(500);
                     FLICKER.setPosition(1);
-                 } else if (gamepad2.y) { //shoot for mid goal/powershot
-                    WOBBLE.setDirection(DcMotorSimple.Direction.REVERSE);
-                    WOBBLE.setPower(.5); //maybe max?
-                    sleep(100);
-                    WOBBLE.setPower(0); //maybe max?
-                    WOBBLE.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-                } else if (gamepad1.x) {  // resets all motors (cancels everything).
+                 } else if (gamepad1.x) {  // resets all motors (cancels everything).
                     SHOOTER.setPower(0);
                     FLICKER.setPosition(0.5);
                     INTAKE.setPower(0);
@@ -111,6 +107,21 @@ public class ACTUALTELEOPv0 extends LinearOpMode { //declaring class for whole p
                     FLICKER.setPosition(.2);
                     sleep(500);
                     FLICKER.setPosition(1);
+                } else if (gamepad2.y) { //shoot for mid goal/powershot
+                    WOBBLE.setDirection(DcMotorSimple.Direction.REVERSE);
+                    WOBBLE.setPower(.5); //maybe max?
+                    sleep(100);
+                    WOBBLE.setPower(0); //maybe max?
+                    WOBBLE.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+                } else if (gamepad2.a) {
+                    //move wobbleblock to open
+                    WOBBLEBLOCK.setPosition(0);
+                } else if (gamepad2.x) {
+                    //move wobbleblock to close
+                    WOBBLEBLOCK.setPosition(1);
+                } else if (Math.abs(gamepad2.left_stick_y) > 0.1) {
+                    //controls wheels that pop up rings to reach the ramp
+                    POPUP.setPower(gamepad1.left_stick_y);
                 }
                 //LEFT BUMPER TO RUN INTAKE BACKWARDS?
 
