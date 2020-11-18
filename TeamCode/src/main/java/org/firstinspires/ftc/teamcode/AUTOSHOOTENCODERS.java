@@ -59,18 +59,21 @@ public class AUTOSHOOTENCODERS extends LinearOpMode { //creating public class, e
 
     // Just a tester function for the encoders.
     private void minimalEncoderTest() {
-        int denc = 5000;
+        int denc = 20;
 
         LEFTFRONT.setDirection(DcMotorSimple.Direction.REVERSE);
         LEFTFRONT.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        LEFTFRONT.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         LEFTFRONT.setTargetPosition(denc);
         LEFTFRONT.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         LEFTFRONT.setPower(0.5);
 
-        while (LEFTFRONT.isBusy()) {
-            // What should happen here?
-        }
+        //while (LEFTFRONT.isBusy()) {
+            //idle();
+        //}
+        sleep(500);
         stopEverything();
     }
 

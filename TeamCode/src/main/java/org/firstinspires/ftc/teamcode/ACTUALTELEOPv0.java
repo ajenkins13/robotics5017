@@ -124,8 +124,6 @@ public class ACTUALTELEOPv0 extends LinearOpMode { //declaring class for whole p
                     POPUP.setPower(gamepad1.left_stick_y);
                 }
                 //LEFT BUMPER TO RUN INTAKE BACKWARDS?
-
-
             }
         }
     }
