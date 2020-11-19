@@ -59,22 +59,27 @@ public class AUTOSHOOTENCODERS extends LinearOpMode { //creating public class, e
 
     // Just a tester function for the encoders.
     private void minimalEncoderTest() {
-        int denc = 20;
+        //int denc = 200;
 
-        LEFTFRONT.setDirection(DcMotorSimple.Direction.REVERSE);
-        LEFTFRONT.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        RIGHTFRONT.setDirection(DcMotorSimple.Direction.FORWARD);
+        RIGHTFRONT.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        LEFTFRONT.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        RIGHTFRONT.setTargetPosition(2000);
+        RIGHTFRONT.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        LEFTFRONT.setTargetPosition(denc);
-        LEFTFRONT.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        LEFTFRONT.setPower(0.5);
+        telemetry.addData("Mode", "running");
+        telemetry.update();
 
-        //while (LEFTFRONT.isBusy()) {
-            //idle();
-        //}
-        sleep(500);
-        stopEverything();
+        RIGHTFRONT.setPower(0.1 );
+
+        while (opModeIsActive() && RIGHTFRONT.isBusy())   //leftMotor.getCurrentPosition() < leftMotor.getTargetPosition())
+        {
+            telemetry.addData("encoder-fwd-left", RIGHTFRONT.getCurrentPosition() + "  busy=" + RIGHTFRONT.isBusy());
+            telemetry.update();
+            idle();
+        }
+
+        RIGHTFRONT.setPower(0);
     }
 
     // SHOULD USE ENCODERS PROPERLY, TEST ON TUESDAY
