@@ -27,7 +27,7 @@ public class AUTOSHOOTENCODERS extends LinearOpMode { //creating public class, e
     private DcMotor SHOOTER;
     private Servo FLICKER;
 
-    final int encRotation = 538;
+    final int encRotation = 545;
 
     @Override
     public void runOpMode() {
