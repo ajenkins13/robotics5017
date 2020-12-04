@@ -15,14 +15,14 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
-@Autonomous(name = "AUTOSHOOTENCODERS", group = "") //name of the file
+@Autonomous(name = "AutoEncodersv1", group = "") //name of the file
 
-public class AUTOSHOOTENCODERS extends LinearOpMode { //creating public class, extension of linear opmode
+public class AutoEncodersv1 extends LinearOpMode { //creating public class, extension of linear opmode
 
     //creating motors, touch sensors, and servos
     private DcMotor RIGHTFRONT;
     private DcMotor RIGHTBACK;
-    //private DcMotor LEFTFRONT;
+    private DcMotor LEFTFRONT;
     private DcMotor LEFTBACK;
     private DcMotor SHOOTER;
     private Servo FLICKER;
@@ -33,7 +33,7 @@ public class AUTOSHOOTENCODERS extends LinearOpMode { //creating public class, e
     public void runOpMode() {
         RIGHTFRONT = hardwareMap.dcMotor.get("RIGHTFRONT");
         RIGHTBACK = hardwareMap.dcMotor.get("RIGHTBACK");
-        //LEFTFRONT = hardwareMap.dcMotor.get("LEFTFRONT");
+        LEFTFRONT = hardwareMap.dcMotor.get("LEFTFRONT");
         LEFTBACK = hardwareMap.dcMotor.get("LEFTBACK");
         SHOOTER = hardwareMap.dcMotor.get("SHOOTER");
         //WOBBLE = hardwareMap.dcMotor.get("WOBBLE");
@@ -46,31 +46,68 @@ public class AUTOSHOOTENCODERS extends LinearOpMode { //creating public class, e
         waitForStart();
 
         if (opModeIsActive()) {
-            minimalEncoderTest();
+            ForwardForDist(0.5, 2);
         }
     }
 
     private void stopEverything() {
-        //LEFTFRONT.setPower(0);
+        LEFTFRONT.setPower(0);
         RIGHTFRONT.setPower(0);
         LEFTBACK.setPower(0);
         RIGHTBACK.setPower(0);
     }
 
-    // Just a tester function for the encoders.
-    private void minimalEncoderTest() {
-        //int denc = 200;
+    // SHOULD USE ENCODERS PROPERLY, TEST ON TUESDAY
+    private void ForwardForDist(double power, double revolutions) {
+        int denc = (int)Math.round(revolutions * encRotation);
 
+//        LEFTBACK.setDirection(DcMotorSimple.Direction.FORWARD);
+//        LEFTBACK.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//
+//        LEFTBACK.setTargetPosition(2000);
+//        LEFTBACK.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//
+//        telemetry.addData("Mode", "running");
+//        telemetry.update();
+//
+//        LEFTBACK.setPower(0.1 );
+//
+//        while (opModeIsActive() && LEFTBACK.isBusy())   //leftMotor.getCurrentPosition() < leftMotor.getTargetPosition())
+//        {
+//            telemetry.addData("encoder-fwd-left", LEFTBACK.getCurrentPosition() + "  busy=" + LEFTBACK.isBusy());
+//            telemetry.update();
+//            idle();
+//        }
+//
+//        LEFTBACK.setPower(0);
+
+        RIGHTFRONT.setDirection(DcMotorSimple.Direction.FORWARD);
+        LEFTFRONT.setDirection(DcMotorSimple.Direction.REVERSE);
+        RIGHTBACK.setDirection(DcMotorSimple.Direction.REVERSE);
         LEFTBACK.setDirection(DcMotorSimple.Direction.FORWARD);
+
+        RIGHTFRONT.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        LEFTFRONT.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        RIGHTBACK.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         LEFTBACK.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
+        RIGHTFRONT.setTargetPosition(2000);
         LEFTBACK.setTargetPosition(2000);
+        RIGHTBACK.setTargetPosition(2000);
+        LEFTFRONT.setTargetPosition(2000);
+
         LEFTBACK.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        RIGHTFRONT.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        LEFTFRONT.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        RIGHTBACK.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         telemetry.addData("Mode", "running");
         telemetry.update();
 
-        LEFTBACK.setPower(0.1 );
+        RIGHTFRONT.setPower(power);
+        LEFTFRONT.setPower(power);
+        RIGHTBACK.setPower(power);
+        LEFTBACK.setPower(power);
 
         while (opModeIsActive() && LEFTBACK.isBusy())   //leftMotor.getCurrentPosition() < leftMotor.getTargetPosition())
         {
@@ -79,44 +116,8 @@ public class AUTOSHOOTENCODERS extends LinearOpMode { //creating public class, e
             idle();
         }
 
-        LEFTBACK.setPower(0);
-    }
-
-    // SHOULD USE ENCODERS PROPERLY, TEST ON TUESDAY
-    private void ForwardForDist(double power, double revolutions) {
-        int denc = (int)Math.round(revolutions * encRotation);
-
-        RIGHTFRONT.setDirection(DcMotorSimple.Direction.FORWARD);
-        //LEFTFRONT.setDirection(DcMotorSimple.Direction.REVERSE);
-        RIGHTBACK.setDirection(DcMotorSimple.Direction.REVERSE);
-        LEFTBACK.setDirection(DcMotorSimple.Direction.FORWARD);
-
-        RIGHTFRONT.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        //LEFTFRONT.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        RIGHTBACK.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        LEFTBACK.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        RIGHTFRONT.setPower(power);
-        //LEFTFRONT.setPower(power);
-        RIGHTBACK.setPower(power);
-        LEFTBACK.setPower(power);
-
-        RIGHTFRONT.setTargetPosition(denc);
-        LEFTBACK.setTargetPosition(denc);
-        RIGHTBACK.setTargetPosition(denc);
-        LEFTBACK.setTargetPosition(denc);
-
-        RIGHTFRONT.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        //LEFTFRONT.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        RIGHTBACK.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        LEFTBACK.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        while (RIGHTBACK.isBusy()) {
-            sleep(100);
-        }
         stopEverything();
     }
-
 
     private void resetEncoders() {
         //LEFTFRONT.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
