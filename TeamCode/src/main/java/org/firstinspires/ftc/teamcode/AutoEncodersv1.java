@@ -46,7 +46,7 @@ public class AutoEncodersv1 extends LinearOpMode { //creating public class, exte
         waitForStart();
 
         if (opModeIsActive()) {
-            ForwardForDist(0.5, 2);
+            ForwardForDistance(0.5, 2);
         }
     }
 
@@ -57,29 +57,53 @@ public class AutoEncodersv1 extends LinearOpMode { //creating public class, exte
         RIGHTBACK.setPower(0);
     }
 
-    // SHOULD USE ENCODERS PROPERLY, TEST ON TUESDAY
-    private void ForwardForDist(double power, double revolutions) {
+    private void TurnForDistance(double power, double revolutions) {
         int denc = (int)Math.round(revolutions * encRotation);
 
-//        LEFTBACK.setDirection(DcMotorSimple.Direction.FORWARD);
-//        LEFTBACK.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//
-//        LEFTBACK.setTargetPosition(2000);
-//        LEFTBACK.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//
-//        telemetry.addData("Mode", "running");
-//        telemetry.update();
-//
-//        LEFTBACK.setPower(0.1 );
-//
-//        while (opModeIsActive() && LEFTBACK.isBusy())   //leftMotor.getCurrentPosition() < leftMotor.getTargetPosition())
-//        {
-//            telemetry.addData("encoder-fwd-left", LEFTBACK.getCurrentPosition() + "  busy=" + LEFTBACK.isBusy());
-//            telemetry.update();
-//            idle();
-//        }
-//
-//        LEFTBACK.setPower(0);
+        RIGHTFRONT.setDirection(DcMotorSimple.Direction.FORWARD);
+        LEFTFRONT.setDirection(DcMotorSimple.Direction.FORWARD);
+        RIGHTBACK.setDirection(DcMotorSimple.Direction.FORWARD);
+        LEFTBACK.setDirection(DcMotorSimple.Direction.FORWARD);
+
+        RIGHTFRONT.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        LEFTFRONT.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        RIGHTBACK.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        LEFTBACK.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        RIGHTFRONT.setTargetPosition(2000);
+        LEFTBACK.setTargetPosition(2000);
+        RIGHTBACK.setTargetPosition(2000);
+        LEFTFRONT.setTargetPosition(2000);
+
+        LEFTBACK.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        RIGHTFRONT.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        LEFTFRONT.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        RIGHTBACK.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        telemetry.addData("Mode", "running");
+        telemetry.update();
+
+        RIGHTFRONT.setPower(power);
+        LEFTFRONT.setPower(power);
+        RIGHTBACK.setPower(power);
+        LEFTBACK.setPower(power);
+
+        while (opModeIsActive() && LEFTBACK.isBusy() && LEFTFRONT.isBusy() && RIGHTBACK.isBusy() && RIGHTFRONT.isBusy())   //leftMotor.getCurrentPosition() < leftMotor.getTargetPosition())
+        {
+            telemetry.addData("encoder-back-left", LEFTBACK.getCurrentPosition() + "  busy=" + LEFTBACK.isBusy());
+            telemetry.addData("encoder-forward-left", LEFTFRONT.getCurrentPosition() + "  busy=" + LEFTFRONT.isBusy());
+            telemetry.addData("encoder-back-right", RIGHTBACK.getCurrentPosition() + "  busy=" + RIGHTBACK.isBusy());
+            telemetry.addData("encoder-forward-right", RIGHTFRONT.getCurrentPosition() + "  busy=" + RIGHTFRONT.isBusy());
+
+            telemetry.update();
+            idle();
+        }
+
+        stopEverything();
+    }
+
+    private void CrabForDistance(double power, double revolutions) {
+        int denc = (int)Math.round(revolutions * encRotation);
 
         RIGHTFRONT.setDirection(DcMotorSimple.Direction.FORWARD);
         LEFTFRONT.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -109,9 +133,13 @@ public class AutoEncodersv1 extends LinearOpMode { //creating public class, exte
         RIGHTBACK.setPower(power);
         LEFTBACK.setPower(power);
 
-        while (opModeIsActive() && LEFTBACK.isBusy())   //leftMotor.getCurrentPosition() < leftMotor.getTargetPosition())
+        while (opModeIsActive() && LEFTBACK.isBusy() && LEFTFRONT.isBusy() && RIGHTBACK.isBusy() && RIGHTFRONT.isBusy())   //leftMotor.getCurrentPosition() < leftMotor.getTargetPosition())
         {
-            telemetry.addData("encoder-fwd-left", LEFTBACK.getCurrentPosition() + "  busy=" + LEFTBACK.isBusy());
+            telemetry.addData("encoder-back-left", LEFTBACK.getCurrentPosition() + "  busy=" + LEFTBACK.isBusy());
+            telemetry.addData("encoder-forward-left", LEFTFRONT.getCurrentPosition() + "  busy=" + LEFTFRONT.isBusy());
+            telemetry.addData("encoder-back-right", RIGHTBACK.getCurrentPosition() + "  busy=" + RIGHTBACK.isBusy());
+            telemetry.addData("encoder-forward-right", RIGHTFRONT.getCurrentPosition() + "  busy=" + RIGHTFRONT.isBusy());
+
             telemetry.update();
             idle();
         }
