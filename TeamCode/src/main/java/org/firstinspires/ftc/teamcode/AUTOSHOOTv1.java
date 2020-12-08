@@ -15,9 +15,9 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
-@Autonomous(name = "AutoEncodersv1", group = "") //name of the file
+@Autonomous(name = "AUTOSHOOTv1", group = "") //name of the file
 
-public class AutoEncodersv1 extends LinearOpMode { //creating public class, extension of linear opmode
+public class AUTOSHOOTv1 extends LinearOpMode { //creating public class, extension of linear opmode
 
     //creating motors, touch sensors, and servos
     private DcMotor RIGHTFRONT;
@@ -46,7 +46,34 @@ public class AutoEncodersv1 extends LinearOpMode { //creating public class, exte
         waitForStart();
 
         if (opModeIsActive()) {
-            CrabForDistance(0.5, 2);
+            //reach the launch line
+            CrabForDistance(0.5, 1);
+            ForwardForDistance(0.5,3);
+
+            //shoot 3 rings at the high goal
+//            SHOOTER.setDirection(DcMotorSimple.Direction.REVERSE);
+//            SHOOTER.setPower(1); //maybe max?
+//            sleep(500);
+//            FLICKER.setPosition(.2);
+//            sleep(500);
+//            FLICKER.setPosition(1);
+//
+//            sleep(1000);
+//            FLICKER.setPosition(.2);
+//            sleep(500);
+//            FLICKER.setPosition(1);
+//
+//            sleep(1000);
+//            FLICKER.setPosition(.2);
+//            sleep(500);
+//            FLICKER.setPosition(1);
+//            sleep(500);
+//            FLICKER.setPosition(.2);
+
+            //drop the wobble goal in the launch line target zone
+
+            //park on the launch line (not touching the wobble goal)
+
         }
     }
 
