@@ -22,7 +22,7 @@ public class AUTOSHOOTENCODERS extends LinearOpMode { //creating public class, e
     //creating motors, touch sensors, and servos
     private DcMotor RIGHTFRONT;
     private DcMotor RIGHTBACK;
-    private DcMotor LEFTFRONT;
+    //private DcMotor LEFTFRONT;
     private DcMotor LEFTBACK;
     private DcMotor SHOOTER;
     private Servo FLICKER;
@@ -33,7 +33,7 @@ public class AUTOSHOOTENCODERS extends LinearOpMode { //creating public class, e
     public void runOpMode() {
         RIGHTFRONT = hardwareMap.dcMotor.get("RIGHTFRONT");
         RIGHTBACK = hardwareMap.dcMotor.get("RIGHTBACK");
-        LEFTFRONT = hardwareMap.dcMotor.get("LEFTFRONT");
+        //LEFTFRONT = hardwareMap.dcMotor.get("LEFTFRONT");
         LEFTBACK = hardwareMap.dcMotor.get("LEFTBACK");
         SHOOTER = hardwareMap.dcMotor.get("SHOOTER");
         //WOBBLE = hardwareMap.dcMotor.get("WOBBLE");
@@ -51,7 +51,7 @@ public class AUTOSHOOTENCODERS extends LinearOpMode { //creating public class, e
     }
 
     private void stopEverything() {
-        LEFTFRONT.setPower(0);
+        //LEFTFRONT.setPower(0);
         RIGHTFRONT.setPower(0);
         LEFTBACK.setPower(0);
         RIGHTBACK.setPower(0);
@@ -59,22 +59,27 @@ public class AUTOSHOOTENCODERS extends LinearOpMode { //creating public class, e
 
     // Just a tester function for the encoders.
     private void minimalEncoderTest() {
-        int denc = 20;
+        //int denc = 200;
 
-        LEFTFRONT.setDirection(DcMotorSimple.Direction.REVERSE);
-        LEFTFRONT.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        LEFTBACK.setDirection(DcMotorSimple.Direction.FORWARD);
+        LEFTBACK.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        LEFTFRONT.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        LEFTBACK.setTargetPosition(2000);
+        LEFTBACK.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        LEFTFRONT.setTargetPosition(denc);
-        LEFTFRONT.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        LEFTFRONT.setPower(0.5);
+        telemetry.addData("Mode", "running");
+        telemetry.update();
 
-        //while (LEFTFRONT.isBusy()) {
-            //idle();
-        //}
-        sleep(500);
-        stopEverything();
+        LEFTBACK.setPower(0.1 );
+
+        while (opModeIsActive() && LEFTBACK.isBusy())   //leftMotor.getCurrentPosition() < leftMotor.getTargetPosition())
+        {
+            telemetry.addData("encoder-fwd-left", LEFTBACK.getCurrentPosition() + "  busy=" + LEFTBACK.isBusy());
+            telemetry.update();
+            idle();
+        }
+
+        LEFTBACK.setPower(0);
     }
 
     // SHOULD USE ENCODERS PROPERLY, TEST ON TUESDAY
@@ -82,17 +87,17 @@ public class AUTOSHOOTENCODERS extends LinearOpMode { //creating public class, e
         int denc = (int)Math.round(revolutions * encRotation);
 
         RIGHTFRONT.setDirection(DcMotorSimple.Direction.FORWARD);
-        LEFTFRONT.setDirection(DcMotorSimple.Direction.REVERSE);
+        //LEFTFRONT.setDirection(DcMotorSimple.Direction.REVERSE);
         RIGHTBACK.setDirection(DcMotorSimple.Direction.REVERSE);
         LEFTBACK.setDirection(DcMotorSimple.Direction.FORWARD);
 
         RIGHTFRONT.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        LEFTFRONT.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //LEFTFRONT.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         RIGHTBACK.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         LEFTBACK.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         RIGHTFRONT.setPower(power);
-        LEFTFRONT.setPower(power);
+        //LEFTFRONT.setPower(power);
         RIGHTBACK.setPower(power);
         LEFTBACK.setPower(power);
 
@@ -102,7 +107,7 @@ public class AUTOSHOOTENCODERS extends LinearOpMode { //creating public class, e
         LEFTBACK.setTargetPosition(denc);
 
         RIGHTFRONT.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        LEFTFRONT.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        //LEFTFRONT.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         RIGHTBACK.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         LEFTBACK.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
@@ -114,7 +119,7 @@ public class AUTOSHOOTENCODERS extends LinearOpMode { //creating public class, e
 
 
     private void resetEncoders() {
-        LEFTFRONT.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //LEFTFRONT.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         RIGHTFRONT.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         LEFTBACK.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         RIGHTBACK.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
