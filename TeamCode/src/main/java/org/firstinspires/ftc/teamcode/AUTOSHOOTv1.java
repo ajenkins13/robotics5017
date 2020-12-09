@@ -26,6 +26,7 @@ public class AUTOSHOOTv1 extends LinearOpMode { //creating public class, extensi
     private DcMotor LEFTBACK;
     private DcMotor SHOOTER;
     private Servo FLICKER;
+    //private Servo WOBBLE;
 
     final double encRotation = 537.6;
 
@@ -36,7 +37,7 @@ public class AUTOSHOOTv1 extends LinearOpMode { //creating public class, extensi
         LEFTFRONT = hardwareMap.dcMotor.get("LEFTFRONT");
         LEFTBACK = hardwareMap.dcMotor.get("LEFTBACK");
         SHOOTER = hardwareMap.dcMotor.get("SHOOTER");
-        //WOBBLE = hardwareMap.dcMotor.get("WOBBLE");
+        //WOBBLE = hardwareMap.servo.get("WOBBLE");
         //INTAKE = hardwareMap.dcMotor.get("INTAKE");
         FLICKER = hardwareMap.servo.get("FLICKER");
 
@@ -48,7 +49,9 @@ public class AUTOSHOOTv1 extends LinearOpMode { //creating public class, extensi
         if (opModeIsActive()) {
             //reach the launch line
             CrabForDistance(0.5, 1);
-            ForwardForDistance(0.5,3);
+            sleep(500);
+            ForwardForDistance(0.5,4);
+            sleep(1000);
 
             //shoot 3 rings at the high goal
 //            SHOOTER.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -70,9 +73,19 @@ public class AUTOSHOOTv1 extends LinearOpMode { //creating public class, extensi
 //            sleep(500);
 //            FLICKER.setPosition(.2);
 
+            //move over to the target square
+            //move forward
+            ForwardForDistance(0.5,1.5);
+            sleep(500);
+            //crab left to the target zone
+            CrabForDistance(0.5,2);
+
             //drop the wobble goal in the launch line target zone
+            //WOBBLE.setPosition(1); //position = placeholder --> replace later after testing
 
             //park on the launch line (not touching the wobble goal)
+            //crab right
+            //CrabForDistance(0.5,1);
 
         }
     }

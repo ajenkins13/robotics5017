@@ -22,7 +22,7 @@ public class AUTOSHOOTENCODERS extends LinearOpMode { //creating public class, e
     //creating motors, touch sensors, and servos
     private DcMotor RIGHTFRONT;
     private DcMotor RIGHTBACK;
-    //private DcMotor LEFTFRONT;
+    private DcMotor LEFTFRONT;
     private DcMotor LEFTBACK;
     private DcMotor SHOOTER;
     private Servo FLICKER;
@@ -33,7 +33,7 @@ public class AUTOSHOOTENCODERS extends LinearOpMode { //creating public class, e
     public void runOpMode() {
         RIGHTFRONT = hardwareMap.dcMotor.get("RIGHTFRONT");
         RIGHTBACK = hardwareMap.dcMotor.get("RIGHTBACK");
-        //LEFTFRONT = hardwareMap.dcMotor.get("LEFTFRONT");
+        LEFTFRONT = hardwareMap.dcMotor.get("LEFTFRONT");
         LEFTBACK = hardwareMap.dcMotor.get("LEFTBACK");
         SHOOTER = hardwareMap.dcMotor.get("SHOOTER");
         //WOBBLE = hardwareMap.dcMotor.get("WOBBLE");
@@ -51,7 +51,7 @@ public class AUTOSHOOTENCODERS extends LinearOpMode { //creating public class, e
     }
 
     private void stopEverything() {
-        //LEFTFRONT.setPower(0);
+        LEFTFRONT.setPower(0);
         RIGHTFRONT.setPower(0);
         LEFTBACK.setPower(0);
         RIGHTBACK.setPower(0);
