@@ -25,8 +25,9 @@ public class AUTOSHOOTv1 extends LinearOpMode { //creating public class, extensi
     private DcMotor LEFTFRONT;
     private DcMotor LEFTBACK;
     private DcMotor SHOOTER;
-    private Servo FLICKER;
-    //private Servo WOBBLE;
+    //private Servo FLICKER;
+    private DcMotor WOBBLE;
+    private Servo WOBBLEBLOCK;
 
     final double encRotation = 537.6;
 
@@ -37,9 +38,10 @@ public class AUTOSHOOTv1 extends LinearOpMode { //creating public class, extensi
         LEFTFRONT = hardwareMap.dcMotor.get("LEFTFRONT");
         LEFTBACK = hardwareMap.dcMotor.get("LEFTBACK");
         SHOOTER = hardwareMap.dcMotor.get("SHOOTER");
-        //WOBBLE = hardwareMap.servo.get("WOBBLE");
+        WOBBLE = hardwareMap.dcMotor.get("WOBBLE");
+        WOBBLEBLOCK = hardwareMap.servo.get("WOBBLEBLOCK");
         //INTAKE = hardwareMap.dcMotor.get("INTAKE");
-        FLICKER = hardwareMap.servo.get("FLICKER");
+        //FLICKER = hardwareMap.servo.get("FLICKER");
 
         RIGHTFRONT.setDirection(DcMotorSimple.Direction.REVERSE);
         RIGHTBACK.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -47,46 +49,12 @@ public class AUTOSHOOTv1 extends LinearOpMode { //creating public class, extensi
         waitForStart();
 
         if (opModeIsActive()) {
-            //reach the launch line
-            CrabForDistance(0.5, 1);
-            sleep(500);
-            ForwardForDistance(0.5,4);
-            sleep(1000);
-
-            //shoot 3 rings at the high goal
-//            SHOOTER.setDirection(DcMotorSimple.Direction.REVERSE);
-//            SHOOTER.setPower(1); //maybe max?
-//            sleep(500);
-//            FLICKER.setPosition(.2);
-//            sleep(500);
-//            FLICKER.setPosition(1);
-//
-//            sleep(1000);
-//            FLICKER.setPosition(.2);
-//            sleep(500);
-//            FLICKER.setPosition(1);
-//
-//            sleep(1000);
-//            FLICKER.setPosition(.2);
-//            sleep(500);
-//            FLICKER.setPosition(1);
-//            sleep(500);
-//            FLICKER.setPosition(.2);
-
-            //move over to the target square
-            //move forward
-            ForwardForDistance(0.5,1.5);
-            sleep(500);
-            //crab left to the target zone
-            CrabForDistance(0.5,2);
-
-            //drop the wobble goal in the launch line target zone
-            //WOBBLE.setPosition(1); //position = placeholder --> replace later after testing
-
-            //park on the launch line (not touching the wobble goal)
-            //crab right
-            //CrabForDistance(0.5,1);
-
+            telemetry.addData("test", "servo position: " + WOBBLEBLOCK.getPosition());
+            WOBBLEBLOCK.setPosition(0.5);
+            telemetry.addData("test", "servo position: " + WOBBLEBLOCK.getPosition());
+            telemetry.update();
+            sleep(100000);
+            idle();
         }
     }
 
