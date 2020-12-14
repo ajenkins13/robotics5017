@@ -49,12 +49,46 @@ public class AUTOSHOOTv1 extends LinearOpMode { //creating public class, extensi
         waitForStart();
 
         if (opModeIsActive()) {
-            telemetry.addData("test", "servo position: " + WOBBLEBLOCK.getPosition());
-            WOBBLEBLOCK.setPosition(0.5);
-            telemetry.addData("test", "servo position: " + WOBBLEBLOCK.getPosition());
-            telemetry.update();
-            sleep(100000);
-            idle();
+
+            //reach the launch line
+            CrabForDistance(0.5, 1);
+            sleep(500);
+            ForwardForDistance(0.5, 4);
+            sleep(1000);
+
+            //shoot 3 rings at the high goal
+//            SHOOTER.setDirection(DcMotorSimple.Direction.REVERSE);
+//            SHOOTER.setPower(1); //maybe max?
+//            sleep(500);
+//            FLICKER.setPosition(.2);
+//            sleep(500);
+//            FLICKER.setPosition(1);
+//
+//            sleep(1000);
+//            FLICKER.setPosition(.2);
+//            sleep(500);
+//            FLICKER.setPosition(1);
+//
+//            sleep(1000);
+//            FLICKER.setPosition(.2);
+//            sleep(500);
+//            FLICKER.setPosition(1);
+//            sleep(500);
+//            FLICKER.setPosition(.2);
+
+            //move over to the target square
+            //move forward
+            ForwardForDistance(0.5, 1.5);
+            sleep(500);
+            //crab left to the target zone
+            CrabForDistance(0.5, 2);
+
+            //drop the wobble goal in the launch line target zone
+            //WOBBLE.setPosition(1); //position = placeholder --> replace later after testing
+
+            //park on the launch line (not touching the wobble goal)
+            //crab right
+            //CrabForDistance(0.5,1);
         }
     }
 
