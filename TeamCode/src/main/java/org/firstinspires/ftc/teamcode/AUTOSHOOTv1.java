@@ -51,10 +51,10 @@ public class AUTOSHOOTv1 extends LinearOpMode { //creating public class, extensi
         if (opModeIsActive()) {
 
             //reach the launch line
-            CrabForDistance(0.5, 1);
-            sleep(500);
-            ForwardForDistance(0.5, 4);
-            sleep(1000);
+//            CrabForDistance(0.5, 1);
+//            sleep(500);
+//            ForwardForDistance(0.5, 4);
+//            sleep(1000);
 
             //shoot 3 rings at the high goal
 //            SHOOTER.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -78,10 +78,10 @@ public class AUTOSHOOTv1 extends LinearOpMode { //creating public class, extensi
 
             //move over to the target square
             //move forward
-            ForwardForDistance(0.5, 1.5);
-            sleep(500);
-            //crab left to the target zone
-            CrabForDistance(0.5, 2);
+//            ForwardForDistance(0.5, 1.5);
+//            sleep(500);
+//            //crab left to the target zone
+//            CrabForDistance(0.5, 2);
 
             //drop the wobble goal in the launch line target zone
             //WOBBLE.setPosition(1); //position = placeholder --> replace later after testing
@@ -91,11 +91,16 @@ public class AUTOSHOOTv1 extends LinearOpMode { //creating public class, extensi
             //CrabForDistance(0.5,1);
 
             telemetry.addData("test", "servo position: " + WOBBLEBLOCK.getPosition());
-            WOBBLEBLOCK.setPosition(0.5);
+            WOBBLEBLOCK.setPosition(0);
+            //telemetry.update();
             telemetry.addData("test", "servo position: " + WOBBLEBLOCK.getPosition());
+            WOBBLEBLOCK.setPosition(1);
+            //telemetry.update();
+            telemetry.addData("test", "servo position: " + WOBBLEBLOCK.getPosition());
+            WOBBLEBLOCK.setPosition(0);
             telemetry.update();
-            sleep(100000);
-            idle();
+            sleep(10000);
+            //idle();
         }
     }
 
