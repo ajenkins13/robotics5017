@@ -89,6 +89,13 @@ public class AUTOSHOOTv1 extends LinearOpMode { //creating public class, extensi
             //park on the launch line (not touching the wobble goal)
             //crab right
             //CrabForDistance(0.5,1);
+
+            telemetry.addData("test", "servo position: " + WOBBLEBLOCK.getPosition());
+            WOBBLEBLOCK.setPosition(0.5);
+            telemetry.addData("test", "servo position: " + WOBBLEBLOCK.getPosition());
+            telemetry.update();
+            sleep(100000);
+            idle();
         }
     }
 
