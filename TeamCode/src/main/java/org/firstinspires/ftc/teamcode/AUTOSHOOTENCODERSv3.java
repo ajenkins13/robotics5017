@@ -54,7 +54,7 @@ public class AUTOSHOOTENCODERSv3 extends LinearOpMode { //creating public class,
             //reach the launch line
             CrabForDistance(0.5, 1);
             sleep(500);
-            ForwardForDistance(0.5, 4);
+            ForwardForDistance(0.5, -4);
             sleep(1000);
 
             //shoot 3 rings at the high goal
@@ -79,7 +79,7 @@ public class AUTOSHOOTENCODERSv3 extends LinearOpMode { //creating public class,
 
             //move over to the target square
             //move forward
-            ForwardForDistance(0.5, 1.5);
+            ForwardForDistance(0.5, -1.5);
             sleep(500);
             //crab left to the target zone
             CrabForDistance(0.5, 2);
@@ -92,7 +92,7 @@ public class AUTOSHOOTENCODERSv3 extends LinearOpMode { //creating public class,
 
             //park on the launch line (not touching the wobble goal)
             //crab right
-            CrabForDistance(0.5,1);
+            CrabForDistance(0.5,-1);
 
 //            telemetry.addData("test", "servo position: " + WOBBLEBLOCK.getPosition());
 //            WOBBLEBLOCK.setPosition(0);
