@@ -25,7 +25,7 @@ public class AUTOSHOOTv1 extends LinearOpMode { //creating public class, extensi
     private DcMotor LEFTFRONT;
     private DcMotor LEFTBACK;
     private DcMotor SHOOTER;
-    //private Servo FLICKER;
+    private Servo FLICKER;
     private DcMotor WOBBLE;
     private Servo WOBBLEBLOCK;
 
@@ -41,7 +41,7 @@ public class AUTOSHOOTv1 extends LinearOpMode { //creating public class, extensi
         WOBBLE = hardwareMap.dcMotor.get("WOBBLE");
         WOBBLEBLOCK = hardwareMap.servo.get("WOBBLEBLOCK");
         //INTAKE = hardwareMap.dcMotor.get("INTAKE");
-        //FLICKER = hardwareMap.servo.get("FLICKER");
+        FLICKER = hardwareMap.servo.get("FLICKER");
 
         RIGHTFRONT.setDirection(DcMotorSimple.Direction.REVERSE);
         RIGHTBACK.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -50,13 +50,17 @@ public class AUTOSHOOTv1 extends LinearOpMode { //creating public class, extensi
 
         if (opModeIsActive()) {
 
-            //reach the launch line
-//            CrabForDistance(0.5, 1);
-//            sleep(500);
-//            ForwardForDistance(0.5, 4);
-//            sleep(1000);
+          //  reach the launch line
 
-            //shoot 3 rings at the high goal
+            CrabForDistance(0.5, 1);
+            sleep(500);
+            ForwardForDistance(0.5, 5);
+            //move right
+            CrabForDistance(0.5, -2);
+            sleep(1000);
+            sleep(500);
+
+         //   shoot 3 rings at the high goal
 //            SHOOTER.setDirection(DcMotorSimple.Direction.REVERSE);
 //            SHOOTER.setPower(1); //maybe max?
 //            sleep(500);
@@ -76,31 +80,25 @@ public class AUTOSHOOTv1 extends LinearOpMode { //creating public class, extensi
 //            sleep(500);
 //            FLICKER.setPosition(.2);
 
-            //move over to the target square
-            //move forward
-//            ForwardForDistance(0.5, 1.5);
-//            sleep(500);
-//            //crab left to the target zone
-//            CrabForDistance(0.5, 2);
+           // move over to the target square
+           // move forward and turn
+            ForwardForDistance(0.5, 1);
+            TurnForDistance(.5, 2);
+            //crab right to the target zone
+            CrabForDistance(0.5, -2);
+            ForwardForDistance(0.5, 1.5);
 
-            //drop the wobble goal in the launch line target zone
-            //WOBBLE.setPosition(1); //position = placeholder --> replace later after testing
 
-            //park on the launch line (not touching the wobble goal)
-            //crab right
-            //CrabForDistance(0.5,1);
+           // drop the wobble goal in the launch line target zone
+            WobbleForwardForDistance(.5, 1); //position = placeholder --> replace later after testing
 
-            telemetry.addData("test", "servo position: " + WOBBLEBLOCK.getPosition());
-            WOBBLEBLOCK.setPosition(0);
-            //telemetry.update();
-            telemetry.addData("test", "servo position: " + WOBBLEBLOCK.getPosition());
-            WOBBLEBLOCK.setPosition(1);
-            //telemetry.update();
-            telemetry.addData("test", "servo position: " + WOBBLEBLOCK.getPosition());
-            WOBBLEBLOCK.setPosition(0);
-            telemetry.update();
-            sleep(10000);
-            //idle();
+            //crab over to park
+            CrabForDistance(0.5, 1);
+
+
+
+
+
         }
     }
 
@@ -148,6 +146,33 @@ public class AUTOSHOOTv1 extends LinearOpMode { //creating public class, extensi
             telemetry.addData("encoder-forward-left", LEFTFRONT.getCurrentPosition() + "  busy=" + LEFTFRONT.isBusy());
             telemetry.addData("encoder-back-right", RIGHTBACK.getCurrentPosition() + "  busy=" + RIGHTBACK.isBusy());
             telemetry.addData("encoder-forward-right", RIGHTFRONT.getCurrentPosition() + "  busy=" + RIGHTFRONT.isBusy());
+
+            telemetry.update();
+            idle();
+        }
+
+        stopEverything();
+    }
+
+    private void WobbleForwardForDistance(double power, double revolutions){
+        int denc = (int)Math.round(revolutions * encRotation);
+
+        WOBBLE.setDirection(DcMotorSimple.Direction.FORWARD);
+
+        WOBBLE.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        WOBBLE.setTargetPosition(denc);
+
+        WOBBLE.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        telemetry.addData("Mode", "running");
+        telemetry.update();
+
+        WOBBLE.setPower(power);
+
+        while (opModeIsActive() && WOBBLE.isBusy())
+        {
+            telemetry.addData("wobble", WOBBLE.getCurrentPosition() + "  busy=" + WOBBLE.isBusy());
 
             telemetry.update();
             idle();
