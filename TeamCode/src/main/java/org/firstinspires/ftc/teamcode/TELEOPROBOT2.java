@@ -27,6 +27,7 @@ public class TELEOPROBOT2 extends LinearOpMode { //declaring class for whole pro
     private DcMotor INTAKE;
     private Servo WOBBLEBLOCK;
     private CRServo POPUP;
+    private DcMotor FLICKER;
 
 
     @Override
@@ -40,6 +41,7 @@ public class TELEOPROBOT2 extends LinearOpMode { //declaring class for whole pro
         INTAKE = hardwareMap.dcMotor.get("INTAKE");
         WOBBLEBLOCK = hardwareMap.servo.get("WOBBLEBLOCK");
         POPUP = hardwareMap.crservo.get("POPUP");
+        FLICKER = hardwareMap.dcMotor.get("FLICKER");
 
         sleep(1000);
 
