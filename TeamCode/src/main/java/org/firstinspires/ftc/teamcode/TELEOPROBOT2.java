@@ -1,5 +1,6 @@
 //this is edited
 //i saw these edits
+//sounds good
 package org.firstinspires.ftc.teamcode; //importing OUR package
 
 //importing OpModes (linear and teleOp) and importing hardware (motors, sensors, servos)
@@ -148,7 +149,6 @@ public class TELEOPROBOT2 extends LinearOpMode { //declaring class for whole pro
                     //controls wheels that pop up rings to reach the ramp
                     POPUP.setPower(gamepad1.left_stick_y);
                 }
-                //LEFT BUMPER TO RUN INTAKE BACKWARDS?
             }
         }
     }
