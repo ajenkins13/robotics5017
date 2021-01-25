@@ -82,7 +82,7 @@ public class AUTOSHOOTENCODERSv3 extends LinearOpMode { //creating public class,
             ForwardForDistance(0.5, -1.5);
             sleep(500);
             //crab left to the target zone
-            CrabForDistance(1.2, 0.5);
+            CrabForDistance(1, 1);
 
             //drop the wobble goal in the launch line target zone
             WOBBLE.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -104,6 +104,8 @@ public class AUTOSHOOTENCODERSv3 extends LinearOpMode { //creating public class,
             //park on the launch line (not touching the wobble goal)
             //crab right
             CrabForDistance(0.5,-1);
+
+            ForwardForDistance(0.5, -1);
 
 //            telemetry.addData("test", "servo position: " + WOBBLEBLOCK.getPosition());
 //            WOBBLEBLOCK.setPosition(0);
