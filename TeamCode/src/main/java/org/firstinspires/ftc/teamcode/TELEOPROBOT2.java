@@ -176,6 +176,8 @@ public class TELEOPROBOT2 extends LinearOpMode { //declaring class for whole pro
                     POPUP.setPower(0);
 
                 }
+
+                //does this work
                 }
             }
         }
