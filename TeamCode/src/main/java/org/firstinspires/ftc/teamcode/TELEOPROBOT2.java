@@ -28,7 +28,7 @@ public class TELEOPROBOT2 extends LinearOpMode { //declaring class for whole pro
     private DcMotor INTAKE;
     private Servo WOBBLEBLOCK;
     private CRServo POPUP;
-    private DcMotor FLICKER;
+    private Servo FLICKER;
 
 
     @Override
@@ -42,7 +42,7 @@ public class TELEOPROBOT2 extends LinearOpMode { //declaring class for whole pro
         INTAKE = hardwareMap.dcMotor.get("INTAKE");
         WOBBLEBLOCK = hardwareMap.servo.get("WOBBLEBLOCK");
         POPUP = hardwareMap.crservo.get("POPUP");
-        FLICKER = hardwareMap.dcMotor.get("FLICKER");
+        FLICKER = hardwareMap.servo.get("FLICKER");
 
         sleep(1000);
 
@@ -87,6 +87,10 @@ public class TELEOPROBOT2 extends LinearOpMode { //declaring class for whole pro
                     LEFTFRONT.setPower(gamepad1.left_trigger);
                 }
 
+
+
+
+
                 else {
                     RIGHTFRONT.setPower(0); //if not triggered, make sure motors donÃ¢â‚¬â„¢t move/power=0
                     LEFTFRONT.setPower(0);
@@ -101,53 +105,77 @@ public class TELEOPROBOT2 extends LinearOpMode { //declaring class for whole pro
                     SHOOTER.setDirection(DcMotorSimple.Direction.REVERSE);
                     SHOOTER.setPower(1); //maybe max?
                     sleep(500);
-                    FLICKER.setPosition(.2);
+                    FLICKER.setPosition(0);
                     sleep(500);
                     FLICKER.setPosition(1);
                 }
 
                 else if (gamepad1.x) {  // resets all motors (cancels everything).
                     SHOOTER.setPower(0);
-                    FLICKER.setPosition(0.5);
-                    INTAKE.setPower(0);
                 }
 
-                else if (gamepad1.b) {  // resets all motors (cancels everything).
-                    INTAKE.setDirection(DcMotorSimple.Direction.FORWARD);
-                    INTAKE.setPower(1);
-                }
-
-                else if (gamepad1.a) {
+                else if (gamepad1.b) {
                     //puts shooter at medium power to hit power shot target
                     SHOOTER.setDirection(DcMotorSimple.Direction.REVERSE);
                     SHOOTER.setPower(0.7); //maybe max?
                     sleep(500);
+                }
+
+                else if (gamepad1.a) {
+                    //flicker
+
                     FLICKER.setPosition(.2);
                     sleep(500);
                     FLICKER.setPosition(1);
                 }
 
-                else if (gamepad2.y) { //shoot for mid goal/powershot
-                    WOBBLE.setDirection(DcMotorSimple.Direction.REVERSE);
-                    WOBBLE.setPower(.5); //maybe max?
-                    sleep(100);
-                    WOBBLE.setPower(0); //maybe max?
-                    WOBBLE.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+                else if (gamepad2.y) {
                 }
 
                 else if (gamepad2.a) {
-                    //move wobbleblock to open
-                    WOBBLEBLOCK.setPosition(0);
+                    //start intake
+                    INTAKE.setPower(0);
                 }
 
                 else if (gamepad2.x) {
-                    //move wobbleblock to close
-                    WOBBLEBLOCK.setPosition(1);
+                    //stop intake
+                    INTAKE.setPower(0);
                 }
 
                 else if (Math.abs(gamepad2.left_stick_y) > 0.1) {
-                    //controls wheels that pop up rings to reach the ramp
-                    POPUP.setPower(gamepad1.left_stick_y);
+                    //sets intake forward
+                   INTAKE.setDirection(DcMotorSimple.Direction.FORWARD);
+
+                }
+
+                else if (Math.abs(gamepad2.left_stick_y) < 0.1) {
+                    //sets intake backwards
+                    INTAKE.setDirection(DcMotorSimple.Direction.REVERSE);
+
+
+
+                } else if (Math.abs(gamepad2.right_stick_y) > 0.1) {
+
+                    //sets wobbleblock out
+                    WOBBLEBLOCK.setPosition(1);
+
+                } else if (Math.abs(gamepad2.right_stick_y) < 0.1) {
+
+                    //sets wobbleblock in
+
+                    WOBBLEBLOCK.setPosition(0);
+
+
+                }  else if (Math.abs(gamepad2.left_trigger) != 0) {
+
+                    POPUP.setPower(1);
+
+
+                } else if (Math.abs(gamepad2.right_trigger) != 0) {
+
+                    POPUP.setPower(0);
+
+                }
                 }
             }
         }
