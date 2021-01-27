@@ -128,7 +128,7 @@ public class ACTUALTELEOPv0 extends LinearOpMode { //declaring class for whole p
 
                 else if (gamepad2.y) { //shoot for mid goal/powershot
                     WOBBLE.setDirection(DcMotorSimple.Direction.REVERSE);
-                    WOBBLE.setPower(.5); //maybe max?
+                    WOBBLE.setPower(.7); //maybe max?
                     sleep(100);
                     WOBBLE.setPower(0); //maybe max?
                     WOBBLE.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
