@@ -26,26 +26,32 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
+package org.firstinspires.ftc.robotcontroller.external.samples;
+
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import java.util.List;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 
 /**
- * Adapts TensorFlow Object Detection API example.
+ * This 2020-2021 OpMode illustrates the basics of using the TensorFlow Object Detection API to
+ * determine the position of the Ultimate Goal game elements.
+ *
+ * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
+ * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list.
+ *
+ * IMPORTANT: In order to use this OpMode, you need to obtain your own Vuforia license key as
+ * is explained below.
  */
-@TeleOp(name = "Adapted TensorFlow Object Detection", group = "Concept")
-
+@Autonomous(name = "current vision program", group = "Concept")
+//@Disabled
 public class ROBOVISIONTESTER extends LinearOpMode {
-
-    public static void main(String[] args) {
-        System.out.println("HI");
-    }
-
     private static final String TFOD_MODEL_ASSET = "UltimateGoal.tflite";
     private static final String LABEL_FIRST_ELEMENT = "Quad";
     private static final String LABEL_SECOND_ELEMENT = "Single";
@@ -63,7 +69,7 @@ public class ROBOVISIONTESTER extends LinearOpMode {
      * and paste it in to your code on the next line, between the double quotes.
      */
     private static final String VUFORIA_KEY =
-            " -- YOUR NEW VUFORIA KEY GOES HERE  --- ";
+            "AZjoYn//////AAABmR/Gz+lF/k+IkcIQI/2fVYFiGF3UGkxilPyhwI/Cm4S3fmhAfVyLZconiBYacj0ZqCMizSfzW9evWjkqwZda2P4Z/lS48cBdkcOjXTviz930ACqjyN3S+Wep41I9xrmtZlv4t/X9cMUOdgQ22+AmBNZ3kTWFnl3PY2xBDsYSvqF1ifaU0R/LDlohIZhM4VBuMZWKLVX9cHOSwjti5T8lMmIMRX24RORLSSkL4ieJFRiusrOlAy6i+9s8io1KGfT4hKTk+LcUkCZUEbgANc8Srx76bhgnnerpMGmwuitHtDXTq8BFMey+fRMigGf+MwlL39A0qwFBq9wT45PdrX5y9+s1Huy0JkXZmt6uo1D8zRB1";
 
     /**
      * {@link #vuforia} is the variable we will use to store our instance of the Vuforia
@@ -108,6 +114,14 @@ public class ROBOVISIONTESTER extends LinearOpMode {
         waitForStart();
 
         if (opModeIsActive()) {
+
+            //crab left
+
+            //move backwards to reach the rings
+
+            //read the rings
+
+
             while (opModeIsActive()) {
                 if (tfod != null) {
                     // getUpdatedRecognitions() will return null if no new information is available since
@@ -115,7 +129,6 @@ public class ROBOVISIONTESTER extends LinearOpMode {
                     List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
                     if (updatedRecognitions != null) {
                         telemetry.addData("# Object Detected", updatedRecognitions.size());
-
                         // step through the list of recognitions and display boundary info.
                         int i = 0;
                         for (Recognition recognition : updatedRecognitions) {
@@ -146,7 +159,7 @@ public class ROBOVISIONTESTER extends LinearOpMode {
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
 
         parameters.vuforiaLicenseKey = VUFORIA_KEY;
-        parameters.cameraDirection = CameraDirection.BACK;
+        parameters.cameraName = hardwareMap.get(WebcamName.class, "Webcam");
 
         //  Instantiate the Vuforia engine
         vuforia = ClassFactory.getInstance().createVuforia(parameters);
