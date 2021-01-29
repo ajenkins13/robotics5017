@@ -1,4 +1,4 @@
-/* Copyright (c) 2017 FIRST. All rights reserved.
+/* Copyright (c) 2019 FIRST. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification,
  * are permitted (subject to the limitations in the disclaimer below) provided that
@@ -29,61 +29,23 @@
 
 package org.firstinspires.ftc.robotcontroller.external.samples;
 
-import android.graphics.Bitmap;
-
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.util.RobotLog;
-import com.qualcomm.robotcore.util.ThreadPool;
-import com.vuforia.Frame;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.robotcore.external.ClassFactory;
-import org.firstinspires.ftc.robotcore.external.function.Consumer;
-import org.firstinspires.ftc.robotcore.external.function.Continuation;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.matrices.MatrixF;
-import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
-import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
+import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
+import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 
 /**
- * This 2016-2017 OpMode illustrates the basics of using the Vuforia localizer to determine
- * positioning and orientation of robot on the FTC field.
- * The code is structured as a LinearOpMode
- *
- * Vuforia uses the phone's camera to inspect it's surroundings, and attempt to locate target images.
- *
- * When images are located, Vuforia is able to determine the position and orientation of the
- * image relative to the camera.  This sample code than combines that information with a
- * knowledge of where the target images are on the field, to determine the location of the camera.
- *
- * This example assumes a "diamond" field configuration where the red and blue alliance stations
- * are adjacent on the corner of the field furthest from the audience.
- * From the Audience perspective, the Red driver station is on the right.
- * The two vision target are located on the two walls closest to the audience, facing in.
- * The Stones are on the RED side of the field, and the Chips are on the Blue side.
- *
- * A final calculation then uses the location of the camera on the robot to determine the
- * robot's location and orientation on the field.
- *
- * @see VuforiaLocalizer
- * @see VuforiaTrackableDefaultListener
- * see  ftc_app/doc/tutorial/FTC_FieldCoordinateSystemDefinition.pdf
+ * This 2020-2021 OpMode illustrates the basics of using the TensorFlow Object Detection API to
+ * determine the position of the Ultimate Goal game elements.
  *
  * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list.
@@ -91,372 +53,397 @@ import java.util.Locale;
  * IMPORTANT: In order to use this OpMode, you need to obtain your own Vuforia license key as
  * is explained below.
  */
-
-@TeleOp(name="webcam + vuforia teseter", group ="Concept")
+@Autonomous(name = "current vision program", group = "Concept")
 //@Disabled
 public class ROBOVISIONTESTERv2 extends LinearOpMode {
+    private static final String TFOD_MODEL_ASSET = "UltimateGoal.tflite";
+    private static final String LABEL_FIRST_ELEMENT = "Quad";
+    private static final String LABEL_SECOND_ELEMENT = "Single";
 
-    public static final String TAG = "Vuforia Navigation Sample";
+    private DcMotor RIGHTFRONT;
+    private DcMotor RIGHTBACK;
+    private DcMotor LEFTFRONT;
+    private DcMotor LEFTBACK;
+    private DcMotor SHOOTER;
+    private Servo FLICKER;
+    private DcMotor WOBBLE;
+    private Servo WOBBLEBLOCK;
+    private DcMotor INTAKE;
 
-    OpenGLMatrix lastLocation = null;
+    final double encRotation = 537.6;
 
-    /**
-     * @see #captureFrameToFile()
+    /*
+     * IMPORTANT: You need to obtain your own license key to use Vuforia. The string below with which
+     * 'parameters.vuforiaLicenseKey' is initialized is for illustration only, and will not function.
+     * A Vuforia 'Development' license key, can be obtained free of charge from the Vuforia developer
+     * web site at https://developer.vuforia.com/license-manager.
+     *
+     * Vuforia license keys are always 380 characters long, and look as if they contain mostly
+     * random data. As an example, here is a example of a fragment of a valid key:
+     *      ... yIgIzTqZ4mWjk9wd3cZO9T1axEqzuhxoGlfOOI2dRzKS4T0hQ8kT ...
+     * Once you've obtained a license key, copy the string from the Vuforia web site
+     * and paste it in to your code on the next line, between the double quotes.
      */
-    int captureCounter = 0;
-    File captureDirectory = AppUtil.ROBOT_DATA_DIR;
+    private static final String VUFORIA_KEY =
+            "AZjoYn//////AAABmR/Gz+lF/k+IkcIQI/2fVYFiGF3UGkxilPyhwI/Cm4S3fmhAfVyLZconiBYacj0ZqCMizSfzW9evWjkqwZda2P4Z/lS48cBdkcOjXTviz930ACqjyN3S+Wep41I9xrmtZlv4t/X9cMUOdgQ22+AmBNZ3kTWFnl3PY2xBDsYSvqF1ifaU0R/LDlohIZhM4VBuMZWKLVX9cHOSwjti5T8lMmIMRX24RORLSSkL4ieJFRiusrOlAy6i+9s8io1KGfT4hKTk+LcUkCZUEbgANc8Srx76bhgnnerpMGmwuitHtDXTq8BFMey+fRMigGf+MwlL39A0qwFBq9wT45PdrX5y9+s1Huy0JkXZmt6uo1D8zRB1";
 
     /**
      * {@link #vuforia} is the variable we will use to store our instance of the Vuforia
      * localization engine.
      */
-    VuforiaLocalizer vuforia;
+    private VuforiaLocalizer vuforia;
 
     /**
-     * This is the webcam we are to use. As with other hardware devices such as motors and
-     * servos, this device is identified using the robot configuration tool in the FTC application.
+     * {@link #tfod} is the variable we will use to store our instance of the TensorFlow Object
+     * Detection engine.
      */
-    WebcamName Webcam;
+    private TFObjectDetector tfod;
 
-    @Override public void runOpMode() {
+    @Override
+    public void runOpMode() {
+        // The TFObjectDetector uses the camera frames from the VuforiaLocalizer, so we create that
+        // first.
 
-        /*
-         * Retrieve the camera we are to use.
-         */
-        Webcam = hardwareMap.get(WebcamName.class, "Webcam");
+        RIGHTFRONT = hardwareMap.dcMotor.get("RIGHTFRONT");
+        RIGHTBACK = hardwareMap.dcMotor.get("RIGHTBACK");
+        LEFTFRONT = hardwareMap.dcMotor.get("LEFTFRONT");
+        LEFTBACK = hardwareMap.dcMotor.get("LEFTBACK");
+        SHOOTER = hardwareMap.dcMotor.get("SHOOTER");
+        WOBBLE = hardwareMap.dcMotor.get("WOBBLE");
+        WOBBLEBLOCK = hardwareMap.servo.get("WOBBLEBLOCK");
+        INTAKE = hardwareMap.dcMotor.get("INTAKE");
+        FLICKER = hardwareMap.servo.get("FLICKER");
 
-        /*
-         * To start up Vuforia, tell it the view that we wish to use for camera monitor (on the RC phone);
-         * If no camera monitor is desired, use the parameterless constructor instead (commented out below).
-         */
-        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
+        RIGHTFRONT.setDirection(DcMotorSimple.Direction.REVERSE);
+        RIGHTBACK.setDirection(DcMotorSimple.Direction.REVERSE);
 
-        // OR...  Do Not Activate the Camera Monitor View, to save power
-        // VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
-
-
-        /*
-         * IMPORTANT: You need to obtain your own license key to use Vuforia. The string below with which
-         * 'parameters.vuforiaLicenseKey' is initialized is for illustration only, and will not function.
-         * A Vuforia 'Development' license key, can be obtained free of charge from the Vuforia developer
-         * web site at https://developer.vuforia.com/license-manager.
-         *
-         * Vuforia license keys are always 380 characters long, and look as if they contain mostly
-         * random data. As an example, here is a example of a fragment of a valid key:
-         *      ... yIgIzTqZ4mWjk9wd3cZO9T1axEqzuhxoGlfOOI2dRzKS4T0hQ8kT ...
-         * Once you've obtained a license key, copy the string from the Vuforia web site
-         * and paste it in to your code on the next line, between the double quotes.
-         */
-        parameters.vuforiaLicenseKey = "AZjoYn//////AAABmR/Gz+lF/k+IkcIQI/2fVYFiGF3UGkxilPyhwI/Cm4S3fmhAfVyLZconiBYacj0ZqCMizSfzW9evWjkqwZda2P4Z/lS48cBdkcOjXTviz930ACqjyN3S+Wep41I9xrmtZlv4t/X9cMUOdgQ22+AmBNZ3kTWFnl3PY2xBDsYSvqF1ifaU0R/LDlohIZhM4VBuMZWKLVX9cHOSwjti5T8lMmIMRX24RORLSSkL4ieJFRiusrOlAy6i+9s8io1KGfT4hKTk+LcUkCZUEbgANc8Srx76bhgnnerpMGmwuitHtDXTq8BFMey+fRMigGf+MwlL39A0qwFBq9wT45PdrX5y9+s1Huy0JkXZmt6uo1D8zRB1";
+        initVuforia();
+        initTfod();
 
         /**
-         * We also indicate which camera on the RC we wish to use.
-         */
-        parameters.cameraName = Webcam;
+         * Activate TensorFlow Object Detection before we wait for the start command.
+         * Do it here so that the Camera Stream window will have the TensorFlow annotations visible.
+         **/
+        if (tfod != null) {
+            tfod.activate();
 
-        /**
-         * Instantiate the Vuforia engine
-         */
-        vuforia = ClassFactory.getInstance().createVuforia(parameters);
+            // The TensorFlow software will scale the input images from the camera to a lower resolution.
+            // This can result in lower detection accuracy at longer distances (> 55cm or 22").
+            // If your target is at distance greater than 50 cm (20") you can adjust the magnification value
+            // to artificially zoom in to the center of image.  For best results, the "aspectRatio" argument
+            // should be set to the value of the images used to create the TensorFlow Object Detection model
+            // (typically 1.78 or 16/9).
 
-        /**
-         * Because this opmode processes frames in order to write them to a file, we tell Vuforia
-         * that we want to ensure that certain frame formats are available in the {@link Frame}s we
-         * see.
-         */
-        vuforia.enableConvertFrameToBitmap();
-
-        /** @see #captureFrameToFile() */
-        AppUtil.getInstance().ensureDirectoryExists(captureDirectory);
-
-
-        /**
-         * Load the data sets that for the trackable objects we wish to track. These particular data
-         * sets are stored in the 'assets' part of our application (you'll see them in the Android
-         * Studio 'Project' view over there on the left of the screen). You can make your own datasets
-         * with the Vuforia Target Manager: https://developer.vuforia.com/target-manager. PDFs for the
-         * example "StonesAndChips", datasets can be found in in this project in the
-         * documentation directory.
-         */
-        VuforiaTrackables stonesAndChips = vuforia.loadTrackablesFromAsset("StonesAndChips");
-        VuforiaTrackable redTarget = stonesAndChips.get(0);
-        redTarget.setName("RedTarget");  // Stones
-
-        VuforiaTrackable blueTarget  = stonesAndChips.get(1);
-        blueTarget.setName("BlueTarget");  // Chips
-
-        /** For convenience, gather together all the trackable objects in one easily-iterable collection */
-        List<VuforiaTrackable> allTrackables = new ArrayList<VuforiaTrackable>();
-        allTrackables.addAll(stonesAndChips);
-
-        /**
-         * We use units of mm here because that's the recommended units of measurement for the
-         * size values specified in the XML for the ImageTarget trackables in data sets. E.g.:
-         *      <ImageTarget name="stones" size="247 173"/>
-         * You don't *have to* use mm here, but the units here and the units used in the XML
-         * target configuration files *must* correspond for the math to work out correctly.
-         */
-        float mmPerInch        = 25.4f;
-        float mmBotWidth       = 18 * mmPerInch;            // ... or whatever is right for your robot
-        float mmFTCFieldWidth  = (12*12 - 2) * mmPerInch;   // the FTC field is ~11'10" center-to-center of the glass panels
-
-        /**
-         * In order for localization to work, we need to tell the system where each target we
-         * wish to use for navigation resides on the field, and we need to specify where on the robot
-         * the camera resides. These specifications are in the form of <em>transformation matrices.</em>
-         * Transformation matrices are a central, important concept in the math here involved in localization.
-         * See <a href="https://en.wikipedia.org/wiki/Transformation_matrix">Transformation Matrix</a>
-         * for detailed information. Commonly, you'll encounter transformation matrices as instances
-         * of the {@link OpenGLMatrix} class.
-         *
-         * For the most part, you don't need to understand the details of the math of how transformation
-         * matrices work inside (as fascinating as that is, truly). Just remember these key points:
-         * <ol>
-         *
-         *     <li>You can put two transformations together to produce a third that combines the effect of
-         *     both of them. If, for example, you have a rotation transform R and a translation transform T,
-         *     then the combined transformation matrix RT which does the rotation first and then the translation
-         *     is given by {@code RT = T.multiplied(R)}. That is, the transforms are multiplied in the
-         *     <em>reverse</em> of the chronological order in which they applied.</li>
-         *
-         *     <li>A common way to create useful transforms is to use methods in the {@link OpenGLMatrix}
-         *     class and the Orientation class. See, for example, {@link OpenGLMatrix#translation(float,
-         *     float, float)}, {@link OpenGLMatrix#rotation(AngleUnit, float, float, float, float)}, and
-         *     {@link Orientation#getRotationMatrix(AxesReference, AxesOrder, AngleUnit, float, float, float)}.
-         *     Related methods in {@link OpenGLMatrix}, such as {@link OpenGLMatrix#rotated(AngleUnit,
-         *     float, float, float, float)}, are syntactic shorthands for creating a new transform and
-         *     then immediately multiplying the receiver by it, which can be convenient at times.</li>
-         *
-         *     <li>If you want to break open the black box of a transformation matrix to understand
-         *     what it's doing inside, use {@link MatrixF#getTranslation()} to fetch how much the
-         *     transform will move you in x, y, and z, and use {@link Orientation#getOrientation(MatrixF,
-         *     AxesReference, AxesOrder, AngleUnit)} to determine the rotational motion that the transform
-         *     will impart. See {@link #format(OpenGLMatrix)} below for an example.</li>
-         *
-         * </ol>
-         *
-         * This example places the "stones" image on the perimeter wall to the Left
-         *  of the Red Driver station wall.  Similar to the Red Beacon Location on the Res-Q
-         *
-         * This example places the "chips" image on the perimeter wall to the Right
-         *  of the Blue Driver station.  Similar to the Blue Beacon Location on the Res-Q
-         *
-         * See the doc folder of this project for a description of the Field Coordinate System
-         * conventions.
-         *
-         * Initially the target is conceptually lying at the origin of the Field Coordinate System
-         * (the center of the field), facing up.
-         *
-         * In this configuration, the target's coordinate system aligns with that of the field.
-         *
-         * In a real situation we'd also account for the vertical (Z) offset of the target,
-         * but for simplicity, we ignore that here; for a real robot, you'll want to fix that.
-         *
-         * To place the Stones Target on the Red Audience wall:
-         * - First we rotate it 90 around the field's X axis to flip it upright
-         * - Then we rotate it  90 around the field's Z access to face it away from the audience.
-         * - Finally, we translate it back along the X axis towards the red audience wall.
-         */
-        OpenGLMatrix redTargetLocationOnField = OpenGLMatrix
-                /* Then we translate the target off to the RED WALL. Our translation here
-                is a negative translation in X.*/
-                .translation(-mmFTCFieldWidth/2, 0, 0)
-                .multiplied(Orientation.getRotationMatrix(
-                        /* First, in the fixed (field) coordinate system, we rotate 90deg in X, then 90 in Z */
-                        AxesReference.EXTRINSIC, AxesOrder.XZX,
-                        AngleUnit.DEGREES, 90, 90, 0));
-        redTarget.setLocationFtcFieldFromTarget(redTargetLocationOnField);
-        RobotLog.ii(TAG, "Red Target=%s", format(redTargetLocationOnField));
-
-        /*
-         * To place the Stones Target on the Blue Audience wall:
-         * - First we rotate it 90 around the field's X axis to flip it upright
-         * - Finally, we translate it along the Y axis towards the blue audience wall.
-         */
-        OpenGLMatrix blueTargetLocationOnField = OpenGLMatrix
-                /* Then we translate the target off to the Blue Audience wall.
-                Our translation here is a positive translation in Y.*/
-                .translation(0, mmFTCFieldWidth/2, 0)
-                .multiplied(Orientation.getRotationMatrix(
-                        /* First, in the fixed (field) coordinate system, we rotate 90deg in X */
-                        AxesReference.EXTRINSIC, AxesOrder.XZX,
-                        AngleUnit.DEGREES, 90, 0, 0));
-        blueTarget.setLocationFtcFieldFromTarget(blueTargetLocationOnField);
-        RobotLog.ii(TAG, "Blue Target=%s", format(blueTargetLocationOnField));
-
-        /**
-         * We also need to tell Vuforia where the <em>cameras</em> are relative to the robot.
-         *
-         * Just as there is a Field Coordinate System, so too there is a Robot Coordinate System.
-         * The two share many similarities. The origin of the Robot Coordinate System is wherever
-         * you choose to make it on the robot, but typically you'd choose somewhere in the middle
-         * of the robot. From that origin, the Y axis is horizontal and positive out towards the
-         * "front" of the robot (however you choose "front" to be defined), the X axis is horizontal
-         * and positive out towards the "right" of the robot (i.e.: 90deg horizontally clockwise from
-         * the positive Y axis), and the Z axis is vertical towards the sky.
-         *
-         * Similarly, for each camera there is a Camera Coordinate System. The origin of a Camera
-         * Coordinate System lies in the middle of the sensor inside of the camera. The Z axis is
-         * positive coming out of the lens of the camera in a direction perpendicular to the plane
-         * of the sensor. When looking at the face of the lens of the camera (down the positive Z
-         * axis), the X axis is positive off to the right in the plane of the sensor, and the Y axis
-         * is positive out the top of the lens in the plane of the sensor at 90 horizontally
-         * counter clockwise from the X axis.
-         *
-         * Next, there is Phone Coordinate System (for robots that have phones, of course), though
-         * with the advent of Vuforia support for Webcams, this coordinate system is less significant
-         * than it was previously. The Phone Coordinate System is defined thusly: with the phone in
-         * flat front of you in portrait mode (i.e. as it is when running the robot controller app)
-         * and you are staring straight at the face of the phone,
-         *     * X is positive heading off to your right,
-         *     * Y is positive heading up through the top edge of the phone, and
-         *     * Z is pointing out of the screen, toward you.
-         * The origin of the Phone Coordinate System is at the origin of the Camera Coordinate System
-         * of the front-facing camera on the phone.
-         *
-         * Finally, it is worth noting that trackable Vuforia Image Targets have their <em>own</em>
-         * coordinate system (see {@link VuforiaTrackable}. This is sometimes referred to as the
-         * Target Coordinate System. In keeping with the above, when looking at the target in its
-         * natural orientation, in the Target Coodinate System
-         *     * X is positive heading off to your right,
-         *     * Y is positive heading up through the top edge of the target, and
-         *     * Z is pointing out of the target, toward you.
-         *
-         * One can observe that the Camera Coordinate System of the front-facing camera on a phone
-         * coincides with the Phone Coordinate System. Further, when a phone is placed on its back
-         * at the origin of the Robot Coordinate System and aligned appropriately, those coordinate
-         * systems also coincide with the Robot Coordinate System. Got it?
-         *
-         * In this example here, we're going to assume that we put the camera on the right side
-         * of the robot (facing outwards, of course). To determine the transformation matrix that
-         * describes that location, first consider the camera as lying on its back at the origin
-         * of the Robot Coordinate System such that the Camera Coordinate System and Robot Coordinate
-         * System coincide. Then the transformation we need is
-         *      * first a rotation of the camera by +90deg along the robot X axis,
-         *      * then a rotation of the camera by +90deg along the robot Z axis, and
-         *      * finally a translation of the camera to the side of the robot.
-         *
-         * When determining whether a rotation is positive or negative, consider yourself as looking
-         * down the (positive) axis of rotation from the positive towards the origin. Positive rotations
-         * are then CCW, and negative rotations CW. An example: consider looking down the positive Z
-         * axis towards the origin. A positive rotation about Z (ie: a rotation parallel to the the X-Y
-         * plane) is then CCW, as one would normally expect from the usual classic 2D geometry.
-         */
-
-        OpenGLMatrix robotFromCamera = OpenGLMatrix
-                .translation(mmBotWidth/2,0,0)
-                .multiplied(Orientation.getRotationMatrix(
-                        AxesReference.EXTRINSIC, AxesOrder.XZY,
-                        AngleUnit.DEGREES, 90, 90, 0));
-        RobotLog.ii(TAG, "camera=%s", format(robotFromCamera));
-
-        /**
-         * Let the trackable listeners we care about know where the camera is. We know that each
-         * listener is a {@link VuforiaTrackableDefaultListener} and can so safely cast because
-         * we have not ourselves installed a listener of a different type.
-         */
-        ((VuforiaTrackableDefaultListener)redTarget.getListener()).setCameraLocationOnRobot(parameters.cameraName, robotFromCamera);
-        ((VuforiaTrackableDefaultListener)blueTarget.getListener()).setCameraLocationOnRobot(parameters.cameraName, robotFromCamera);
-
-        /**
-         * A brief tutorial: here's how all the math is going to work:
-         *
-         * C = robotFromCamera          maps   camera coords -> robot coords
-         * P = tracker.getPose()        maps   image target coords -> camera coords
-         * L = redTargetLocationOnField maps   image target coords -> field coords
-         *
-         * So
-         *
-         * C.inverted()                 maps   robot coords -> camera coords
-         * P.inverted()                 maps   camera coords -> imageTarget coords
-         *
-         * Putting that all together,
-         *
-         * L x P.inverted() x C.inverted() maps robot coords to field coords.
-         *
-         * @see VuforiaTrackableDefaultListener#getRobotLocation()
-         */
+            // Uncomment the following line if you want to adjust the magnification and/or the aspect ratio of the input images.
+            //tfod.setZoom(2.5, 1.78);
+        }
 
         /** Wait for the game to begin */
-        telemetry.addData(">", "Press Play to start tracking");
+        telemetry.addData(">", "Press Play to start op mode");
         telemetry.update();
         waitForStart();
 
-        /** Start tracking the data sets we care about. */
-        stonesAndChips.activate();
+        if (opModeIsActive()) {
 
-        boolean buttonPressed = false;
-        while (opModeIsActive()) {
+//            //crab left
+//            CrabForDistance(1, 0.5);
+//
+//            //move backwards to reach the rings
+//            ForwardForDistance(0.5,);
 
-            if (gamepad1.a && !buttonPressed) {
-                captureFrameToFile();
-            }
-            buttonPressed = gamepad1.a;
+            //reach the rings
+            CrabForDistance(0.2, 0.5);
+            sleep(500);
+            ForwardForDistance(0.5, -1);
+            sleep(1000);
 
-            for (VuforiaTrackable trackable : allTrackables) {
-                /**
-                 * getUpdatedRobotLocation() will return null if no new information is available since
-                 * the last time that call was made, or if the trackable is not currently visible.
-                 * getRobotLocation() will return null if the trackable is not currently visible.
-                 */
-                telemetry.addData(trackable.getName(), ((VuforiaTrackableDefaultListener)trackable.getListener()).isVisible() ? "Visible" : "Not Visible");    //
+            //read the rings
+            String readLabel = "";
 
-                OpenGLMatrix robotLocationTransform = ((VuforiaTrackableDefaultListener)trackable.getListener()).getUpdatedRobotLocation();
-                if (robotLocationTransform != null) {
-                    lastLocation = robotLocationTransform;
+            while (int count = 0; count < 1000; count++){
+                if (tfod != null) {
+                    // getUpdatedRecognitions() will return null if no new information is available since
+                    // the last time that call was made.
+                    List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
+                    if (updatedRecognitions != null) {
+                        telemetry.addData("# Object Detected", updatedRecognitions.size());
+                        // step through the list of recognitions and display boundary info.
+                        int i = 0;
+                        for (Recognition recognition : updatedRecognitions) {
+                            telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
+                            readLabel = recognition.getLabel();
+                            telemetry.addData(String.format("  left,top (%d)", i), "%.03f , %.03f",
+                                    recognition.getLeft(), recognition.getTop());
+                            telemetry.addData(String.format("  right,bottom (%d)", i), "%.03f , %.03f",
+                                    recognition.getRight(), recognition.getBottom());
+                        }
+                        telemetry.update();
+                    }
                 }
+                sleep(10);
             }
-            /**
-             * Provide feedback as to where the robot was last located (if we know).
-             */
-            if (lastLocation != null) {
-                //  RobotLog.vv(TAG, "robot=%s", format(lastLocation));
-                telemetry.addData("Pos", format(lastLocation));
-            } else {
-                telemetry.addData("Pos", "Unknown");
+            sleep(1000);
+
+
+            //move to the launch line
+
+            CrabForDistance(0.2, 0.5);
+            sleep(500);
+            ForwardForDistance(0.5, -3);
+            sleep(1000);
+
+            //shoot 3 rings at the high goal
+            SHOOTER.setDirection(DcMotorSimple.Direction.REVERSE);
+            SHOOTER.setPower(1); //maybe max?
+            sleep(2000);
+            FLICKER.setPosition(.2);
+            sleep(500);
+            FLICKER.setPosition(1);
+
+            sleep(1000);
+            FLICKER.setPosition(.2);
+            sleep(500);
+            FLICKER.setPosition(1);
+
+            sleep(1000);
+            FLICKER.setPosition(.2);
+            sleep(500);
+            FLICKER.setPosition(1);
+            sleep(500);
+            FLICKER.setPosition(.2);
+
+            //use the data gathered
+
+            // 4 rings spotted
+            if (readLabel.equals("Quad")) {
+                //move to square C (furthest)
             }
-            telemetry.update();
+            // 1 ring spotted
+            else if (readLabel.equals("Single")) {
+                //move to square B (middle)
+
+            }
+            // 0 rings spotted
+            else {
+                //move to square A (closest)
+                //move over to the target square
+                //move forward
+                ForwardForDistance(0.5, -1.5);
+                sleep(500);
+                //crab left to the target zone
+                CrabForDistance(1, 1);
+
+                //drop the wobble goal in the launch line target zone
+                WOBBLE.setDirection(DcMotorSimple.Direction.REVERSE);
+                WOBBLE.setPower(0.8); //position = placeholder --> replace later after testing
+                sleep(200);
+                WOBBLE.setPower(0.5); //position = placeholder --> replace later after testing
+                sleep(200);
+                WOBBLE.setPower(0.4); //position = placeholder --> replace later after testing
+                sleep(200);
+                WOBBLE.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+                WOBBLE.setPower(0);
+
+                sleep(2000);
+                WOBBLEBLOCK.setPosition(0);
+                sleep(1000);
+
+                ForwardForDistance(0.3,1);
+
+                //park on the launch line (not touching the wobble goal)
+                //crab right
+                CrabForDistance(0.5,-1);
+
+                ForwardForDistance(0.5, -1);
+
+            }
+
+
+        }
+
+        if (tfod != null) {
+            tfod.shutdown();
         }
     }
 
     /**
-     * A simple utility that extracts positioning information from a transformation matrix
-     * and formats it in a form palatable to a human being.
+     * Initialize the Vuforia localization engine.
      */
-    String format(OpenGLMatrix transformationMatrix) {
-        return transformationMatrix.formatAsTransform();
+    private void initVuforia() {
+        /*
+         * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
+         */
+        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
+
+        parameters.vuforiaLicenseKey = VUFORIA_KEY;
+        parameters.cameraName = hardwareMap.get(WebcamName.class, "Webcam");
+
+        //  Instantiate the Vuforia engine
+        vuforia = ClassFactory.getInstance().createVuforia(parameters);
+
+        // Loading trackables is not necessary for the TensorFlow Object Detection engine.
     }
 
     /**
-     * Sample one frame from the Vuforia stream and write it to a .PNG image file on the robot
-     * controller in the /sdcard/FIRST/data directory. The images can be downloaded using Android
-     * Studio's Device File Explorer, ADB, or the Media Transfer Protocol (MTP) integration into
-     * Windows Explorer, among other means. The images can be useful during robot design and calibration
-     * in order to get a sense of what the camera is actually seeing and so assist in camera
-     * aiming and alignment.
+     * Initialize the TensorFlow Object Detection engine.
      */
-    void captureFrameToFile() {
-        vuforia.getFrameOnce(Continuation.create(ThreadPool.getDefault(), new Consumer<Frame>()
+    private void initTfod() {
+        int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
+                "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
+        tfodParameters.minResultConfidence = 0.8f;
+        tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
+        tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_FIRST_ELEMENT, LABEL_SECOND_ELEMENT);
+    }
+
+    private void stopEverything() {
+        LEFTFRONT.setPower(0);
+        RIGHTFRONT.setPower(0);
+        LEFTBACK.setPower(0);
+        RIGHTBACK.setPower(0);
+    }
+
+    private void ForwardForDistance(double power, double revolutions) {
+        int denc = (int)Math.round(revolutions * encRotation);
+
+        RIGHTFRONT.setDirection(DcMotorSimple.Direction.REVERSE);
+        LEFTFRONT.setDirection(DcMotorSimple.Direction.FORWARD);
+        RIGHTBACK.setDirection(DcMotorSimple.Direction.REVERSE);
+        LEFTBACK.setDirection(DcMotorSimple.Direction.FORWARD);
+
+        RIGHTFRONT.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        LEFTFRONT.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        RIGHTBACK.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        LEFTBACK.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        RIGHTFRONT.setTargetPosition(denc);
+        LEFTBACK.setTargetPosition(denc);
+        RIGHTBACK.setTargetPosition(denc);
+        LEFTFRONT.setTargetPosition(denc);
+
+        LEFTBACK.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        RIGHTFRONT.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        LEFTFRONT.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        RIGHTBACK.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        telemetry.addData("Mode", "running");
+        telemetry.update();
+
+        RIGHTFRONT.setPower(power);
+        LEFTFRONT.setPower(power);
+        RIGHTBACK.setPower(power);
+        LEFTBACK.setPower(power);
+
+        while (opModeIsActive() && LEFTBACK.isBusy() && LEFTFRONT.isBusy() && RIGHTBACK.isBusy() && RIGHTFRONT.isBusy())   //leftMotor.getCurrentPosition() < leftMotor.getTargetPosition())
         {
-            @Override public void accept(Frame frame)
-            {
-                Bitmap bitmap = vuforia.convertFrameToBitmap(frame);
-                if (bitmap != null) {
-                    File file = new File(captureDirectory, String.format(Locale.getDefault(), "VuforiaFrame-%d.png", captureCounter++));
-                    try {
-                        FileOutputStream outputStream = new FileOutputStream(file);
-                        try {
-                            bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
-                        } finally {
-                            outputStream.close();
-                            telemetry.log().add("captured %s", file.getName());
-                        }
-                    } catch (IOException e) {
-                        RobotLog.ee(TAG, e, "exception in captureFrameToFile()");
-                    }
-                }
-            }
-        }));
+            telemetry.addData("encoder-back-left", LEFTBACK.getCurrentPosition() + "  busy=" + LEFTBACK.isBusy());
+            telemetry.addData("encoder-forward-left", LEFTFRONT.getCurrentPosition() + "  busy=" + LEFTFRONT.isBusy());
+            telemetry.addData("encoder-back-right", RIGHTBACK.getCurrentPosition() + "  busy=" + RIGHTBACK.isBusy());
+            telemetry.addData("encoder-forward-right", RIGHTFRONT.getCurrentPosition() + "  busy=" + RIGHTFRONT.isBusy());
+
+            telemetry.update();
+            idle();
+        }
+
+        stopEverything();
+    }
+
+    private void TurnForDistance(double power, double revolutions) {
+        int denc = (int)Math.round(revolutions * encRotation);
+
+        RIGHTFRONT.setDirection(DcMotorSimple.Direction.FORWARD);
+        LEFTFRONT.setDirection(DcMotorSimple.Direction.FORWARD);
+        RIGHTBACK.setDirection(DcMotorSimple.Direction.FORWARD);
+        LEFTBACK.setDirection(DcMotorSimple.Direction.FORWARD);
+
+        RIGHTFRONT.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        LEFTFRONT.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        RIGHTBACK.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        LEFTBACK.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        RIGHTFRONT.setTargetPosition(denc);
+        LEFTBACK.setTargetPosition(denc);
+        RIGHTBACK.setTargetPosition(denc);
+        LEFTFRONT.setTargetPosition(denc);
+
+        LEFTBACK.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        RIGHTFRONT.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        LEFTFRONT.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        RIGHTBACK.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        telemetry.addData("Mode", "running");
+        telemetry.update();
+
+        RIGHTFRONT.setPower(power);
+        LEFTFRONT.setPower(power);
+        RIGHTBACK.setPower(power);
+        LEFTBACK.setPower(power);
+
+        while (opModeIsActive() && LEFTBACK.isBusy() && LEFTFRONT.isBusy() && RIGHTBACK.isBusy() && RIGHTFRONT.isBusy())   //leftMotor.getCurrentPosition() < leftMotor.getTargetPosition())
+        {
+            telemetry.addData("encoder-back-left", LEFTBACK.getCurrentPosition() + "  busy=" + LEFTBACK.isBusy());
+            telemetry.addData("encoder-forward-left", LEFTFRONT.getCurrentPosition() + "  busy=" + LEFTFRONT.isBusy());
+            telemetry.addData("encoder-back-right", RIGHTBACK.getCurrentPosition() + "  busy=" + RIGHTBACK.isBusy());
+            telemetry.addData("encoder-forward-right", RIGHTFRONT.getCurrentPosition() + "  busy=" + RIGHTFRONT.isBusy());
+
+            telemetry.update();
+            idle();
+        }
+
+        stopEverything();
+    }
+
+    private void CrabForDistance(double power, double revolutions) {
+        //positive revolutions = left
+        //negative revolutions = right
+        int denc = (int)Math.round(revolutions * encRotation);
+
+        RIGHTFRONT.setDirection(DcMotorSimple.Direction.REVERSE);
+        LEFTFRONT.setDirection(DcMotorSimple.Direction.REVERSE);
+        RIGHTBACK.setDirection(DcMotorSimple.Direction.FORWARD);
+        LEFTBACK.setDirection(DcMotorSimple.Direction.FORWARD);
+
+        RIGHTFRONT.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        LEFTFRONT.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        RIGHTBACK.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        LEFTBACK.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        RIGHTFRONT.setTargetPosition(denc);
+        LEFTBACK.setTargetPosition(denc);
+        RIGHTBACK.setTargetPosition(denc);
+        LEFTFRONT.setTargetPosition(denc);
+
+        LEFTBACK.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        RIGHTFRONT.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        LEFTFRONT.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        RIGHTBACK.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        telemetry.addData("Mode", "running");
+        telemetry.update();
+
+        RIGHTFRONT.setPower(power);
+        LEFTFRONT.setPower(power);
+        RIGHTBACK.setPower(power);
+        LEFTBACK.setPower(power);
+
+        while (opModeIsActive() && LEFTBACK.isBusy() && LEFTFRONT.isBusy() && RIGHTBACK.isBusy() && RIGHTFRONT.isBusy())   //leftMotor.getCurrentPosition() < leftMotor.getTargetPosition())
+        {
+            telemetry.addData("encoder-back-left", LEFTBACK.getCurrentPosition() + "  busy=" + LEFTBACK.isBusy());
+            telemetry.addData("encoder-forward-left", LEFTFRONT.getCurrentPosition() + "  busy=" + LEFTFRONT.isBusy());
+            telemetry.addData("encoder-back-right", RIGHTBACK.getCurrentPosition() + "  busy=" + RIGHTBACK.isBusy());
+            telemetry.addData("encoder-forward-right", RIGHTFRONT.getCurrentPosition() + "  busy=" + RIGHTFRONT.isBusy());
+
+            telemetry.update();
+            idle();
+        }
+
+        stopEverything();
+    }
+
+    private void resetEncoders() {
+        //LEFTFRONT.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        RIGHTFRONT.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        LEFTBACK.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        RIGHTBACK.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 }
