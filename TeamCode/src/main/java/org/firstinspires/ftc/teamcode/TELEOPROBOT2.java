@@ -27,9 +27,53 @@ public class TELEOPROBOT2 extends LinearOpMode { //declaring class for whole pro
     private DcMotor WOBBLE;
     private DcMotor INTAKE;
     private Servo WOBBLEBLOCK;
-    private CRServo POPUP;
     private Servo FLICKER;
 
+
+    private void ForwardForDistance(double power, double revolutions) {
+        int denc = (int)Math.round(revolutions * encRotation);
+
+        RIGHTFRONT.setDirection(DcMotorSimple.Direction.REVERSE);
+        LEFTFRONT.setDirection(DcMotorSimple.Direction.FORWARD);
+        RIGHTBACK.setDirection(DcMotorSimple.Direction.REVERSE);
+        LEFTBACK.setDirection(DcMotorSimple.Direction.FORWARD);
+
+        RIGHTFRONT.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        LEFTFRONT.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        RIGHTBACK.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        LEFTBACK.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        RIGHTFRONT.setTargetPosition(denc);
+        LEFTBACK.setTargetPosition(denc);
+        RIGHTBACK.setTargetPosition(denc);
+        LEFTFRONT.setTargetPosition(denc);
+
+        LEFTBACK.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        RIGHTFRONT.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        LEFTFRONT.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        RIGHTBACK.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        telemetry.addData("Mode", "running");
+        telemetry.update();
+
+        RIGHTFRONT.setPower(power);
+        LEFTFRONT.setPower(power);
+        RIGHTBACK.setPower(power);
+        LEFTBACK.setPower(power);
+
+        while (opModeIsActive() && LEFTBACK.isBusy() && LEFTFRONT.isBusy() && RIGHTBACK.isBusy() && RIGHTFRONT.isBusy())   //leftMotor.getCurrentPosition() < leftMotor.getTargetPosition())
+        {
+            telemetry.addData("encoder-back-left", LEFTBACK.getCurrentPosition() + "  busy=" + LEFTBACK.isBusy());
+            telemetry.addData("encoder-forward-left", LEFTFRONT.getCurrentPosition() + "  busy=" + LEFTFRONT.isBusy());
+            telemetry.addData("encoder-back-right", RIGHTBACK.getCurrentPosition() + "  busy=" + RIGHTBACK.isBusy());
+            telemetry.addData("encoder-forward-right", RIGHTFRONT.getCurrentPosition() + "  busy=" + RIGHTFRONT.isBusy());
+
+            telemetry.update();
+            idle();
+        }
+
+        stopEverything();
+    }
 
     @Override
     public void runOpMode() {
@@ -41,7 +85,6 @@ public class TELEOPROBOT2 extends LinearOpMode { //declaring class for whole pro
         WOBBLE = hardwareMap.dcMotor.get("WOBBLE");
         INTAKE = hardwareMap.dcMotor.get("INTAKE");
         WOBBLEBLOCK = hardwareMap.servo.get("WOBBLEBLOCK");
-        POPUP = hardwareMap.crservo.get("POPUP");
         FLICKER = hardwareMap.servo.get("FLICKER");
 
         sleep(1000);
@@ -87,10 +130,6 @@ public class TELEOPROBOT2 extends LinearOpMode { //declaring class for whole pro
                     LEFTFRONT.setPower(gamepad1.left_trigger);
                 }
 
-
-
-
-
                 else {
                     RIGHTFRONT.setPower(0); //if not triggered, make sure motors donÃ¢â‚¬â„¢t move/power=0
                     LEFTFRONT.setPower(0);
@@ -102,84 +141,102 @@ public class TELEOPROBOT2 extends LinearOpMode { //declaring class for whole pro
                 // ********** ATTACHMENTS **********
 
                 if (gamepad1.y) { //shoot for highest goal
-                    SHOOTER.setDirection(DcMotorSimple.Direction.REVERSE);
-                    SHOOTER.setPower(1); //maybe max?
+
                     sleep(500);
                     FLICKER.setPosition(0);
                     sleep(500);
                     FLICKER.setPosition(1);
                 }
 
-                else if (gamepad1.x) {  // resets all motors (cancels everything).
+                if (gamepad1.x) {  // resets all motors (cancels everything).
                     SHOOTER.setPower(0);
+
                 }
 
-                else if (gamepad1.b) {
+                if (gamepad1.b) {
                     //puts shooter at medium power to hit power shot target
-                    SHOOTER.setDirection(DcMotorSimple.Direction.REVERSE);
-                    SHOOTER.setPower(0.7); //maybe max?
+                    SHOOTER.setDirection(DcMotorSimple.Direction.FORWARD);
+                    SHOOTER.setPower(.95);
                     sleep(500);
                 }
 
-                else if (gamepad1.a) {
+                if (gamepad1.a) {
                     //flicker
 
                     FLICKER.setPosition(.2);
                     sleep(500);
-                    FLICKER.setPosition(1);
+                    FLICKER.setPosition(.7);
                 }
 
-                else if (gamepad2.y) {
+                if (gamepad2.y) {
+                    //intake goes in
+                    INTAKE.setDirection(DcMotorSimple.Direction.REVERSE);
+                    INTAKE.setPower(1);
                 }
 
-                else if (gamepad2.a) {
-                    //start intake
-                    INTAKE.setPower(0);
+
+                if (gamepad2.a) {
+                    //intake goes out
+                    INTAKE.setDirection(DcMotorSimple.Direction.FORWARD);
+                    INTAKE.setPower(1);
                 }
 
-                else if (gamepad2.x) {
+                if (gamepad2.x) {
                     //stop intake
                     INTAKE.setPower(0);
                 }
 
-                else if (Math.abs(gamepad2.left_stick_y) > 0.1) {
-                    //sets intake forward
-                   INTAKE.setDirection(DcMotorSimple.Direction.FORWARD);
+                if ( Math.abs(gamepad2.right_stick_y) > 0.1) {
+
+                    //sets wobble out
+
+
+                    WOBBLE.setDirection(DcMotorSimple.Direction.REVERSE);
+                    WOBBLE.setPower((gamepad2.right_stick_y )/ 2.0);
+
+
+
+
+
+                }
+                if (Math.abs(gamepad2.right_stick_y) < 0.1) {
+
+                    //sets wobblewobble in
+                    WOBBLE.setDirection(DcMotorSimple.Direction.FORWARD);
+                    WOBBLE.setPower((gamepad2.right_stick_y) / 2.0);
+
+
 
                 }
 
-                else if (Math.abs(gamepad2.left_stick_y) < 0.1) {
-                    //sets intake backwards
-                    INTAKE.setDirection(DcMotorSimple.Direction.REVERSE);
+                if (gamepad2.right_bumper == true) {
 
+                    telemetry.addData("test", "it goes in: ");
+                    telemetry.update();
+                    sleep(500);
 
-
-                } else if (Math.abs(gamepad2.right_stick_y) > 0.1) {
-
-                    //sets wobbleblock out
                     WOBBLEBLOCK.setPosition(1);
 
-                } else if (Math.abs(gamepad2.right_stick_y) < 0.1) {
 
-                    //sets wobbleblock in
 
+
+                } if ((gamepad2.left_bumper) == true) {
+
+                    sleep(500);
+
+                    WOBBLEBLOCK.setPosition(1);
+                    sleep(500);
                     WOBBLEBLOCK.setPosition(0);
 
 
-                }  else if (Math.abs(gamepad2.left_trigger) != 0) {
 
-                    POPUP.setPower(1);
-
-
-                } else if (Math.abs(gamepad2.right_trigger) != 0) {
-
-                    POPUP.setPower(0);
 
                 }
 
                 //does this work
-                }
             }
         }
     }
+
+
 }
