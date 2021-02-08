@@ -30,50 +30,7 @@ public class TELEOPROBOT2 extends LinearOpMode { //declaring class for whole pro
     private Servo FLICKER;
 
 
-    private void ForwardForDistance(double power, double revolutions) {
-        int denc = (int)Math.round(revolutions * encRotation);
 
-        RIGHTFRONT.setDirection(DcMotorSimple.Direction.REVERSE);
-        LEFTFRONT.setDirection(DcMotorSimple.Direction.FORWARD);
-        RIGHTBACK.setDirection(DcMotorSimple.Direction.REVERSE);
-        LEFTBACK.setDirection(DcMotorSimple.Direction.FORWARD);
-
-        RIGHTFRONT.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        LEFTFRONT.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        RIGHTBACK.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        LEFTBACK.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        RIGHTFRONT.setTargetPosition(denc);
-        LEFTBACK.setTargetPosition(denc);
-        RIGHTBACK.setTargetPosition(denc);
-        LEFTFRONT.setTargetPosition(denc);
-
-        LEFTBACK.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        RIGHTFRONT.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        LEFTFRONT.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        RIGHTBACK.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        telemetry.addData("Mode", "running");
-        telemetry.update();
-
-        RIGHTFRONT.setPower(power);
-        LEFTFRONT.setPower(power);
-        RIGHTBACK.setPower(power);
-        LEFTBACK.setPower(power);
-
-        while (opModeIsActive() && LEFTBACK.isBusy() && LEFTFRONT.isBusy() && RIGHTBACK.isBusy() && RIGHTFRONT.isBusy())   //leftMotor.getCurrentPosition() < leftMotor.getTargetPosition())
-        {
-            telemetry.addData("encoder-back-left", LEFTBACK.getCurrentPosition() + "  busy=" + LEFTBACK.isBusy());
-            telemetry.addData("encoder-forward-left", LEFTFRONT.getCurrentPosition() + "  busy=" + LEFTFRONT.isBusy());
-            telemetry.addData("encoder-back-right", RIGHTBACK.getCurrentPosition() + "  busy=" + RIGHTBACK.isBusy());
-            telemetry.addData("encoder-forward-right", RIGHTFRONT.getCurrentPosition() + "  busy=" + RIGHTFRONT.isBusy());
-
-            telemetry.update();
-            idle();
-        }
-
-        stopEverything();
-    }
 
     @Override
     public void runOpMode() {
@@ -191,6 +148,8 @@ public class TELEOPROBOT2 extends LinearOpMode { //declaring class for whole pro
                     //sets wobble out
 
 
+
+
                     WOBBLE.setDirection(DcMotorSimple.Direction.REVERSE);
                     WOBBLE.setPower((gamepad2.right_stick_y )/ 2.0);
 
@@ -200,10 +159,28 @@ public class TELEOPROBOT2 extends LinearOpMode { //declaring class for whole pro
 
                 }
                 if (Math.abs(gamepad2.right_stick_y) < 0.1) {
+                    telemetry.addData("current position: ", WOBBLE.getCurrentPosition());
+                    telemetry.addData("current position divided: ", WOBBLE.getCurrentPosition()/545);
 
-                    //sets wobblewobble in
-                    WOBBLE.setDirection(DcMotorSimple.Direction.FORWARD);
-                    WOBBLE.setPower((gamepad2.right_stick_y) / 2.0);
+                    if ((WOBBLE.getCurrentPosition() / 545 )< .25) {
+                        telemetry.update();
+                        WOBBLE.setDirection(DcMotorSimple.Direction.FORWARD);
+                        WOBBLE.setPower((gamepad2.right_stick_y) / 2.0);
+
+                    } else {
+
+                        WOBBLE.setDirection(DcMotorSimple.Direction.FORWARD);
+                        WOBBLE.setPower((gamepad2.right_stick_y) / 4.0);
+
+
+                    }
+
+
+
+
+
+
+                }
 
 
 
