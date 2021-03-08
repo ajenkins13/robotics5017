@@ -154,25 +154,18 @@ public class CurrentTeleop extends LinearOpMode { //declaring class for whole pr
 
                     //sets wobble out
 
-
-
-
                     WOBBLE.setDirection(DcMotorSimple.Direction.REVERSE);
+
                     if ((WOBBLE.getCurrentPosition() / 545.0 )< .25) {
                         WOBBLE.setDirection(DcMotorSimple.Direction.FORWARD);
-                        WOBBLE.setPower((gamepad2.right_stick_y) / 1.25);
+                        WOBBLE.setPower((gamepad2.right_stick_y) / 1);
 
                     } else {
 
                         WOBBLE.setDirection(DcMotorSimple.Direction.FORWARD);
                         WOBBLE.setPower((gamepad2.right_stick_y) / 3.0);
 
-
                     }
-
-
-
-
 
                 }
                 if (Math.abs(gamepad2.right_stick_y) < 0.1) {
@@ -182,7 +175,7 @@ public class CurrentTeleop extends LinearOpMode { //declaring class for whole pr
 
                     if ((WOBBLE.getCurrentPosition() / 545.0 )< .25) {
                         WOBBLE.setDirection(DcMotorSimple.Direction.FORWARD);
-                        WOBBLE.setPower((gamepad2.right_stick_y) / 1.25);
+                        WOBBLE.setPower((gamepad2.right_stick_y) / 1);
 
                     } else {
 
