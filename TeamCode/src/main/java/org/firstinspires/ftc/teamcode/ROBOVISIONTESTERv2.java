@@ -160,7 +160,7 @@ public class ROBOVISIONTESTERv2 extends LinearOpMode {
             //read the rings
             String readLabel = "";
 
-            while (int count = 0; count < 1000; count++){
+            for (int count = 0; count < 1000; count++) {
                 if (tfod != null) {
                     // getUpdatedRecognitions() will return null if no new information is available since
                     // the last time that call was made.
@@ -221,10 +221,6 @@ public class ROBOVISIONTESTERv2 extends LinearOpMode {
             // 1 ring spotted
             else if (readLabel.equals("Single")) {
                 //move to square B (middle)
-
-            }
-            // 0 rings spotted
-            else {
                 //move to square A (closest)
                 //move over to the target square
                 //move forward
@@ -255,7 +251,39 @@ public class ROBOVISIONTESTERv2 extends LinearOpMode {
                 CrabForDistance(0.5,-1);
 
                 ForwardForDistance(0.5, -1);
-
+            }
+            // 0 rings spotted
+            else {
+//                //move to square A (closest)
+//                //move over to the target square
+//                //move forward
+//                ForwardForDistance(0.5, -1.5);
+//                sleep(500);
+//                //crab left to the target zone
+//                CrabForDistance(1, 1);
+//
+//                //drop the wobble goal in the launch line target zone
+//                WOBBLE.setDirection(DcMotorSimple.Direction.REVERSE);
+//                WOBBLE.setPower(0.8); //position = placeholder --> replace later after testing
+//                sleep(200);
+//                WOBBLE.setPower(0.5); //position = placeholder --> replace later after testing
+//                sleep(200);
+//                WOBBLE.setPower(0.4); //position = placeholder --> replace later after testing
+//                sleep(200);
+//                WOBBLE.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//                WOBBLE.setPower(0);
+//
+//                sleep(2000);
+//                WOBBLEBLOCK.setPosition(0);
+//                sleep(1000);
+//
+//                ForwardForDistance(0.3,1);
+//
+//                //park on the launch line (not touching the wobble goal)
+//                //crab right
+//                CrabForDistance(0.5,-1);
+//
+//                ForwardForDistance(0.5, -1);
             }
 
 
