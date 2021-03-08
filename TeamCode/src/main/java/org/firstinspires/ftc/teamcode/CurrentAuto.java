@@ -1,3 +1,5 @@
+//TODO(sachi): Rename this...
+
 //comment out attachments since this is for this year
 //FORWARD means REVERSE for the left wheels
 
@@ -15,9 +17,9 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
-@Autonomous(name = "currentProgram", group = "") //name of the file
+@Autonomous(name = "Current Auto", group = "") //name of the file
 
-public class AUTOSHOOTENCODERSv3 extends LinearOpMode { //creating public class, extension of linear opmode
+public class CurrentAuto extends LinearOpMode { //creating public class, extension of linear opmode
 
     //creating motors, touch sensors, and servos
     private DcMotor RIGHTFRONT;
@@ -51,73 +53,97 @@ public class AUTOSHOOTENCODERSv3 extends LinearOpMode { //creating public class,
 
         if (opModeIsActive()) {
 
+            //TEST ALL FUNCTIONS
+            // ForwardForDistance(0.5, 5);
+            // ForwardForDistance(0.5, -5);
+
+            // sleep(2000);
+
+            // TurnForDistance(0.5, 1);
+            // TurnForDistance(0.5, -1);
+
+            // sleep(2000);
+
+            // CrabForDistance(0.5,1);
+            // CrabForDistance(0.5,-1);
+
             //reach the launch line
+
+            SHOOTER.setDirection(DcMotorSimple.Direction.FORWARD);
+            SHOOTER.setPower(0.52); //maybe max?
+
             CrabForDistance(0.2, 1);
             sleep(500);
-            ForwardForDistance(0.5, -4);
+            ForwardForDistance(0.5, -1);
             sleep(1000);
+            ForwardForDistance(0.5, 4.7);
+            sleep(1000);
+            TurnForDistance(0.5,-0.18);
 
             //shoot 3 rings at the high goal
-            SHOOTER.setDirection(DcMotorSimple.Direction.REVERSE);
-            SHOOTER.setPower(1); //maybe max?
-            sleep(2000);
+
+            sleep(3000);
             FLICKER.setPosition(.2);
             sleep(500);
             FLICKER.setPosition(1);
 
-            sleep(1000);
+            sleep(3000);
             FLICKER.setPosition(.2);
             sleep(500);
             FLICKER.setPosition(1);
 
-            sleep(1000);
+            sleep(3000);
             FLICKER.setPosition(.2);
             sleep(500);
             FLICKER.setPosition(1);
             sleep(500);
             FLICKER.setPosition(.2);
+            sleep(500);
+            FLICKER.setPosition(1);
+            sleep(1000);
+
+            // WOBBLE.setDirection(DcMotorSimple.Direction.REVERSE);
+            // WOBBLE.setPower(1); //position = placeholder --> replace later after testing
+            // sleep(500);
+            // WOBBLE.setPower(0.5); //position = placeholder --> replace later after testing
+            // sleep(200);
+            // WOBBLE.setPower(0.4); //position = placeholder --> replace later after testing
+            // sleep(200);
+            // WOBBLE.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            // WOBBLE.setPower(0);
+
+            ForwardForDistance(0.5, 1.5);
 
             //move over to the target square
-            //move forward
-            ForwardForDistance(0.5, -1.5);
-            sleep(500);
+            //ForwardForDistance(0.5, -1.5);
+            //sleep(500);
             //crab left to the target zone
-            CrabForDistance(1, 1);
+            //CrabForDistance(1, 1);
+            //SHOOTER.setPower(0);
 
             //drop the wobble goal in the launch line target zone
-            WOBBLE.setDirection(DcMotorSimple.Direction.REVERSE);
-            WOBBLE.setPower(0.8); //position = placeholder --> replace later after testing
-            sleep(200);
-            WOBBLE.setPower(0.5); //position = placeholder --> replace later after testing
-            sleep(200);
-            WOBBLE.setPower(0.4); //position = placeholder --> replace later after testing
-            sleep(200);
-            WOBBLE.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            WOBBLE.setPower(0);
+            // WOBBLE.setDirection(DcMotorSimple.Direction.REVERSE);
+            // WOBBLE.setPower(1); //position = placeholder --> replace later after testing
+            // sleep(500);
+            // WOBBLE.setPower(0.5); //position = placeholder --> replace later after testing
+            // sleep(200);
+            // WOBBLE.setPower(0.4); //position = placeholder --> replace later after testing
+            // sleep(200);
+            // WOBBLE.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            // WOBBLE.setPower(0);
 
-            sleep(2000);
-            WOBBLEBLOCK.setPosition(0);
-            sleep(1000);
+            //sleep(2000);
+            //WOBBLEBLOCK.setPosition(0);
+            //sleep(1000);
 
-            ForwardForDistance(0.3,1);
+            //ForwardForDistance(0.3,1);
 
             //park on the launch line (not touching the wobble goal)
             //crab right
-            CrabForDistance(0.5,-1);
+            //CrabForDistance(0.5,-1);
 
-            ForwardForDistance(0.5, -1);
+            //ForwardForDistance(0.5, -1);
 
-//            telemetry.addData("test", "servo position: " + WOBBLEBLOCK.getPosition());
-//            WOBBLEBLOCK.setPosition(0);
-//            //telemetry.update();
-//            telemetry.addData("test", "servo position: " + WOBBLEBLOCK.getPosition());
-//            WOBBLEBLOCK.setPosition(1);
-//            //telemetry.update();
-//            telemetry.addData("test", "servo position: " + WOBBLEBLOCK.getPosition());
-//            WOBBLEBLOCK.setPosition(0);
-//            telemetry.update();
-//            sleep(10000);
-//            idle();
         }
     }
 
@@ -129,51 +155,6 @@ public class AUTOSHOOTENCODERSv3 extends LinearOpMode { //creating public class,
     }
 
     private void ForwardForDistance(double power, double revolutions) {
-        int denc = (int)Math.round(revolutions * encRotation);
-
-        RIGHTFRONT.setDirection(DcMotorSimple.Direction.REVERSE);
-        LEFTFRONT.setDirection(DcMotorSimple.Direction.FORWARD);
-        RIGHTBACK.setDirection(DcMotorSimple.Direction.REVERSE);
-        LEFTBACK.setDirection(DcMotorSimple.Direction.FORWARD);
-
-        RIGHTFRONT.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        LEFTFRONT.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        RIGHTBACK.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        LEFTBACK.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        RIGHTFRONT.setTargetPosition(denc);
-        LEFTBACK.setTargetPosition(denc);
-        RIGHTBACK.setTargetPosition(denc);
-        LEFTFRONT.setTargetPosition(denc);
-
-        LEFTBACK.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        RIGHTFRONT.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        LEFTFRONT.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        RIGHTBACK.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        telemetry.addData("Mode", "running");
-        telemetry.update();
-
-        RIGHTFRONT.setPower(power);
-        LEFTFRONT.setPower(power);
-        RIGHTBACK.setPower(power);
-        LEFTBACK.setPower(power);
-
-        while (opModeIsActive() && LEFTBACK.isBusy() && LEFTFRONT.isBusy() && RIGHTBACK.isBusy() && RIGHTFRONT.isBusy())   //leftMotor.getCurrentPosition() < leftMotor.getTargetPosition())
-        {
-            telemetry.addData("encoder-back-left", LEFTBACK.getCurrentPosition() + "  busy=" + LEFTBACK.isBusy());
-            telemetry.addData("encoder-forward-left", LEFTFRONT.getCurrentPosition() + "  busy=" + LEFTFRONT.isBusy());
-            telemetry.addData("encoder-back-right", RIGHTBACK.getCurrentPosition() + "  busy=" + RIGHTBACK.isBusy());
-            telemetry.addData("encoder-forward-right", RIGHTFRONT.getCurrentPosition() + "  busy=" + RIGHTFRONT.isBusy());
-
-            telemetry.update();
-            idle();
-        }
-
-        stopEverything();
-    }
-
-    private void TurnForDistance(double power, double revolutions) {
         int denc = (int)Math.round(revolutions * encRotation);
 
         RIGHTFRONT.setDirection(DcMotorSimple.Direction.FORWARD);
@@ -218,12 +199,57 @@ public class AUTOSHOOTENCODERSv3 extends LinearOpMode { //creating public class,
         stopEverything();
     }
 
-    private void CrabForDistance(double power, double revolutions) {
+    private void TurnForDistance(double power, double revolutions) {
         int denc = (int)Math.round(revolutions * encRotation);
 
         RIGHTFRONT.setDirection(DcMotorSimple.Direction.REVERSE);
+        LEFTFRONT.setDirection(DcMotorSimple.Direction.FORWARD);
+        RIGHTBACK.setDirection(DcMotorSimple.Direction.REVERSE);
+        LEFTBACK.setDirection(DcMotorSimple.Direction.FORWARD);
+
+        RIGHTFRONT.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        LEFTFRONT.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        RIGHTBACK.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        LEFTBACK.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        RIGHTFRONT.setTargetPosition(denc);
+        LEFTBACK.setTargetPosition(denc);
+        RIGHTBACK.setTargetPosition(denc);
+        LEFTFRONT.setTargetPosition(denc);
+
+        LEFTBACK.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        RIGHTFRONT.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        LEFTFRONT.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        RIGHTBACK.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        telemetry.addData("Mode", "running");
+        telemetry.update();
+
+        RIGHTFRONT.setPower(power);
+        LEFTFRONT.setPower(power);
+        RIGHTBACK.setPower(power);
+        LEFTBACK.setPower(power);
+
+        while (opModeIsActive() && LEFTBACK.isBusy() && LEFTFRONT.isBusy() && RIGHTBACK.isBusy() && RIGHTFRONT.isBusy())   //leftMotor.getCurrentPosition() < leftMotor.getTargetPosition())
+        {
+            telemetry.addData("encoder-back-left", LEFTBACK.getCurrentPosition() + "  busy=" + LEFTBACK.isBusy());
+            telemetry.addData("encoder-forward-left", LEFTFRONT.getCurrentPosition() + "  busy=" + LEFTFRONT.isBusy());
+            telemetry.addData("encoder-back-right", RIGHTBACK.getCurrentPosition() + "  busy=" + RIGHTBACK.isBusy());
+            telemetry.addData("encoder-forward-right", RIGHTFRONT.getCurrentPosition() + "  busy=" + RIGHTFRONT.isBusy());
+
+            telemetry.update();
+            idle();
+        }
+
+        stopEverything();
+    }
+
+    private void CrabForDistance(double power, double revolutions) {
+        int denc = (int)Math.round(revolutions * encRotation);
+
+        RIGHTFRONT.setDirection(DcMotorSimple.Direction.FORWARD);
         LEFTFRONT.setDirection(DcMotorSimple.Direction.REVERSE);
-        RIGHTBACK.setDirection(DcMotorSimple.Direction.FORWARD);
+        RIGHTBACK.setDirection(DcMotorSimple.Direction.REVERSE);
         LEFTBACK.setDirection(DcMotorSimple.Direction.FORWARD);
 
         RIGHTFRONT.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);

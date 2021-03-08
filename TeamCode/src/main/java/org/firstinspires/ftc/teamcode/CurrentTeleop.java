@@ -13,10 +13,10 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 
-@TeleOp(name = "TELEOPROBOT2", group = "") //name of file
+@TeleOp(name = "Current Teleop", group = "") //name of file
 
 
-public class TELEOPROBOT2 extends LinearOpMode { //declaring class for whole program
+public class CurrentTeleop extends LinearOpMode { //declaring class for whole program
 
     //initialize instance variables
     private DcMotor LEFTFRONT; //2:0
@@ -28,9 +28,6 @@ public class TELEOPROBOT2 extends LinearOpMode { //declaring class for whole pro
     private DcMotor INTAKE;
     private Servo WOBBLEBLOCK;
     private Servo FLICKER;
-
-
-
 
     @Override
     public void runOpMode() {
@@ -58,8 +55,8 @@ public class TELEOPROBOT2 extends LinearOpMode { //declaring class for whole pro
                     // Forward/Reverse Drive
                     RIGHTFRONT.setPower(-gamepad1.right_stick_y);
                     RIGHTBACK.setPower(-gamepad1.right_stick_y);
-                    LEFTFRONT.setPower(gamepad1.left_stick_y);
-                    LEFTBACK.setPower(gamepad1.left_stick_y);
+                    LEFTFRONT.setPower(-gamepad1.left_stick_y);
+                    LEFTBACK.setPower(-gamepad1.left_stick_y);
                 }
 
                 else if (Math.abs(gamepad1.right_trigger) != 0) {
@@ -68,9 +65,9 @@ public class TELEOPROBOT2 extends LinearOpMode { //declaring class for whole pro
                     // to +1 in its bottommost position. We negate this value so that
                     // the topmost position corresponds to maximum forward power.
                     RIGHTFRONT.setPower(-gamepad1.right_trigger);
-                    LEFTBACK.setPower(gamepad1.right_trigger);
+                    LEFTBACK.setPower(-gamepad1.right_trigger);
                     RIGHTBACK.setPower(gamepad1.right_trigger);
-                    LEFTFRONT.setPower(-gamepad1.right_trigger);
+                    LEFTFRONT.setPower(gamepad1.right_trigger);
                 }
 
                 else if (Math.abs(gamepad1.left_trigger) != 0) {
@@ -79,12 +76,12 @@ public class TELEOPROBOT2 extends LinearOpMode { //declaring class for whole pro
                     // to +1 in its bottommost position. We negate this value so that
                     // the topmost position corresponds to maximum forward power.
                     RIGHTFRONT.setPower(gamepad1.left_trigger);
-                    LEFTBACK.setPower(-gamepad1.left_trigger);
+                    LEFTBACK.setPower(gamepad1.left_trigger);
                     // The Y axis of a joystick ranges from -1 in its topmost position
                     // to +1 in its bottommost position. We negate this value so that
                     // the topmost position corresponds to maximum forward power.
                     RIGHTBACK.setPower(-gamepad1.left_trigger);
-                    LEFTFRONT.setPower(gamepad1.left_trigger);
+                    LEFTFRONT.setPower(-gamepad1.left_trigger);
                 }
 
                 else {
@@ -113,9 +110,11 @@ public class TELEOPROBOT2 extends LinearOpMode { //declaring class for whole pro
                 if (gamepad1.b) {
                     //puts shooter at medium power to hit power shot target
                     SHOOTER.setDirection(DcMotorSimple.Direction.FORWARD);
-                    SHOOTER.setPower(.95);
+                    SHOOTER.setPower(.57);//95 is power shot number
                     sleep(500);
                 }
+
+
 
                 if (gamepad1.a) {
                     //flicker
@@ -138,6 +137,14 @@ public class TELEOPROBOT2 extends LinearOpMode { //declaring class for whole pro
                     INTAKE.setPower(1);
                 }
 
+                if (gamepad2.b){
+                    SHOOTER.setDirection(DcMotorSimple.Direction.FORWARD);
+                    SHOOTER.setPower(.45);//95 is power shot number
+                    sleep(500);
+
+
+                }
+
                 if (gamepad2.x) {
                     //stop intake
                     INTAKE.setPower(0);
@@ -151,26 +158,14 @@ public class TELEOPROBOT2 extends LinearOpMode { //declaring class for whole pro
 
 
                     WOBBLE.setDirection(DcMotorSimple.Direction.REVERSE);
-                    WOBBLE.setPower((gamepad2.right_stick_y )/ 2.0);
-
-
-
-
-
-                }
-                if (Math.abs(gamepad2.right_stick_y) < 0.1) {
-                    telemetry.addData("current position: ", WOBBLE.getCurrentPosition());
-                    telemetry.addData("current position divided: ", WOBBLE.getCurrentPosition()/545);
-
-                    if ((WOBBLE.getCurrentPosition() / 545 )< .25) {
-                        telemetry.update();
+                    if ((WOBBLE.getCurrentPosition() / 545.0 )< .25) {
                         WOBBLE.setDirection(DcMotorSimple.Direction.FORWARD);
-                        WOBBLE.setPower((gamepad2.right_stick_y) / 2.0);
+                        WOBBLE.setPower((gamepad2.right_stick_y) / 1.25);
 
                     } else {
 
                         WOBBLE.setDirection(DcMotorSimple.Direction.FORWARD);
-                        WOBBLE.setPower((gamepad2.right_stick_y) / 4.0);
+                        WOBBLE.setPower((gamepad2.right_stick_y) / 3.0);
 
 
                     }
@@ -179,9 +174,23 @@ public class TELEOPROBOT2 extends LinearOpMode { //declaring class for whole pro
 
 
 
-
                 }
+                if (Math.abs(gamepad2.right_stick_y) < 0.1) {
+                    telemetry.addData("current position: ", WOBBLE.getCurrentPosition());
+                    telemetry.addData("current position divided: ", (WOBBLE.getCurrentPosition()/545.0));
+                    telemetry.update();
 
+                    if ((WOBBLE.getCurrentPosition() / 545.0 )< .25) {
+                        WOBBLE.setDirection(DcMotorSimple.Direction.FORWARD);
+                        WOBBLE.setPower((gamepad2.right_stick_y) / 1.25);
+
+                    } else {
+
+                        WOBBLE.setDirection(DcMotorSimple.Direction.FORWARD);
+                        WOBBLE.setPower((gamepad2.right_stick_y) / 3.0);
+
+
+                    }
 
 
                 }
@@ -192,21 +201,20 @@ public class TELEOPROBOT2 extends LinearOpMode { //declaring class for whole pro
                     telemetry.update();
                     sleep(500);
 
-                    WOBBLEBLOCK.setPosition(1);
-
-
-
+                    WOBBLEBLOCK.setPosition(.5);
 
                 } if ((gamepad2.left_bumper) == true) {
 
                     sleep(500);
 
-                    WOBBLEBLOCK.setPosition(1);
+                    WOBBLEBLOCK.setPosition(.5);
+                    telemetry.addData("test: ", "hi");
+                    telemetry.update();
+
                     sleep(500);
                     WOBBLEBLOCK.setPosition(0);
-
-
-
+                    telemetry.addData("test", "hello: ");
+                    telemetry.update();
 
                 }
 
