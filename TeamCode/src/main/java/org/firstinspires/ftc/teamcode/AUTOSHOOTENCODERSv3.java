@@ -61,7 +61,7 @@ public class AUTOSHOOTENCODERSv3 extends LinearOpMode { //creating public class,
             SHOOTER.setDirection(DcMotorSimple.Direction.REVERSE);
             SHOOTER.setPower(1); //maybe max?
             sleep(2000);
-            FLICKER.setPosition(.2);8
+            FLICKER.setPosition(.2);
             sleep(500);
             FLICKER.setPosition(1);
 
