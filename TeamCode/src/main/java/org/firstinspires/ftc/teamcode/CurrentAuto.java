@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 //importing servos, motors, touch sensors
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -26,7 +27,7 @@ public class CurrentAuto extends LinearOpMode { //creating public class, extensi
     private DcMotor RIGHTBACK;
     private DcMotor LEFTFRONT;
     private DcMotor LEFTBACK;
-    private DcMotor SHOOTER;
+    private DcMotorEx SHOOTER;
     private Servo FLICKER;
     private DcMotor WOBBLE;
     private Servo WOBBLEBLOCK;
@@ -40,7 +41,7 @@ public class CurrentAuto extends LinearOpMode { //creating public class, extensi
         RIGHTBACK = hardwareMap.dcMotor.get("RIGHTBACK");
         LEFTFRONT = hardwareMap.dcMotor.get("LEFTFRONT");
         LEFTBACK = hardwareMap.dcMotor.get("LEFTBACK");
-        SHOOTER = hardwareMap.dcMotor.get("SHOOTER");
+        SHOOTER = (DcMotorEx)(hardwareMap.dcMotor.get("SHOOTER"));
         WOBBLE = hardwareMap.dcMotor.get("WOBBLE");
         WOBBLEBLOCK = hardwareMap.servo.get("WOBBLEBLOCK");
         INTAKE = hardwareMap.dcMotor.get("INTAKE");
@@ -53,28 +54,12 @@ public class CurrentAuto extends LinearOpMode { //creating public class, extensi
 
         if (opModeIsActive()) {
 
-            //TEST ALL FUNCTIONS
-            // ForwardForDistance(0.5, 5);
-            // ForwardForDistance(0.5, -5);
+            SHOOTER.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            SHOOTER.setVelocity(1885);   // Ticks per second.
 
-            // sleep(2000);
-
-            // TurnForDistance(0.5, 1);
-            // TurnForDistance(0.5, -1);
-
-            // sleep(2000);
-
-            // CrabForDistance(0.5,1);
-            // CrabForDistance(0.5,-1);
-
-            //reach the launch line
-
-            SHOOTER.setDirection(DcMotorSimple.Direction.FORWARD);
-            SHOOTER.setPower(0.52); //maybe max?
-
-            CrabForDistance(0.2, 1);
+            CrabForDistance(0.2, 1.5); //changed from 1 to 1.5
             sleep(500);
-            ForwardForDistance(0.5, -1);
+            ForwardForDistance(0.5, -1); //turns toward the wall??
             sleep(1000);
             ForwardForDistance(0.5, 4.7);
             sleep(1000);
@@ -102,47 +87,47 @@ public class CurrentAuto extends LinearOpMode { //creating public class, extensi
             FLICKER.setPosition(1);
             sleep(1000);
 
-            // WOBBLE.setDirection(DcMotorSimple.Direction.REVERSE);
-            // WOBBLE.setPower(1); //position = placeholder --> replace later after testing
-            // sleep(500);
-            // WOBBLE.setPower(0.5); //position = placeholder --> replace later after testing
-            // sleep(200);
-            // WOBBLE.setPower(0.4); //position = placeholder --> replace later after testing
-            // sleep(200);
-            // WOBBLE.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            // WOBBLE.setPower(0);
+//             WOBBLE.setDirection(DcMotorSimple.Direction.FORWARD);
+//             WOBBLE.setPower(.7); //position = placeholder --> replace later after testing
+//             sleep(1000);
+//             WOBBLE.setPower(0.5); //position = placeholder --> replace later after testing
+//             sleep(200);
+//             WOBBLE.setPower(0.4); //position = placeholder --> replace later after testing
+//             sleep(200);
+//             WOBBLE.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//             WOBBLE.setPower(0);
 
             ForwardForDistance(0.5, 1.5);
 
             //move over to the target square
-            //ForwardForDistance(0.5, -1.5);
-            //sleep(500);
+//            ForwardForDistance(0.5, -1.5);
+//            sleep(500);
             //crab left to the target zone
-            //CrabForDistance(1, 1);
-            //SHOOTER.setPower(0);
+            CrabForDistance(1, 1);
+            SHOOTER.setPower(0);
 
             //drop the wobble goal in the launch line target zone
-            // WOBBLE.setDirection(DcMotorSimple.Direction.REVERSE);
-            // WOBBLE.setPower(1); //position = placeholder --> replace later after testing
-            // sleep(500);
-            // WOBBLE.setPower(0.5); //position = placeholder --> replace later after testing
-            // sleep(200);
-            // WOBBLE.setPower(0.4); //position = placeholder --> replace later after testing
-            // sleep(200);
-            // WOBBLE.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            // WOBBLE.setPower(0);
+             WOBBLE.setDirection(DcMotorSimple.Direction.FORWARD);
+             WOBBLE.setPower(1); //position = placeholder --> replace later after testing
+             sleep(500);
+             WOBBLE.setPower(0.5); //position = placeholder --> replace later after testing
+             sleep(200);
+             WOBBLE.setPower(0.4); //position = placeholder --> replace later after testing
+             sleep(200);
+             WOBBLE.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+             WOBBLE.setPower(0);
 
-            //sleep(2000);
-            //WOBBLEBLOCK.setPosition(0);
-            //sleep(1000);
+            sleep(2000);
+            WOBBLEBLOCK.setPosition(0);
+            sleep(1000);
 
-            //ForwardForDistance(0.3,1);
+            ForwardForDistance(0.3,-1.0);
 
             //park on the launch line (not touching the wobble goal)
             //crab right
-            //CrabForDistance(0.5,-1);
+            CrabForDistance(0.5,-1);
 
-            //ForwardForDistance(0.5, -1);
+            ForwardForDistance(0.5, 1.0);
 
         }
     }
@@ -290,7 +275,7 @@ public class CurrentAuto extends LinearOpMode { //creating public class, extensi
     }
 
     private void resetEncoders() {
-        //LEFTFRONT.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        LEFTFRONT.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         RIGHTFRONT.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         LEFTBACK.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         RIGHTBACK.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);

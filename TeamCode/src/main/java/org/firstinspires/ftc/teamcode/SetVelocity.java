@@ -23,11 +23,13 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 public class SetVelocity extends LinearOpMode { //declaring class for whole program
 
     private DcMotorEx SHOOTER; //1:1
+    private Servo FLICKER;
 
     @Override
     public void runOpMode() {
 
         SHOOTER = (DcMotorEx)(hardwareMap.dcMotor.get("SHOOTER"));
+        FLICKER = hardwareMap.servo.get("FLICKER");
 
         sleep(1000);
 
@@ -37,9 +39,29 @@ public class SetVelocity extends LinearOpMode { //declaring class for whole prog
 
             telemetry.addData("Starting velocity:", "" + SHOOTER.getVelocity());
             SHOOTER.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            SHOOTER.setVelocity(500);   // Ticks per second.
+            SHOOTER.setVelocity(1750);   // Ticks per second.
             // We don't want this one: SHOOTER.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            sleep(2000);
+            //sleep(10000);
+
+            sleep(3000);
+            FLICKER.setPosition(.2);
+            sleep(500);
+            FLICKER.setPosition(1);
+
+            sleep(3000);
+            FLICKER.setPosition(.2);
+            sleep(500);
+            FLICKER.setPosition(1);
+
+            sleep(3000);
+            FLICKER.setPosition(.2);
+            sleep(500);
+            FLICKER.setPosition(1);
+            sleep(500);
+            FLICKER.setPosition(.2);
+            sleep(500);
+            FLICKER.setPosition(1);
+            sleep(1000);
         }
     }
 
