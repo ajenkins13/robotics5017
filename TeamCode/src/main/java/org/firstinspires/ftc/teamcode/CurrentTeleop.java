@@ -28,6 +28,7 @@ public class CurrentTeleop extends LinearOpMode { //declaring class for whole pr
     private DcMotor INTAKE;
     private Servo WOBBLEBLOCK;
     private Servo FLICKER;
+    private Servo KICKOUT;
 
     @Override
     public void runOpMode() {
@@ -40,6 +41,7 @@ public class CurrentTeleop extends LinearOpMode { //declaring class for whole pr
         INTAKE = hardwareMap.dcMotor.get("INTAKE");
         WOBBLEBLOCK = hardwareMap.servo.get("WOBBLEBLOCK");
         FLICKER = hardwareMap.servo.get("FLICKER");
+        KICKOUT = hardwareMap.servo.get("KICKOUT");
 
         sleep(1000);
 
@@ -199,15 +201,10 @@ public class CurrentTeleop extends LinearOpMode { //declaring class for whole pr
                 } if ((gamepad2.left_bumper) == true) {
 
                     sleep(500);
-
-                    WOBBLEBLOCK.setPosition(.5);
-                    telemetry.addData("test: ", "hi");
-                    telemetry.update();
-
-                    sleep(500);
                     WOBBLEBLOCK.setPosition(0);
                     telemetry.addData("test", "hello: ");
                     telemetry.update();
+//                    KICKOUT.setPosition(1);
 
                 }
 
