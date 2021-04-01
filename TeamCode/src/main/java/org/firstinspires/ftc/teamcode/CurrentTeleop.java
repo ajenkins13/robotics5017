@@ -6,6 +6,8 @@ package org.firstinspires.ftc.teamcode; //importing OUR package
 //importing OpModes (linear and teleOp) and importing hardware (motors, sensors, servos)
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import java.lang.reflect.Array;
+
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -23,7 +25,7 @@ public class CurrentTeleop extends LinearOpMode { //declaring class for whole pr
     private DcMotor LEFTBACK; //2:1
     private DcMotor RIGHTFRONT; //1:0
     private DcMotor RIGHTBACK; //1:1
-    private DcMotor SHOOTER; //1:1
+    private DcMotorEx SHOOTER; //1:1
     private DcMotor WOBBLE;
     private DcMotor INTAKE;
     private Servo WOBBLEBLOCK;
@@ -36,7 +38,7 @@ public class CurrentTeleop extends LinearOpMode { //declaring class for whole pr
         LEFTBACK = hardwareMap.dcMotor.get("LEFTBACK");
         RIGHTFRONT = hardwareMap.dcMotor.get("RIGHTFRONT");
         RIGHTBACK = hardwareMap.dcMotor.get("RIGHTBACK");
-        SHOOTER = hardwareMap.dcMotor.get("SHOOTER");
+        SHOOTER = (DcMotorEx)(hardwareMap.dcMotor.get("SHOOTER"));
         WOBBLE = hardwareMap.dcMotor.get("WOBBLE");
         INTAKE = hardwareMap.dcMotor.get("INTAKE");
         WOBBLEBLOCK = hardwareMap.servo.get("WOBBLEBLOCK");
@@ -112,10 +114,11 @@ public class CurrentTeleop extends LinearOpMode { //declaring class for whole pr
                 if (gamepad1.b) {
                     //puts shooter at medium power to hit power shot target
                     SHOOTER.setDirection(DcMotorSimple.Direction.FORWARD);
-                    SHOOTER.setPower(.57);//95 is power shot number
-                    sleep(500);
+                    SHOOTER.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                    SHOOTER.setVelocity(1885);   // Ticks per second.
+                   // SHOOTER.setPower(.57);//95 is power shot number
+                   // sleep(500);
                 }
-
 
 
                 if (gamepad1.a) {
@@ -143,8 +146,6 @@ public class CurrentTeleop extends LinearOpMode { //declaring class for whole pr
                     SHOOTER.setDirection(DcMotorSimple.Direction.FORWARD);
                     SHOOTER.setPower(.45);//95 is power shot number
                     sleep(500);
-
-
                 }
 
                 if (gamepad2.x) {
@@ -192,23 +193,19 @@ public class CurrentTeleop extends LinearOpMode { //declaring class for whole pr
 
                 if (gamepad2.right_bumper == true) {
 
-                    telemetry.addData("test", "it goes in: ");
-                    telemetry.update();
                     sleep(500);
-
-                    WOBBLEBLOCK.setPosition(.5);
+                    WOBBLEBLOCK.setPosition(0);
+                    KICKOUT.setPosition(1);
+                    sleep(2000);
+                    KICKOUT.setPosition(0);
 
                 } if ((gamepad2.left_bumper) == true) {
 
                     sleep(500);
-                    WOBBLEBLOCK.setPosition(0);
-                    telemetry.addData("test", "hello: ");
-                    telemetry.update();
-//                    KICKOUT.setPosition(1);
+                    WOBBLEBLOCK.setPosition(.5);
 
                 }
 
-                //does this work
             }
         }
     }
