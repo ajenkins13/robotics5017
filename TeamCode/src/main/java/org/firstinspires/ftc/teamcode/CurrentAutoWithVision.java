@@ -23,7 +23,7 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 //importing OpModes (linear and teleOp) and importing hardware (motors, sensors, servos)
 //importing servos, motors, touch sensors
 
-@Autonomous(name = "Current Auto", group = "") //name of the file
+@Autonomous(name = "Current Auto with Vision", group = "") //name of the file
 
 public class CurrentAutoWithVision extends LinearOpMode { //creating public class, extension of linear opmode
 
@@ -55,6 +55,70 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
     private TFObjectDetector tfod;
 
     final double encRotation = 537.6;
+
+    private void crabToBoxA() {
+        ForwardForDistance(0.5, 1.5);
+        CrabForDistance(1, 1);
+        SHOOTER.setPower(0);
+        dispenseWobble();
+        sleep(2000);
+        WOBBLEBLOCK.setPosition(0);
+        sleep(1000);
+
+        ForwardForDistance(0.3,-1.0);
+
+        //park on the launch line (not touching the wobble goal)
+        //crab right
+        CrabForDistance(0.5,-1);
+
+        ForwardForDistance(0.5, 1.0);
+    }
+
+    private void crabToBoxB() {
+        ForwardForDistance(0.5, 2.5);
+        SHOOTER.setPower(0);
+        dispenseWobble();
+        sleep(2000);
+        WOBBLEBLOCK.setPosition(0);
+        sleep(1000);
+
+        ForwardForDistance(0.3,-2.0);
+
+        ForwardForDistance(0.5, 1.0);
+
+    }
+
+    private void crabToBoxC() {
+        ForwardForDistance(0.5, 3.5);
+
+        CrabForDistance(1, 1);
+        SHOOTER.setPower(0);
+        dispenseWobble();
+        sleep(2000);
+        WOBBLEBLOCK.setPosition(0);
+        sleep(1000);
+
+        ForwardForDistance(0.3,-3.0);
+
+        //park on the launch line (not touching the wobble goal)
+        //crab right
+        CrabForDistance(0.5,-1);
+
+        ForwardForDistance(0.5, 1.0);
+    }
+
+    private void dispenseWobble() {
+        //drop the wobble goal in the launch line target zone
+        WOBBLE.setDirection(DcMotorSimple.Direction.FORWARD);
+        WOBBLE.setPower(1); //position = placeholder --> replace later after testing
+        sleep(500);
+        WOBBLE.setPower(0.5); //position = placeholder --> replace later after testing
+        sleep(200);
+        WOBBLE.setPower(0.4); //position = placeholder --> replace later after testing
+        sleep(200);
+        WOBBLE.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        WOBBLE.setPower(0);
+    }
 
     @Override
     public void runOpMode() {
@@ -109,20 +173,32 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
             telemetry.update();
             waitForStart();
 
+            String numberRings = "None";
+            int tries = 0;
             if (opModeIsActive()) {
-                while (opModeIsActive()) {
+
+                while (true) {
+
                     if (tfod != null) {
+                        telemetry.addData("tfod is not null", "");
+                        telemetry.update();
                         // getUpdatedRecognitions() will return null if no new information is available since
                         // the last time that call was made.
                         List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
+                        tries++;
                         if (updatedRecognitions != null) {
-                            telemetry.addData("# Object Detected", updatedRecognitions.size());
-                            // step through the list of recognitions and display boundary info.
-                            int i = 0;
-                            for (Recognition recognition : updatedRecognitions) {
-                                telemetry.addData(String.format("label (%d)", i), recognition.getLabel());
-                            }
+                            telemetry.addData("updatedRecognitions has something", "");
                             telemetry.update();
+
+                            if (updatedRecognitions.size() != 0) {
+                                // step through the list of recognitions and display boundary info.
+                                numberRings = (updatedRecognitions.get(0)).getLabel();
+                                telemetry.addData(String.format("label (%d)", 0), numberRings);
+                                telemetry.update();
+                                break;
+                            }
+                        } else if (tries > 200) {
+                            break;
                         }
                     }
                 }
@@ -161,37 +237,22 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
             FLICKER.setPosition(1);
             sleep(1000);
 
-            ForwardForDistance(0.5, 1.5);
-
-            //move over to the target square
-//            ForwardForDistance(0.5, -1.5);
-//            sleep(500);
-            //crab left to the target zone
-            CrabForDistance(1, 1);
-            SHOOTER.setPower(0);
-
-            //drop the wobble goal in the launch line target zone
-            WOBBLE.setDirection(DcMotorSimple.Direction.FORWARD);
-            WOBBLE.setPower(1); //position = placeholder --> replace later after testing
-            sleep(500);
-            WOBBLE.setPower(0.5); //position = placeholder --> replace later after testing
-            sleep(200);
-            WOBBLE.setPower(0.4); //position = placeholder --> replace later after testing
-            sleep(200);
-            WOBBLE.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-            WOBBLE.setPower(0);
-
-            sleep(2000);
-            WOBBLEBLOCK.setPosition(0);
-            sleep(1000);
-
-            ForwardForDistance(0.3,-1.0);
-
-            //park on the launch line (not touching the wobble goal)
-            //crab right
-            CrabForDistance(0.5,-1);
-
-            ForwardForDistance(0.5, 1.0);
+            // if numberRings = single, then crab to box B, if numberRings = none, then crab to box A, if numberRings = quadruple, then crab to box C
+            if (numberRings.equals("None")) {
+                telemetry.addData("This is going to box A:", numberRings);
+                telemetry.update();
+                crabToBoxA();
+            }
+            else if (numberRings.equals("Single")) {
+                telemetry.addData("This is going to box B:", numberRings);
+                telemetry.update();
+                crabToBoxB();
+            }
+            else if (numberRings.equals("Quad")) {
+                telemetry.addData("This is going to box C:", numberRings);
+                telemetry.update();
+                crabToBoxC();
+            }
 
         }
     }
@@ -355,7 +416,7 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
 
         parameters.vuforiaLicenseKey = VUFORIA_KEY;
-        parameters.cameraName = hardwareMap.get(WebcamName.class, "Webcam 1");
+        parameters.cameraName = hardwareMap.get(WebcamName.class, "Webcam");
 
         //  Instantiate the Vuforia engine
         vuforia = ClassFactory.getInstance().createVuforia(parameters);
@@ -374,5 +435,4 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
         tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
         tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_FIRST_ELEMENT, LABEL_SECOND_ELEMENT);
     }
-}
 }
