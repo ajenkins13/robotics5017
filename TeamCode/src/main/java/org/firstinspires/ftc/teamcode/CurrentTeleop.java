@@ -31,6 +31,7 @@ public class CurrentTeleop extends LinearOpMode { //declaring class for whole pr
     private Servo WOBBLEBLOCK;
     private Servo FLICKER;
     private Servo KICKOUT;
+    private Servo MRFIXIT;
 
     @Override
     public void runOpMode() {
@@ -44,12 +45,15 @@ public class CurrentTeleop extends LinearOpMode { //declaring class for whole pr
         WOBBLEBLOCK = hardwareMap.servo.get("WOBBLEBLOCK");
         FLICKER = hardwareMap.servo.get("FLICKER");
         KICKOUT = hardwareMap.servo.get("KICKOUT");
+        MRFIXIT = hardwareMap.servo.get("MRFIXIT");
 
         sleep(1000);
 
         waitForStart();
 
         if (opModeIsActive()) {
+
+            MRFIXIT.setPosition(0); // on init, to release the fixer from auto (left is out/0).
 
             while (opModeIsActive()) { //looking for values, waiting for controller to send values
 
@@ -127,6 +131,9 @@ public class CurrentTeleop extends LinearOpMode { //declaring class for whole pr
                     FLICKER.setPosition(.2);
                     sleep(500);
                     FLICKER.setPosition(.7);
+                    MRFIXIT.setPosition(.5);//trap it
+                    sleep( 500);
+                    MRFIXIT.setPosition(0);//trap it
                 }
 
                 if (gamepad2.y) {
