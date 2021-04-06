@@ -134,6 +134,8 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
 
         RIGHTFRONT.setDirection(DcMotorSimple.Direction.REVERSE);
         RIGHTBACK.setDirection(DcMotorSimple.Direction.REVERSE);
+        initVuforia();
+        initTfod();
 
         waitForStart();
 
@@ -147,8 +149,9 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
             //vuforia stuff - print out number of rings it sees
             // The TFObjectDetector uses the camera frames from the VuforiaLocalizer, so we create that
             // first.
-            initVuforia();
-            initTfod();
+            ForwardForDistance(0.5, 0.5);
+            sleep(5000);
+
 
             /**
              * Activate TensorFlow Object Detection before we wait for the start command.
@@ -180,7 +183,7 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
                 while (true) {
 
                     if (tfod != null) {
-                        telemetry.addData("tfod is not null", "");
+                        telemetry.addData("dsfjfjugdruhguhesfhufuheuh", "");
                         telemetry.update();
                         // getUpdatedRecognitions() will return null if no new information is available since
                         // the last time that call was made.
@@ -197,7 +200,9 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
                                 telemetry.update();
                                 break;
                             }
-                        } else if (tries > 200) {
+                        } else if (tries > 2000) {
+                            telemetry.addData("breaking while loop cuz exceeded tries no ring", "");
+                            telemetry.update();
                             break;
                         }
                     }
@@ -208,51 +213,52 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
                 tfod.shutdown();
             }
 
-            SHOOTER.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            SHOOTER.setVelocity(1885);   // Ticks per second.
-
-            ForwardForDistance(0.5, 4.8);
-            sleep(1000);
-            TurnForDistance(0.5,-0.25);
-
-            //shoot 3 rings at the high goal
-
-            sleep(3000);
-            FLICKER.setPosition(.2);
-            sleep(500);
-            FLICKER.setPosition(1);
-
-            sleep(3000);
-            FLICKER.setPosition(.2);
-            sleep(500);
-            FLICKER.setPosition(1);
-
-            sleep(3000);
-            FLICKER.setPosition(.2);
-            sleep(500);
-            FLICKER.setPosition(1);
-            sleep(500);
-            FLICKER.setPosition(.2);
-            sleep(500);
-            FLICKER.setPosition(1);
-            sleep(1000);
-
-            // if numberRings = single, then crab to box B, if numberRings = none, then crab to box A, if numberRings = quadruple, then crab to box C
-            if (numberRings.equals("None")) {
-                telemetry.addData("This is going to box A:", numberRings);
-                telemetry.update();
-                crabToBoxA();
-            }
-            else if (numberRings.equals("Single")) {
-                telemetry.addData("This is going to box B:", numberRings);
-                telemetry.update();
-                crabToBoxB();
-            }
-            else if (numberRings.equals("Quad")) {
-                telemetry.addData("This is going to box C:", numberRings);
-                telemetry.update();
-                crabToBoxC();
-            }
+//            SHOOTER.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//            SHOOTER.setVelocity(1885);   // Ticks per second.
+//
+//            ForwardForDistance(0.5, 4.3);
+//            sleep(1000);
+//            TurnForDistance(0.5,-0.25);
+//
+//            //shoot 3 rings at the high goal
+//
+//            sleep(3000);
+//            FLICKER.setPosition(.2);
+//            sleep(500);
+//            FLICKER.setPosition(1);
+//
+//            sleep(3000);
+//            FLICKER.setPosition(.2);
+//            sleep(500);
+//            FLICKER.setPosition(1);
+//
+//            sleep(3000);
+//            FLICKER.setPosition(.2);
+//            sleep(500);
+//            FLICKER.setPosition(1);
+//            sleep(500);
+//            FLICKER.setPosition(.2);
+//            sleep(500);
+//            FLICKER.setPosition(1);
+//            sleep(1000);
+//
+//            // if numberRings = single, then crab to box B, if numberRings = none, then crab to box A, if numberRings = quadruple, then crab to box C
+//            if (numberRings.equals("None")) {
+//                telemetry.addData("This is going to box A:", numberRings);
+//                telemetry.update();
+//                crabToBoxA();
+//            }
+//            else if (numberRings.equals("Single")) {
+//                telemetry.addData("This is going to box B:", numberRings);
+//                telemetry.update();
+//                crabToBoxB();
+//            }
+//            else if (numberRings.equals("Quad")) {
+//                telemetry.addData("This is going to box C:", numberRings);
+//                telemetry.update();
+//                crabToBoxC();
+//            }
+            sleep(5000);
 
         }
     }
