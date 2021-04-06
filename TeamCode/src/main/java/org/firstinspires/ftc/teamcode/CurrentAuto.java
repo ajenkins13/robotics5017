@@ -47,6 +47,7 @@ public class CurrentAuto extends LinearOpMode { //creating public class, extensi
         INTAKE = hardwareMap.dcMotor.get("INTAKE");
         FLICKER = hardwareMap.servo.get("FLICKER");
 
+
         RIGHTFRONT.setDirection(DcMotorSimple.Direction.REVERSE);
         RIGHTBACK.setDirection(DcMotorSimple.Direction.REVERSE);
 

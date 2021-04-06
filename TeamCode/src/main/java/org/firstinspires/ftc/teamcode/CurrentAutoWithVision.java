@@ -36,7 +36,6 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
     private Servo FLICKER;
     private DcMotor WOBBLE;
     private Servo WOBBLEBLOCK;
-    private DcMotor INTAKE;
     private static final String TFOD_MODEL_ASSET = "UltimateGoal.tflite";
     private static final String LABEL_FIRST_ELEMENT = "Quad";
     private static final String LABEL_SECOND_ELEMENT = "Single";
@@ -63,7 +62,6 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
         dispenseWobble();
         sleep(2000);
         WOBBLEBLOCK.setPosition(0);
-        sleep(1000);
 
         ForwardForDistance(0.3,-1.0);
 
@@ -76,35 +74,33 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
 
     private void crabToBoxB() {
         ForwardForDistance(0.5, 2.5);
+        CrabForDistance(1, 2);
         SHOOTER.setPower(0);
         dispenseWobble();
         sleep(2000);
         WOBBLEBLOCK.setPosition(0);
-        sleep(1000);
 
         ForwardForDistance(0.3,-2.0);
-
-        ForwardForDistance(0.5, 1.0);
 
     }
 
     private void crabToBoxC() {
-        ForwardForDistance(0.5, 3.5);
+        ForwardForDistance(0.5, 4.8); //adjusted 3:54
+        //CrabForDistance();
 
-        CrabForDistance(1, 1);
+        CrabForDistance(1, -1);
         SHOOTER.setPower(0);
         dispenseWobble();
         sleep(2000);
         WOBBLEBLOCK.setPosition(0);
-        sleep(1000);
 
         ForwardForDistance(0.3,-3.0);
 
         //park on the launch line (not touching the wobble goal)
         //crab right
-        CrabForDistance(0.5,-1);
+        //CrabForDistance(0.5,-1);
 
-        ForwardForDistance(0.5, 1.0);
+        //ForwardForDistance(0.5, 1.0);
     }
 
     private void dispenseWobble() {
@@ -129,7 +125,6 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
         SHOOTER = (DcMotorEx)(hardwareMap.dcMotor.get("SHOOTER"));
         WOBBLE = hardwareMap.dcMotor.get("WOBBLE");
         WOBBLEBLOCK = hardwareMap.servo.get("WOBBLEBLOCK");
-        INTAKE = hardwareMap.dcMotor.get("INTAKE");
         FLICKER = hardwareMap.servo.get("FLICKER");
 
         RIGHTFRONT.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -149,9 +144,6 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
             //vuforia stuff - print out number of rings it sees
             // The TFObjectDetector uses the camera frames from the VuforiaLocalizer, so we create that
             // first.
-            ForwardForDistance(0.5, 0.5);
-            sleep(5000);
-
 
             /**
              * Activate TensorFlow Object Detection before we wait for the start command.
@@ -171,19 +163,18 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
                 //tfod.setZoom(2.5, 1.78);
             }
 
-            /** Wait for the game to begin */
-            telemetry.addData(">", "Press Play to start op mode");
-            telemetry.update();
-            waitForStart();
 
             String numberRings = "None";
             int tries = 0;
             if (opModeIsActive()) {
 
+                ForwardForDistance(0.5,1);
+                //sleep(5000);
+
                 while (true) {
 
                     if (tfod != null) {
-                        telemetry.addData("dsfjfjugdruhguhesfhufuheuh", "");
+                        telemetry.addData("tfod is not null", "");
                         telemetry.update();
                         // getUpdatedRecognitions() will return null if no new information is available since
                         // the last time that call was made.
@@ -200,7 +191,7 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
                                 telemetry.update();
                                 break;
                             }
-                        } else if (tries > 2000) {
+                        } else if (tries > 10000) {
                             telemetry.addData("breaking while loop cuz exceeded tries no ring", "");
                             telemetry.update();
                             break;
@@ -213,54 +204,48 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
                 tfod.shutdown();
             }
 
-//            SHOOTER.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//            SHOOTER.setVelocity(1885);   // Ticks per second.
-//
-//            ForwardForDistance(0.5, 4.3);
-//            sleep(1000);
-//            TurnForDistance(0.5,-0.25);
-//
-//            //shoot 3 rings at the high goal
-//
-//            sleep(3000);
-//            FLICKER.setPosition(.2);
-//            sleep(500);
-//            FLICKER.setPosition(1);
-//
-//            sleep(3000);
-//            FLICKER.setPosition(.2);
-//            sleep(500);
-//            FLICKER.setPosition(1);
-//
-//            sleep(3000);
-//            FLICKER.setPosition(.2);
-//            sleep(500);
-//            FLICKER.setPosition(1);
-//            sleep(500);
-//            FLICKER.setPosition(.2);
-//            sleep(500);
-//            FLICKER.setPosition(1);
-//            sleep(1000);
-//
-//            // if numberRings = single, then crab to box B, if numberRings = none, then crab to box A, if numberRings = quadruple, then crab to box C
-//            if (numberRings.equals("None")) {
-//                telemetry.addData("This is going to box A:", numberRings);
-//                telemetry.update();
-//                crabToBoxA();
-//            }
-//            else if (numberRings.equals("Single")) {
-//                telemetry.addData("This is going to box B:", numberRings);
-//                telemetry.update();
-//                crabToBoxB();
-//            }
-//            else if (numberRings.equals("Quad")) {
-//                telemetry.addData("This is going to box C:", numberRings);
-//                telemetry.update();
-//                crabToBoxC();
-//            }
+            SHOOTER.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            SHOOTER.setVelocity(1885);   // Ticks per second.
+
+            ForwardForDistance(0.5, 3.8);
+            sleep(1000);
+            CrabForDistance(1, -.1);
+            //TurnForDistance(0.5,-0.25);
+
+            //shoot 3 rings at the high goal
+
+            shootRing();
+            shootRing();
+            shootRing();
+
+            // if numberRings = single, then crab to box B, if numberRings = none, then crab to box A, if numberRings = quadruple, then crab to box C
+            if (numberRings.equals("None")) {
+                telemetry.addData("This is going to box A:", numberRings);
+                telemetry.update();
+                crabToBoxA();
+            }
+            else if (numberRings.equals("Single")) {
+                telemetry.addData("This is going to box B:", numberRings);
+                telemetry.update();
+                crabToBoxB();
+            }
+            else if (numberRings.equals("Quad")) {
+                telemetry.addData("This is going to box C:", numberRings);
+                telemetry.update();
+                crabToBoxC();
+            }
             sleep(5000);
 
         }
+    }
+
+    private void shootRing() {
+
+        FLICKER.setPosition(.2);
+        sleep(500);
+        FLICKER.setPosition(.7);
+
+        sleep(1000);
     }
 
     private void stopEverything() {
@@ -293,9 +278,6 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
         LEFTFRONT.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         RIGHTBACK.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        telemetry.addData("Mode", "running");
-        telemetry.update();
-
         RIGHTFRONT.setPower(power);
         LEFTFRONT.setPower(power);
         RIGHTBACK.setPower(power);
@@ -303,12 +285,12 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
 
         while (opModeIsActive() && LEFTBACK.isBusy() && LEFTFRONT.isBusy() && RIGHTBACK.isBusy() && RIGHTFRONT.isBusy())   //leftMotor.getCurrentPosition() < leftMotor.getTargetPosition())
         {
-            telemetry.addData("encoder-back-left", LEFTBACK.getCurrentPosition() + "  busy=" + LEFTBACK.isBusy());
-            telemetry.addData("encoder-forward-left", LEFTFRONT.getCurrentPosition() + "  busy=" + LEFTFRONT.isBusy());
-            telemetry.addData("encoder-back-right", RIGHTBACK.getCurrentPosition() + "  busy=" + RIGHTBACK.isBusy());
-            telemetry.addData("encoder-forward-right", RIGHTFRONT.getCurrentPosition() + "  busy=" + RIGHTFRONT.isBusy());
+            //telemetry.addData("encoder-back-left", LEFTBACK.getCurrentPosition() + "  busy=" + LEFTBACK.isBusy());
+            //telemetry.addData("encoder-forward-left", LEFTFRONT.getCurrentPosition() + "  busy=" + LEFTFRONT.isBusy());
+            //telemetry.addData("encoder-back-right", RIGHTBACK.getCurrentPosition() + "  busy=" + RIGHTBACK.isBusy());
+            //telemetry.addData("encoder-forward-right", RIGHTFRONT.getCurrentPosition() + "  busy=" + RIGHTFRONT.isBusy());
 
-            telemetry.update();
+            //telemetry.update();
             idle();
         }
 
@@ -437,7 +419,7 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
         int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
                 "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
-        tfodParameters.minResultConfidence = 0.8f;
+        tfodParameters.minResultConfidence = 0.7f;
         tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
         tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_FIRST_ELEMENT, LABEL_SECOND_ELEMENT);
     }
