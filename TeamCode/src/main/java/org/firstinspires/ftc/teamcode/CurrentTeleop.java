@@ -179,21 +179,9 @@ public class CurrentTeleop extends LinearOpMode { //declaring class for whole pr
 
                 }
                 if (Math.abs(gamepad2.right_stick_y) < 0.1) {
-                    telemetry.addData("current position: ", WOBBLE.getCurrentPosition());
-                    telemetry.addData("current position divided: ", (WOBBLE.getCurrentPosition()/545.0));
-                    telemetry.update();
+                    WOBBLE.setDirection(DcMotorSimple.Direction.FORWARD);
+                    WOBBLE.setPower(gamepad2.right_stick_y); // /3
 
-                    if ((WOBBLE.getCurrentPosition() / 545.0 )< .25) {
-                        WOBBLE.setDirection(DcMotorSimple.Direction.FORWARD);
-                        WOBBLE.setPower((gamepad2.right_stick_y) / 1);
-
-                    } else {
-
-                        WOBBLE.setDirection(DcMotorSimple.Direction.FORWARD);
-                        WOBBLE.setPower((gamepad2.right_stick_y) / 3.0);
-
-
-                    }
 
 
                 }
