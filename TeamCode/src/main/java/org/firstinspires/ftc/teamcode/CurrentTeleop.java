@@ -165,13 +165,13 @@ public class CurrentTeleop extends LinearOpMode { //declaring class for whole pr
                     //sets wobble out, reverse means going toward robot
 
                     WOBBLE.setDirection(DcMotorSimple.Direction.REVERSE);
-                    WOBBLE.setPower((gamepad2.right_stick_y));// /2
+                    WOBBLE.setPower((gamepad2.right_stick_y));
 
                 }
                 if ((gamepad2.right_stick_y) < -0.1) {
                     //brings wobble in, forward is away from the robot
                     WOBBLE.setDirection(DcMotorSimple.Direction.FORWARD);
-                    WOBBLE.setPower(Math.abs(gamepad2.right_stick_y)); // /3
+                    WOBBLE.setPower(Math.abs(gamepad2.right_stick_y));
 
                 }
 
