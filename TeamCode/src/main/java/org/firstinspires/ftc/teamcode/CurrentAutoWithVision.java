@@ -91,6 +91,12 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
         ForwardForDistance(0.3,-3.9);
     }
 
+    private void crabAround() {
+        CrabForDistance(1, 2);
+        ForwardForDistance(1, 3);
+        CrabForDistance(1, -2);
+    }
+
     private void dispenseWobble() {
         //drop the wobble goal in the launch line target zone
         WOBBLE.setDirection(DcMotorSimple.Direction.FORWARD);
@@ -189,10 +195,16 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
             }
 
             SHOOTER.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            SHOOTER.setVelocity(5655);   // Ticks per second.
+            SHOOTER.setVelocity(1885);   // Ticks per second.
 
-            //get in position for shooting
-            ForwardForDistance(.5, 3.0);
+            //get in position for shooting, crabAround the ring stack if there is one
+            if (numberRings.equals("Quad") || numberRings.equals("Single")) {
+                crabAround();
+            }
+            else {
+                ForwardForDistance(.5, 3.0);
+            }
+
             sleep(1000);
             CrabForDistance(1, -.1);
 

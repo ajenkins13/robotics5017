@@ -160,29 +160,18 @@ public class CurrentTeleop extends LinearOpMode { //declaring class for whole pr
                     INTAKE.setPower(0);
                 }
 
-                if ( Math.abs(gamepad2.right_stick_y) > 0.1) {
+                if (gamepad2.right_stick_y > 0.1) {
 
-                    //sets wobble out
+                    //sets wobble out, reverse means going toward robot
 
                     WOBBLE.setDirection(DcMotorSimple.Direction.REVERSE);
-
-                    if ((WOBBLE.getCurrentPosition() / 545.0 )< .25) {
-                        WOBBLE.setDirection(DcMotorSimple.Direction.FORWARD);
-                        WOBBLE.setPower((gamepad2.right_stick_y) / 1);
-
-                    } else {
-
-                        WOBBLE.setDirection(DcMotorSimple.Direction.FORWARD);
-                        WOBBLE.setPower((gamepad2.right_stick_y) / 3.0);
-
-                    }
+                    WOBBLE.setPower((gamepad2.right_stick_y));// /2
 
                 }
-                if (Math.abs(gamepad2.right_stick_y) < 0.1) {
+                if ((gamepad2.right_stick_y) < -0.1) {
+                    //brings wobble in, forward is away from the robot
                     WOBBLE.setDirection(DcMotorSimple.Direction.FORWARD);
-                    WOBBLE.setPower(gamepad2.right_stick_y); // /3
-
-
+                    WOBBLE.setPower(Math.abs(gamepad2.right_stick_y)); // /3
 
                 }
 
@@ -198,6 +187,15 @@ public class CurrentTeleop extends LinearOpMode { //declaring class for whole pr
 
                     sleep(500);
                     WOBBLEBLOCK.setPosition(.5);
+
+                }
+
+                if (gamepad2.left_trigger > .1) {
+                    MRFIXIT.setPosition(.5);
+
+                }
+                if (gamepad2.right_trigger > .1) {
+                    MRFIXIT.setPosition(0);
 
                 }
 
