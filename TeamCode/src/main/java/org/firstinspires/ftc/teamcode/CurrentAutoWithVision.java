@@ -92,9 +92,9 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
     }
 
     private void crabAround() {
-        CrabForDistance(1, 2);
-        ForwardForDistance(1, 3);
-        CrabForDistance(1, -2);
+        CrabForDistance(.5, 1);
+        ForwardForDistance(.5, 3);
+        CrabForDistance(.5, -1.5);
     }
 
     private void dispenseWobble() {
