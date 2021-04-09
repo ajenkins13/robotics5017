@@ -186,7 +186,7 @@ public class CurrentTeleop extends LinearOpMode { //declaring class for whole pr
                 } if ((gamepad2.left_bumper) == true) {
 
                     sleep(500);
-                    WOBBLEBLOCK.setPosition(.5);
+                    WOBBLEBLOCK.setPosition(1);
 
                 }
 

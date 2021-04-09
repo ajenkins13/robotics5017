@@ -81,7 +81,7 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
 
     private void crabToBoxC() {
         ForwardForDistance(0.5, 5.7);
-        CrabForDistance(1, -1);
+        CrabForDistance(1, -1.5);
         TurnForDistance(1, -1);
         SHOOTER.setPower(0);
         dispenseWobble();
@@ -198,12 +198,12 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
             SHOOTER.setVelocity(1885);   // Ticks per second.
 
             //get in position for shooting, crabAround the ring stack if there is one
-            if (numberRings.equals("Quad") || numberRings.equals("Single")) {
-                crabAround();
-            }
-            else {
+            //if (numberRings.equals("Quad") || numberRings.equals("Single")) {
+                //crabAround();
+            //}
+            //else {
                 ForwardForDistance(.5, 3.0);
-            }
+            //f}
 
             sleep(1000);
             CrabForDistance(1, -.1);
