@@ -62,6 +62,7 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
         dispenseWobble();
         sleep(2000);
         WOBBLEBLOCK.setPosition(0);
+        sleep(2000);
         ForwardForDistance(0.3,-1.0);
         //park on the launch line (not touching the wobble goal)
         CrabForDistance(0.5,1.5);
@@ -75,6 +76,7 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
         dispenseWobble();
         sleep(2000);
         WOBBLEBLOCK.setPosition(0);
+        sleep(2000);
         ForwardForDistance(0.5, -1);
         CrabForDistance(0.5,1);
     }
@@ -87,6 +89,7 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
         dispenseWobble();
         sleep(2000);
         WOBBLEBLOCK.setPosition(0);
+        sleep(2000);
         TurnForDistance(1, 1);
         ForwardForDistance(0.3,-3.9);
     }
