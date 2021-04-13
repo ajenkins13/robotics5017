@@ -48,37 +48,37 @@ public class TESTALLPARTS extends LinearOpMode { //declaring class for whole pro
         if (opModeIsActive()) {
 
             while (opModeIsActive()) { //looking for values, waiting for controller to send values
-                INTAKE.setDirection(DcMotorSimple.Direction.REVERSE);
-                INTAKE.setPower(.3);
-                sleep(3000);
-                INTAKE.setPower(0);
+//                INTAKE.setDirection(DcMotorSimple.Direction.REVERSE);
+//                INTAKE.setPower(.3);
+//                sleep(3000);
+//                INTAKE.setPower(0);
+//
+//                WOBBLE.setDirection(DcMotorSimple.Direction.REVERSE);
+//                WOBBLE.setPower(.3);
+//                sleep(3000);
+//                WOBBLE.setPower(0);
+//
+//                SHOOTER.setDirection(DcMotorSimple.Direction.REVERSE);
+//                SHOOTER.setPower(.3);
+//                sleep(3000);
+//                SHOOTER.setPower(0);
 
-                WOBBLE.setDirection(DcMotorSimple.Direction.REVERSE);
-                WOBBLE.setPower(.3);
-                sleep(3000);
-                WOBBLE.setPower(0);
-
-                SHOOTER.setDirection(DcMotorSimple.Direction.REVERSE);
-                SHOOTER.setPower(.3);
-                sleep(3000);
-                SHOOTER.setPower(0);
-
-                RIGHTFRONT.setDirection(DcMotorSimple.Direction.REVERSE);
+                RIGHTFRONT.setDirection(DcMotorSimple.Direction.FORWARD);
                 RIGHTFRONT.setPower(.3);
                 sleep(3000);
                 RIGHTFRONT.setPower(0);
 
-                RIGHTBACK.setDirection(DcMotorSimple.Direction.REVERSE);
+                RIGHTBACK.setDirection(DcMotorSimple.Direction.FORWARD);
                 RIGHTBACK.setPower(.3);
                 sleep(3000);
                 RIGHTBACK.setPower(0);
 
-                LEFTFRONT.setDirection(DcMotorSimple.Direction.REVERSE);
+                LEFTFRONT.setDirection(DcMotorSimple.Direction.FORWARD);
                 LEFTFRONT.setPower(.3);
                 sleep(3000);
                 LEFTFRONT.setPower(0);
 
-                LEFTBACK.setDirection(DcMotorSimple.Direction.REVERSE);
+                LEFTBACK.setDirection(DcMotorSimple.Direction.FORWARD);
                 LEFTBACK.setPower(.3);
                 sleep(3000);
                 LEFTBACK.setPower(0);

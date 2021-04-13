@@ -23,9 +23,9 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 //importing OpModes (linear and teleOp) and importing hardware (motors, sensors, servos)
 //importing servos, motors, touch sensors
 
-@Autonomous(name = "Current Auto with Vision", group = "") //name of the file
+@Autonomous(name = "TestShooter", group = "") //name of the file
 
-public class CurrentAutoWithVision extends LinearOpMode { //creating public class, extension of linear opmode
+public class TestShooter extends LinearOpMode { //creating public class, extension of linear opmode
 
     //creating motors, touch sensors, and servos
     private DcMotor RIGHTFRONT;
@@ -36,6 +36,7 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
     private Servo FLICKER;
     private DcMotor WOBBLE;
     private Servo WOBBLEBLOCK;
+    private DcMotor INTAKE;
     private static final String TFOD_MODEL_ASSET = "UltimateGoal.tflite";
     private static final String LABEL_FIRST_ELEMENT = "Quad";
     private static final String LABEL_SECOND_ELEMENT = "Single";
@@ -124,6 +125,7 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
         WOBBLE = hardwareMap.dcMotor.get("WOBBLE");
         WOBBLEBLOCK = hardwareMap.servo.get("WOBBLEBLOCK");
         FLICKER = hardwareMap.servo.get("FLICKER");
+        INTAKE = hardwareMap.dcMotor.get("INTAKE");
 
         RIGHTFRONT.setDirection(DcMotorSimple.Direction.REVERSE);
         RIGHTBACK.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -133,106 +135,110 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
         waitForStart();
 
         if (opModeIsActive()) {
-
-            //vuforia stuff - print out number of rings it sees
-            // The TFObjectDetector uses the camera frames from the VuforiaLocalizer, so we create that
-            // first.
-
-            /**
-             * Activate TensorFlow Object Detection before we wait for the start command.
-             * Do it here so that the Camera Stream window will have the TensorFlow annotations visible.
-             **/
-            if (tfod != null) {
-                tfod.activate();
-
-                // The TensorFlow software will scale the input images from the camera to a lower resolution.
-                // This can result in lower detection accuracy at longer distances (> 55cm or 22").
-                // If your target is at distance greater than 50 cm (20") you can adjust the magnification value
-                // to artificially zoom in to the center of image.  For best results, the "aspectRatio" argument
-                // should be set to the value of the images used to create the TensorFlow Object Detection model
-                // (typically 1.78 or 16/9).
-
-                // Uncomment the following line if you want to adjust the magnification and/or the aspect ratio of the input images.
-                //tfod.setZoom(2.5, 1.78);
-            }
-
-
-            String numberRings = "None";
-            int tries = 0;
-            telemetry.addData("right before opModeIsActive", "");
-            if (opModeIsActive()) {
-                //goes forward before it looks for the rings
-                ForwardForDistance(0.5,1);
-                sleep(1000);
-
-                while (true) {
-
-                    if (tfod != null) {
-                        telemetry.addData("tfod is not null", "");
-                        telemetry.update();
-                        // getUpdatedRecognitions() will return null if no new information is available since
-                        // the last time that call was made.
-                        List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
-                        tries++;
-                        if (updatedRecognitions != null) {
-                            telemetry.addData("updatedRecognitions has something", "");
-                            telemetry.update();
-
-                            if (updatedRecognitions.size() != 0) {
-                                // step through the list of recognitions and display boundary info.
-                                numberRings = (updatedRecognitions.get(0)).getLabel();
-                                telemetry.addData(String.format("label (%d)", 0), numberRings);
-                                telemetry.update();
-                                break;
-                            }
-                        } else if (tries > 10000) {
-                            telemetry.addData("breaking while loop cuz exceeded tries no ring", "");
-                            telemetry.update();
-                            break;
-                        }
-                    }
-                }
-            }
-
-            if (tfod != null) {
-                tfod.shutdown();
-            }
-
-            SHOOTER.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            SHOOTER.setVelocity(1885);   // Ticks per second.
+//
+//            //vuforia stuff - print out number of rings it sees
+//            // The TFObjectDetector uses the camera frames from the VuforiaLocalizer, so we create that
+//            // first.
+//
+//            /**
+//             * Activate TensorFlow Object Detection before we wait for the start command.
+//             * Do it here so that the Camera Stream window will have the TensorFlow annotations visible.
+//             **/
+//            if (tfod != null) {
+//                tfod.activate();
+//
+//                // The TensorFlow software will scale the input images from the camera to a lower resolution.
+//                // This can result in lower detection accuracy at longer distances (> 55cm or 22").
+//                // If your target is at distance greater than 50 cm (20") you can adjust the magnification value
+//                // to artificially zoom in to the center of image.  For best results, the "aspectRatio" argument
+//                // should be set to the value of the images used to create the TensorFlow Object Detection model
+//                // (typically 1.78 or 16/9).
+//
+//                // Uncomment the following line if you want to adjust the magnification and/or the aspect ratio of the input images.
+//                //tfod.setZoom(2.5, 1.78);
+//            }
+//
+//
+//            String numberRings = "None";
+//            int tries = 0;
+//            telemetry.addData("right before opModeIsActive", "");
+//            if (opModeIsActive()) {
+//                //goes forward before it looks for the rings
+//                ForwardForDistance(0.5,1);
+//                sleep(1000);
+//
+//                while (true) {
+//
+//                    if (tfod != null) {
+//                        telemetry.addData("tfod is not null", "");
+//                        telemetry.update();
+//                        // getUpdatedRecognitions() will return null if no new information is available since
+//                        // the last time that call was made.
+//                        List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
+//                        tries++;
+//                        if (updatedRecognitions != null) {
+//                            telemetry.addData("updatedRecognitions has something", "");
+//                            telemetry.update();
+//
+//                            if (updatedRecognitions.size() != 0) {
+//                                // step through the list of recognitions and display boundary info.
+//                                numberRings = (updatedRecognitions.get(0)).getLabel();
+//                                telemetry.addData(String.format("label (%d)", 0), numberRings);
+//                                telemetry.update();
+//                                break;
+//                            }
+//                        } else if (tries > 10000) {
+//                            telemetry.addData("breaking while loop cuz exceeded tries no ring", "");
+//                            telemetry.update();
+//                            break;
+//                        }
+//                    }
+//                }
+//            }
+//
+//            if (tfod != null) {
+//                tfod.shutdown();
+//            }
+            //ForwardForDistance(0.5,1);
+            //sleep(1000);
+            //SHOOTER.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            //SHOOTER.setVelocity(2075);   // Ticks per second. 2800 is theoretical max
 
             //get in position for shooting, crabAround the ring stack if there is one
-            if (numberRings.equals("Quad") || numberRings.equals("Single")) {
-                //crabAround();
-            }
-            else {
-                ForwardForDistance(.5, 3.0);
-            }
+//            if (numberRings.equals("Quad") || numberRings.equals("Single")) {
+//                //crabAround();
+//            }
+//            else {
+//            TurnForDistance(1, 4);
+//            INTAKE.setDirection(DcMotorSimple.Direction.REVERSE);
+//            INTAKE.setPower(1);
+//            ForwardForDistance(.5, -2.0);
+////            }
+//            TurnForDistance(1, 4);
+//            sleep(1000);
+//            CrabForDistance(1, -.1);
+//
+//            //shoot 3 rings at the high goal
+            //shootRing();
+            //shootRing();
+            //shootRing();
 
-            sleep(1000);
-            CrabForDistance(1, -.1);
-
-            //shoot 3 rings at the high goal
-            shootRing();
-            shootRing();
-            shootRing();
-
-            if (numberRings.equals("None")) {
-                telemetry.addData("This is going to box A:", numberRings);
-                telemetry.update();
-                crabToBoxA();
-            }
-            else if (numberRings.equals("Single")) {
-                telemetry.addData("This is going to box B:", numberRings);
-                telemetry.update();
-                crabToBoxB();
-            }
-            else if (numberRings.equals("Quad")) {
-                telemetry.addData("This is going to box C:", numberRings);
-                telemetry.update();
-                crabToBoxC();
-            }
-            sleep(5000);
+//            if (numberRings.equals("None")) {
+//                telemetry.addData("This is going to box A:", numberRings);
+//                telemetry.update();
+//                crabToBoxA();
+//            }
+//            else if (numberRings.equals("Single")) {
+//                telemetry.addData("This is going to box B:", numberRings);
+//                telemetry.update();
+//                crabToBoxB();
+//            }
+//            else if (numberRings.equals("Quad")) {
+//                telemetry.addData("This is going to box C:", numberRings);
+//                telemetry.update();
+//                crabToBoxC();
+//            }
+//            sleep(5000);
 
         }
     }
@@ -241,9 +247,9 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
         FLICKER.setPosition(.2);
         sleep(500);
         FLICKER.setPosition(.7);
-        sleep(2000);
-    }
-
+        sleep(3000);
+}
+//
     private void stopEverything() {
         LEFTFRONT.setPower(0);
         RIGHTFRONT.setPower(0);
