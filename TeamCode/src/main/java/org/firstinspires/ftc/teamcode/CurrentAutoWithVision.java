@@ -55,20 +55,42 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
 
     final double encRotation = 537.6;
 
-    private void crabToBoxA() {
+    private void zeroRings() {
         ForwardForDistance(0.5, 1.5);
-        CrabForDistance(1, -1);
+        sleep(2000);
         SHOOTER.setPower(0);
         dispenseWobble();
         sleep(2000);
         WOBBLEBLOCK.setPosition(0);
-        ForwardForDistance(0.3,-1.0);
-        //park on the launch line (not touching the wobble goal)
-        CrabForDistance(0.5,1.5);
-        ForwardForDistance(0.5, .6);
+        sleep(2000);
+        ForwardForDistance(0.5,-.7);
+        sleep(2000);
+        WOBBLE.setDirection(DcMotorSimple.Direction.REVERSE);
+        WOBBLE.setPower(1); //position = placeholder --> replace later after testing
+        sleep(500);
+        ForwardForDistance(0.5,-3);
+        sleep(2000);
+        CrabForDistance(1, 1);
+        sleep(2000);
+        ForwardForDistance(0.5,-1.5);
+        sleep(2000);
+        CrabForDistance(1, -1.5);
+        WOBBLE.setDirection(DcMotorSimple.Direction.FORWARD);
+        WOBBLE.setPower(1); //position = placeholder --> replace later after testing
+        sleep(500);
+        sleep(2000);
+        ForwardForDistance(0.5,0.3);
+        sleep(2000);
+        WOBBLEBLOCK.setPosition(1);
+        WOBBLE.setDirection(DcMotorSimple.Direction.REVERSE);
+        WOBBLE.setPower(1); //position = placeholder --> replace later after testing
+        sleep(500);
+        ForwardForDistance(0.5,4.7);
+        sleep(2000);
+        dispenseWobble();
     }
 
-    private void crabToBoxB() {
+    private void oneRing() {
         ForwardForDistance(0.5, 2.5);
         TurnForDistance(1, -2);
         SHOOTER.setPower(0);
@@ -79,7 +101,7 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
         CrabForDistance(0.5,1);
     }
 
-    private void crabToBoxC() {
+    private void fourRings() {
         ForwardForDistance(0.5, 5.7);
         CrabForDistance(1, -1.5);
         TurnForDistance(1, -1);
@@ -220,17 +242,17 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
             if (numberRings.equals("None")) {
                 telemetry.addData("This is going to box A:", numberRings);
                 telemetry.update();
-                crabToBoxA();
+                zeroRings();
             }
             else if (numberRings.equals("Single")) {
                 telemetry.addData("This is going to box B:", numberRings);
                 telemetry.update();
-                crabToBoxB();
+                oneRing();
             }
             else if (numberRings.equals("Quad")) {
                 telemetry.addData("This is going to box C:", numberRings);
                 telemetry.update();
-                crabToBoxC();
+                fourRings();
             }
             sleep(5000);
 
