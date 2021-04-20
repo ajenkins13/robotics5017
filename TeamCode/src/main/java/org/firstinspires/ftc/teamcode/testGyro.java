@@ -20,12 +20,40 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 
+//FROM CHAD
+
+import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+
+import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+
 //importing OpModes (linear and teleOp) and importing hardware (motors, sensors, servos)
 //importing servos, motors, touch sensors
 
-@Autonomous(name = "Current Auto with Vision", group = "") //name of the file
+@Autonomous(name = "test gyro", group = "") //name of the file
 
-public class CurrentAutoWithVision extends LinearOpMode { //creating public class, extension of linear opmode
+public class testGyro extends LinearOpMode { //creating public class, extension of linear opmode
+
+    Double width = 16.0; //inches
+    Integer cpr = 28; //counts per rotation
+    Integer gearratio = 40;
+    Double diameter = 4.125;
+    Double cpi = (cpr * gearratio)/(Math.PI * diameter); //counts per inch, 28cpr * gear ratio / (2 * pi * diameter (in inches, in the center))
+    Double bias = 0.8;//default 0.8
+    Double meccyBias = 0.9;//change to adjust only strafing movement
+
+    Double conversion = cpi * bias;
+    Boolean exit = false;
+    //
+    BNO055IMU imu;
+    Orientation angles;
+    Acceleration gravity;
 
     //creating motors, touch sensors, and servos
     private DcMotor RIGHTFRONT;
@@ -97,7 +125,6 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
         dispenseWobble();
         sleep(2000);
         WOBBLEBLOCK.setPosition(0);
-        sleep(2000);
         ForwardForDistance(0.5, -1);
         CrabForDistance(0.5,1);
     }
@@ -110,7 +137,6 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
         dispenseWobble();
         sleep(2000);
         WOBBLEBLOCK.setPosition(0);
-        sleep(2000);
         TurnForDistance(1, 1);
         ForwardForDistance(0.3,-3.9);
     }
@@ -140,6 +166,9 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
 
     @Override
     public void runOpMode() {
+
+        initGyro();
+
         RIGHTFRONT = hardwareMap.dcMotor.get("RIGHTFRONT");
         RIGHTBACK = hardwareMap.dcMotor.get("RIGHTBACK");
         LEFTFRONT = hardwareMap.dcMotor.get("LEFTFRONT");
@@ -158,107 +187,174 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
 
         if (opModeIsActive()) {
 
-            //vuforia stuff - print out number of rings it sees
-            // The TFObjectDetector uses the camera frames from the VuforiaLocalizer, so we create that
-            // first.
-
-            /**
-             * Activate TensorFlow Object Detection before we wait for the start command.
-             * Do it here so that the Camera Stream window will have the TensorFlow annotations visible.
-             **/
-            if (tfod != null) {
-                tfod.activate();
-
-                // The TensorFlow software will scale the input images from the camera to a lower resolution.
-                // This can result in lower detection accuracy at longer distances (> 55cm or 22").
-                // If your target is at distance greater than 50 cm (20") you can adjust the magnification value
-                // to artificially zoom in to the center of image.  For best results, the "aspectRatio" argument
-                // should be set to the value of the images used to create the TensorFlow Object Detection model
-                // (typically 1.78 or 16/9).
-
-                // Uncomment the following line if you want to adjust the magnification and/or the aspect ratio of the input images.
-                //tfod.setZoom(2.5, 1.78);
-            }
-
-
-            String numberRings = "None";
-            int tries = 0;
-            telemetry.addData("right before opModeIsActive", "");
-            if (opModeIsActive()) {
-                //goes forward before it looks for the rings
-                ForwardForDistance(0.5,1);
-                sleep(1000);
-
-                while (true) {
-
-                    if (tfod != null) {
-                        telemetry.addData("tfod is not null", "");
-                        telemetry.update();
-                        // getUpdatedRecognitions() will return null if no new information is available since
-                        // the last time that call was made.
-                        List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
-                        tries++;
-                        if (updatedRecognitions != null) {
-                            telemetry.addData("updatedRecognitions has something", "");
-                            telemetry.update();
-
-                            if (updatedRecognitions.size() != 0) {
-                                // step through the list of recognitions and display boundary info.
-                                numberRings = (updatedRecognitions.get(0)).getLabel();
-                                telemetry.addData(String.format("label (%d)", 0), numberRings);
-                                telemetry.update();
-                                break;
-                            }
-                        } else if (tries > 10000) {
-                            telemetry.addData("breaking while loop cuz exceeded tries no ring", "");
-                            telemetry.update();
-                            break;
-                        }
-                    }
-                }
-            }
-
-            if (tfod != null) {
-                tfod.shutdown();
-            }
-
-            SHOOTER.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            SHOOTER.setVelocity(1885);   // Ticks per second.
-
-            //get in position for shooting, crabAround the ring stack if there is one
-            if (numberRings.equals("Quad") || numberRings.equals("Single")) {
-                //crabAround();
-            }
-            else {
-                ForwardForDistance(.5, 3.0);
-            }
-
-            sleep(1000);
-            CrabForDistance(1, -.1);
-
-            //shoot 3 rings at the high goal
-            shootRing();
-            shootRing();
-            shootRing();
-
-            if (numberRings.equals("None")) {
-                telemetry.addData("This is going to box A:", numberRings);
-                telemetry.update();
-                zeroRings();
-            }
-            else if (numberRings.equals("Single")) {
-                telemetry.addData("This is going to box B:", numberRings);
-                telemetry.update();
-                oneRing();
-            }
-            else if (numberRings.equals("Quad")) {
-                telemetry.addData("This is going to box C:", numberRings);
-                telemetry.update();
-                fourRings();
-            }
-            sleep(5000);
-
+            turnWithGyro(90, 0.5);
         }
+    }
+
+    /*
+   This function uses the Expansion Hub IMU Integrated Gyro to turn a precise number of degrees (+/- 5).
+   Degrees should always be positive, make speedDirection negative to turn left.
+    */
+    public void turnWithGyro(double degrees, double speedDirection){
+        //<editor-fold desc="Initialize">
+        angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        double yaw = -angles.firstAngle;//make this negative
+        telemetry.addData("Speed Direction", speedDirection);
+        telemetry.addData("Yaw", yaw);
+        telemetry.update();
+        //
+        telemetry.addData("stuff", speedDirection);
+        telemetry.update();
+        //
+        double first;
+        double second;
+        //</editor-fold>
+        //
+        if (speedDirection > 0){//set target positions
+            //<editor-fold desc="turn right">
+            if (degrees > 10){
+                first = (degrees - 10) + devertify(yaw);
+                second = degrees + devertify(yaw);
+            }else{
+                first = devertify(yaw);
+                second = degrees + devertify(yaw);
+            }
+            //</editor-fold>
+        }else{
+            //<editor-fold desc="turn left">
+            if (degrees > 10){
+                first = devertify(-(degrees - 10) + devertify(yaw));
+                second = devertify(-degrees + devertify(yaw));
+            }else{
+                first = devertify(yaw);
+                second = devertify(-degrees + devertify(yaw));
+            }
+            //
+            //</editor-fold>
+        }
+        //
+        //<editor-fold desc="Go to position">
+        Double firsta = convertify(first - 5);//175
+        Double firstb = convertify(first + 5);//-175
+        //
+        turnWithEncoder(speedDirection);
+        //
+        if (Math.abs(firsta - firstb) < 11) {
+            while (!(firsta < yaw && yaw < firstb) && opModeIsActive()) {//within range?
+                angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+                gravity = imu.getGravity();
+                yaw = -angles.firstAngle;
+                telemetry.addData("Position", yaw);
+                telemetry.addData("first before", first);
+                telemetry.addData("first after", convertify(first));
+                telemetry.update();
+            }
+        }else{
+            //
+            while (!((firsta < yaw && yaw < 180) || (-180 < yaw && yaw < firstb)) && opModeIsActive()) {//within range?
+                angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+                gravity = imu.getGravity();
+                yaw = -angles.firstAngle;
+                telemetry.addData("Position", yaw);
+                telemetry.addData("first before", first);
+                telemetry.addData("first after", convertify(first));
+                telemetry.update();
+            }
+        }
+        //
+        Double seconda = convertify(second - 5);//175
+        Double secondb = convertify(second + 5);//-175
+        //
+        turnWithEncoder(speedDirection / 3);
+        //
+        if (Math.abs(seconda - secondb) < 11) {
+            while (!(seconda < yaw && yaw < secondb) && opModeIsActive()) {//within range?
+                angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+                gravity = imu.getGravity();
+                yaw = -angles.firstAngle;
+                telemetry.addData("Position", yaw);
+                telemetry.addData("second before", second);
+                telemetry.addData("second after", convertify(second));
+                telemetry.update();
+            }
+            while (!((seconda < yaw && yaw < 180) || (-180 < yaw && yaw < secondb)) && opModeIsActive()) {//within range?
+                angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+                gravity = imu.getGravity();
+                yaw = -angles.firstAngle;
+                telemetry.addData("Position", yaw);
+                telemetry.addData("second before", second);
+                telemetry.addData("second after", convertify(second));
+                telemetry.update();
+            }
+            LEFTFRONT.setPower(0);
+            RIGHTFRONT.setPower(0);
+            LEFTBACK.setPower(0);
+            RIGHTBACK.setPower(0);
+        }
+        //</editor-fold>
+        //
+        LEFTFRONT.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        RIGHTFRONT.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        LEFTBACK.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        RIGHTBACK.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        LEFTFRONT.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        RIGHTFRONT.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        LEFTBACK.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        RIGHTBACK.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    }
+
+    /*
+    These functions are used in the turnWithGyro function to ensure inputs
+    are interpreted properly.
+     */
+    public double devertify(double degrees){
+        if (degrees < 0){
+            degrees = degrees + 360;
+        }
+        return degrees;
+    }
+    public double convertify(double degrees){
+        if (degrees > 179){
+            degrees = -(360 - degrees);
+        } else if(degrees < -180){
+            degrees = 360 + degrees;
+        } else if(degrees > 360){
+            degrees = degrees - 360;
+        }
+        return degrees;
+    }
+    //
+    /*
+    This function is called at the beginning of the program to activate
+    the IMU Integrated Gyro.
+     */
+    public void initGyro(){
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        //parameters.calibrationDataFile = "GyroCal.json"; // see the calibration sample opmode
+        parameters.loggingEnabled      = true;
+        parameters.loggingTag          = "IMU";
+        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
+        //
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        imu.initialize(parameters);
+    }
+    //
+    /*
+    This function is used in the turnWithGyro function to set the
+    encoder mode and turn.
+     */
+    public void turnWithEncoder(double input){
+        LEFTFRONT.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        LEFTBACK.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        RIGHTFRONT.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        RIGHTBACK.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //
+        LEFTFRONT.setPower(input);
+        LEFTBACK.setPower(input);
+        RIGHTFRONT.setPower(-input);
+        RIGHTBACK.setPower(-input);
     }
 
     private void shootRing() {

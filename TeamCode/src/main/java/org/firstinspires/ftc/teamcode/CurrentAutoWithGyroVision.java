@@ -23,9 +23,9 @@ import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 //importing OpModes (linear and teleOp) and importing hardware (motors, sensors, servos)
 //importing servos, motors, touch sensors
 
-@Autonomous(name = "Current Auto with Vision", group = "") //name of the file
+@Autonomous(name = "Current Auto with Gyro/Vision", group = "") //name of the file
 
-public class CurrentAutoWithVision extends LinearOpMode { //creating public class, extension of linear opmode
+public class CurrentAutoWithGyroVision extends LinearOpMode { //creating public class, extension of linear opmode
 
     //creating motors, touch sensors, and servos
     private DcMotor RIGHTFRONT;
@@ -97,7 +97,6 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
         dispenseWobble();
         sleep(2000);
         WOBBLEBLOCK.setPosition(0);
-        sleep(2000);
         ForwardForDistance(0.5, -1);
         CrabForDistance(0.5,1);
     }
@@ -110,7 +109,6 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
         dispenseWobble();
         sleep(2000);
         WOBBLEBLOCK.setPosition(0);
-        sleep(2000);
         TurnForDistance(1, 1);
         ForwardForDistance(0.3,-3.9);
     }
