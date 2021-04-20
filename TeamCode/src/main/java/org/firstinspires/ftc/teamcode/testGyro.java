@@ -346,6 +346,12 @@ public class testGyro extends LinearOpMode { //creating public class, extension 
     encoder mode and turn.
      */
     public void turnWithEncoder(double input){
+
+        RIGHTFRONT.setDirection(DcMotorSimple.Direction.REVERSE);
+        LEFTFRONT.setDirection(DcMotorSimple.Direction.FORWARD);
+        RIGHTBACK.setDirection(DcMotorSimple.Direction.REVERSE);
+        LEFTBACK.setDirection(DcMotorSimple.Direction.FORWARD);
+
         LEFTFRONT.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         LEFTBACK.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         RIGHTFRONT.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -353,8 +359,8 @@ public class testGyro extends LinearOpMode { //creating public class, extension 
         //
         LEFTFRONT.setPower(input);
         LEFTBACK.setPower(input);
-        RIGHTFRONT.setPower(-input);
-        RIGHTBACK.setPower(-input);
+        RIGHTFRONT.setPower(input);
+        RIGHTBACK.setPower(input);
     }
 
     private void shootRing() {
