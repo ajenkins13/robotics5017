@@ -69,8 +69,6 @@ public class GyroTester extends LinearOpMode { //creating public class, extensio
     @Override
     public void runOpMode() {
 
-        initGyro();
-
         RIGHTFRONT = hardwareMap.dcMotor.get("RIGHTFRONT");
         RIGHTBACK = hardwareMap.dcMotor.get("RIGHTBACK");
         LEFTFRONT = hardwareMap.dcMotor.get("LEFTFRONT");
@@ -85,10 +83,31 @@ public class GyroTester extends LinearOpMode { //creating public class, extensio
 
         waitForStart();
 
+
         telemetry.addData("IMU heading", angles.firstAngle);
 
         if (opModeIsActive()) {
 
+            //calibrate gyro and make sure its connected
+            initGyro();
+
+            // getting first (initial) reading and print the angle
+            Orientation initialReading = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+            double initialAngle = initialReading.firstAngle;
+            telemetry.addData("Angle measure:", "" + initialAngle);
+            telemetry.update();
+
+            // time to manually reorient robot
+            sleep(6000);
+
+            // getting second reading and print the 2nd angle
+            Orientation readingTwo = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+            double angleZ = readingTwo.firstAngle;
+            double angleY = readingTwo.secondAngle;
+            double angleX = readingTwo.thirdAngle;
+            telemetry.addData("Angle measure:", "" + angleZ + "," + angleY + "," + angleX);
+            telemetry.update();
+            sleep(12000);
         }
     }
 
