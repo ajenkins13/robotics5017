@@ -83,9 +83,6 @@ public class GyroTester extends LinearOpMode { //creating public class, extensio
 
         waitForStart();
 
-
-        telemetry.addData("IMU heading", angles.firstAngle);
-
         if (opModeIsActive()) {
 
             //calibrate gyro and make sure its connected
