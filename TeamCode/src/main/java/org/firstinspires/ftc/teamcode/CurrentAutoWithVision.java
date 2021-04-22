@@ -69,12 +69,7 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
         WOBBLE.setPower(1); //position = placeholder --> replace later after testing
         sleep(500);
         ForwardForDistance(0.5,-3);
-        sleep(2000);
-        CrabForDistance(1, 1);
-        sleep(2000);
-        ForwardForDistance(0.5,-1.5);
-        sleep(2000);
-        CrabForDistance(1, -1.5);
+        TurnForDistance(.5, 4);
         WOBBLE.setDirection(DcMotorSimple.Direction.FORWARD);
         WOBBLE.setPower(1); //position = placeholder --> replace later after testing
         sleep(500);
@@ -85,6 +80,7 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
         WOBBLE.setDirection(DcMotorSimple.Direction.REVERSE);
         WOBBLE.setPower(1); //position = placeholder --> replace later after testing
         sleep(500);
+        TurnForDistance(.5, -4);
         ForwardForDistance(0.5,4.7);
         sleep(2000);
         dispenseWobble();
