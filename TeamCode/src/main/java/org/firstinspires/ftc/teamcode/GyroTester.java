@@ -105,6 +105,8 @@ public class GyroTester extends LinearOpMode { //creating public class, extensio
             telemetry.addData("Angle measure:", "" + angleZ + "," + angleY + "," + angleX);
             telemetry.update();
             sleep(12000);
+
+            turnToAngle(90,0.5);
         }
     }
 
@@ -143,6 +145,24 @@ public class GyroTester extends LinearOpMode { //creating public class, extensio
         angles = currentAngles;
 
         return globalHeading;
+    }
+
+    private void turnToAngle(double angle, double power) {
+        resetAngle();
+        while (getAngle() < angle) {
+            //set motor directions:
+            RIGHTFRONT.setDirection(DcMotorSimple.Direction.REVERSE);
+            LEFTFRONT.setDirection(DcMotorSimple.Direction.FORWARD);
+            RIGHTBACK.setDirection(DcMotorSimple.Direction.REVERSE);
+            LEFTBACK.setDirection(DcMotorSimple.Direction.FORWARD);
+
+            //set motor powers:
+            LEFTFRONT.setPower(power);
+            LEFTBACK.setPower(power);
+            RIGHTFRONT.setPower(power);
+            RIGHTBACK.setPower(power);
+            sleep(100);
+        }
     }
 
     /*
