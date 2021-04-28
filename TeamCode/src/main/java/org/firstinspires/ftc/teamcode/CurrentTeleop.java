@@ -62,9 +62,9 @@ public class CurrentTeleop extends LinearOpMode { //declaring class for whole pr
                 if (Math.abs(gamepad1.left_stick_y) > 0.1 || Math.abs(gamepad1.right_stick_y) > 0.1) { //if left stick or right stick is pushed a significant amount
                     // Forward/Reverse Drive
                     RIGHTFRONT.setPower(-gamepad1.right_stick_y);
-                    RIGHTBACK.setPower(-gamepad1.right_stick_y*.95);
+                    RIGHTBACK.setPower(-gamepad1.right_stick_y);
                     LEFTFRONT.setPower(-gamepad1.left_stick_y);
-                    LEFTBACK.setPower(-gamepad1.left_stick_y*.95);
+                    LEFTBACK.setPower(-gamepad1.left_stick_y);
                 }
 
                 else if (Math.abs(gamepad1.right_trigger) != 0) {
@@ -72,10 +72,12 @@ public class CurrentTeleop extends LinearOpMode { //declaring class for whole pr
                     // The Y axis of a joystick ranges from -1 in its topmost position
                     // to +1 in its bottommost position. We negate this value so that
                     // the topmost position corresponds to maximum forward power.
-                    RIGHTFRONT.setPower(-gamepad1.right_trigger);
-                    LEFTBACK.setPower(-gamepad1.right_trigger);
-                    RIGHTBACK.setPower(gamepad1.right_trigger*.95);
-                    LEFTFRONT.setPower(gamepad1.right_trigger*.95);
+                    RIGHTFRONT.setPower(-gamepad1.right_trigger*.5);
+                    LEFTBACK.setPower(-gamepad1.right_trigger*.5);
+                    RIGHTBACK.setPower(gamepad1.right_trigger*.8);
+                    LEFTFRONT.setPower(gamepad1.right_trigger*.6);
+                    //telemetry.addData("hi", "");
+                   // telemetry.update();
                 }
 
                 else if (Math.abs(gamepad1.left_trigger) != 0) {
