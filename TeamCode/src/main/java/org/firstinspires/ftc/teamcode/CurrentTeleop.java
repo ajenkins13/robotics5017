@@ -61,10 +61,10 @@ public class CurrentTeleop extends LinearOpMode { //declaring class for whole pr
 
                 if (Math.abs(gamepad1.left_stick_y) > 0.1 || Math.abs(gamepad1.right_stick_y) > 0.1) { //if left stick or right stick is pushed a significant amount
                     // Forward/Reverse Drive
-                    RIGHTFRONT.setPower(-gamepad1.right_stick_y*.95);
-                    RIGHTBACK.setPower(-gamepad1.right_stick_y);
+                    RIGHTFRONT.setPower(-gamepad1.right_stick_y);
+                    RIGHTBACK.setPower(-gamepad1.right_stick_y*.95);
                     LEFTFRONT.setPower(-gamepad1.left_stick_y);
-                    LEFTBACK.setPower(-gamepad1.left_stick_y*95);
+                    LEFTBACK.setPower(-gamepad1.left_stick_y*.95);
                 }
 
                 else if (Math.abs(gamepad1.right_trigger) != 0) {
@@ -74,8 +74,8 @@ public class CurrentTeleop extends LinearOpMode { //declaring class for whole pr
                     // the topmost position corresponds to maximum forward power.
                     RIGHTFRONT.setPower(-gamepad1.right_trigger);
                     LEFTBACK.setPower(-gamepad1.right_trigger);
-                    RIGHTBACK.setPower(gamepad1.right_trigger*95);
-                    LEFTFRONT.setPower(gamepad1.right_trigger*95);
+                    RIGHTBACK.setPower(gamepad1.right_trigger*.95);
+                    LEFTFRONT.setPower(gamepad1.right_trigger*.95);
                 }
 
                 else if (Math.abs(gamepad1.left_trigger) != 0) {
