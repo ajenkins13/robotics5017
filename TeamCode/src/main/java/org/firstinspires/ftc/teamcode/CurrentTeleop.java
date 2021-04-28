@@ -64,7 +64,7 @@ public class CurrentTeleop extends LinearOpMode { //declaring class for whole pr
                     RIGHTFRONT.setPower(-gamepad1.right_stick_y*.95);
                     RIGHTBACK.setPower(-gamepad1.right_stick_y);
                     LEFTFRONT.setPower(-gamepad1.left_stick_y);
-                    LEFTBACK.setPower(-gamepad1.left_stick_y)*95;
+                    LEFTBACK.setPower(-gamepad1.left_stick_y*95);
                 }
 
                 else if (Math.abs(gamepad1.right_trigger) != 0) {
