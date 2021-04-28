@@ -36,7 +36,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 //importing OpModes (linear and teleOp) and importing hardware (motors, sensors, servos)
 //importing servos, motors, touch sensors
 
-@Autonomous(name = "toz gyro tester", group = "") //name of the file
+@Autonomous(name = "gyro tester 2.0", group = "") //name of the file
 
 public class GyroTester extends LinearOpMode { //creating public class, extension of linear opmode
 
@@ -93,10 +93,6 @@ public class GyroTester extends LinearOpMode { //creating public class, extensio
             double initialAngle = initialReading.firstAngle;
             telemetry.addData("Angle measure:", "" + initialAngle);
             telemetry.update();
-
-            // time to manually reorient robot
-            sleep(6000);
-
             // getting second reading and print the 2nd angle
             Orientation readingTwo = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
             double angleZ = readingTwo.firstAngle;
@@ -104,7 +100,6 @@ public class GyroTester extends LinearOpMode { //creating public class, extensio
             double angleX = readingTwo.thirdAngle;
             telemetry.addData("Angle measure:", "" + angleZ + "," + angleY + "," + angleX);
             telemetry.update();
-            sleep(12000);
 
             turnToAngle(90,0.5);
 
@@ -150,10 +145,15 @@ public class GyroTester extends LinearOpMode { //creating public class, extensio
 
     private void turnToAngle(double angle, double power) {
         resetAngle();
-        telemetry.addData("angle degree", globalHeading);
+        telemetry.addData("TURNING FUNCTION angle degree", globalHeading);
         telemetry.update();
-        while (getAngle() < angle) {
+        telemetry.addData("get angle", getAngle());
+        telemetry.update();
+        sleep(2000);
+        while (getAngle() > (-1 * angle)) {
             //set motor directions:
+            telemetry.addData("angle degree in loop", globalHeading);
+            telemetry.update();
             RIGHTFRONT.setDirection(DcMotorSimple.Direction.REVERSE);
             LEFTFRONT.setDirection(DcMotorSimple.Direction.FORWARD);
             RIGHTBACK.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -164,10 +164,13 @@ public class GyroTester extends LinearOpMode { //creating public class, extensio
             LEFTBACK.setPower(power);
             RIGHTFRONT.setPower(power);
             RIGHTBACK.setPower(power);
-            sleep(100);
         }
         telemetry.addData("Broke loop", "");
         telemetry.update();
+        LEFTFRONT.setPower(0);
+        LEFTBACK.setPower(0);
+        RIGHTFRONT.setPower(0);
+        RIGHTBACK.setPower(0);
     }
 
     /*
