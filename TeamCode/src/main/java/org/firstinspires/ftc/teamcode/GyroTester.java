@@ -1,8 +1,3 @@
-//TODO(sachi): Rename this...
-
-//comment out attachments since this is for this year
-//FORWARD means REVERSE for the left wheels
-
 package org.firstinspires.ftc.teamcode; //importing OUR package
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -110,8 +105,7 @@ public class GyroTester extends LinearOpMode { //creating public class, extensio
      * Resets the cumulative angle tracking to zero.
      */
     private void resetAngle()
-    {   // Are these values right?
-        // Maybe need to determine AxesOrder from Control Hub's orientation.
+    {
         angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         globalHeading = 0.0;
     }
@@ -150,20 +144,45 @@ public class GyroTester extends LinearOpMode { //creating public class, extensio
         telemetry.addData("get angle", getAngle());
         telemetry.update();
         sleep(2000);
-        while (getAngle() > (-1 * angle)) {
-            //set motor directions:
-            telemetry.addData("angle degree in loop", globalHeading);
-            telemetry.update();
-            RIGHTFRONT.setDirection(DcMotorSimple.Direction.REVERSE);
-            LEFTFRONT.setDirection(DcMotorSimple.Direction.FORWARD);
-            RIGHTBACK.setDirection(DcMotorSimple.Direction.REVERSE);
-            LEFTBACK.setDirection(DcMotorSimple.Direction.FORWARD);
+        //If turning to a negative angle, turn right
+        if (angle < 0) {
+            while (getAngle() > angle) {
+                //set motor directions:
+                telemetry.addData("angle degree in right loop", globalHeading);
+                telemetry.update();
+                sleep(2000);
+                // Turn right.
+                RIGHTFRONT.setDirection(DcMotorSimple.Direction.REVERSE);
+                LEFTFRONT.setDirection(DcMotorSimple.Direction.FORWARD);
+                RIGHTBACK.setDirection(DcMotorSimple.Direction.REVERSE);
+                LEFTBACK.setDirection(DcMotorSimple.Direction.FORWARD);
 
-            //set motor powers:
-            LEFTFRONT.setPower(power);
-            LEFTBACK.setPower(power);
-            RIGHTFRONT.setPower(power);
-            RIGHTBACK.setPower(power);
+                //set motor powers:
+                LEFTFRONT.setPower(power);
+                LEFTBACK.setPower(power);
+                RIGHTFRONT.setPower(power);
+                RIGHTBACK.setPower(power);
+            }
+        }
+        //If turning to a positive angle, turn left
+        else {
+            while (getAngle() < angle) {
+                //set motor directions:
+                telemetry.addData("angle degree in left loop", globalHeading);
+                telemetry.update();
+                sleep(2000);
+                // Turn left.
+                RIGHTFRONT.setDirection(DcMotorSimple.Direction.FORWARD);
+                LEFTFRONT.setDirection(DcMotorSimple.Direction.REVERSE);
+                RIGHTBACK.setDirection(DcMotorSimple.Direction.FORWARD);
+                LEFTBACK.setDirection(DcMotorSimple.Direction.REVERSE);
+
+                //set motor powers:
+                LEFTFRONT.setPower(power);
+                LEFTBACK.setPower(power);
+                RIGHTFRONT.setPower(power);
+                RIGHTBACK.setPower(power);
+            }
         }
         telemetry.addData("Broke loop", "");
         telemetry.update();
