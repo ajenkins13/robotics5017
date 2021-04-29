@@ -5,6 +5,8 @@
 
 package org.firstinspires.ftc.teamcode; //importing OUR package
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -16,6 +18,11 @@ import com.qualcomm.robotcore.hardware.Servo;
 import java.util.List;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
@@ -36,11 +43,30 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
     private Servo FLICKER;
     private DcMotor WOBBLE;
     private Servo WOBBLEBLOCK;
+
+    //Vision
     private static final String TFOD_MODEL_ASSET = "UltimateGoal.tflite";
     private static final String LABEL_FIRST_ELEMENT = "Quad";
     private static final String LABEL_SECOND_ELEMENT = "Single";
     private static final String VUFORIA_KEY =
             "AZjoYn//////AAABmR/Gz+lF/k+IkcIQI/2fVYFiGF3UGkxilPyhwI/Cm4S3fmhAfVyLZconiBYacj0ZqCMizSfzW9evWjkqwZda2P4Z/lS48cBdkcOjXTviz930ACqjyN3S+Wep41I9xrmtZlv4t/X9cMUOdgQ22+AmBNZ3kTWFnl3PY2xBDsYSvqF1ifaU0R/LDlohIZhM4VBuMZWKLVX9cHOSwjti5T8lMmIMRX24RORLSSkL4ieJFRiusrOlAy6i+9s8io1KGfT4hKTk+LcUkCZUEbgANc8Srx76bhgnnerpMGmwuitHtDXTq8BFMey+fRMigGf+MwlL39A0qwFBq9wT45PdrX5y9+s1Huy0JkXZmt6uo1D8zRB1";
+    //Gyro
+    Double width = 16.0; //inches
+    Integer cpr = 28; //counts per rotation
+    Integer gearratio = 40;
+    Double diameter = 4.125;
+    Double cpi = (cpr * gearratio)/(Math.PI * diameter); //counts per inch, 28cpr * gear ratio / (2 * pi * diameter (in inches, in the center))
+    Double bias = 0.8;//default 0.8
+    Double meccyBias = 0.9;//change to adjust only strafing movement
+
+    Double conversion = cpi * bias;
+    Boolean exit = false;
+
+    BNO055IMU imu;  // Reference to IMU device.
+    Orientation angles;
+    double globalHeading;
+    Acceleration gravity;
+
     /**
      * {@link #vuforia} is the variable we will use to store our instance of the Vuforia
      * localization engine.
@@ -56,34 +82,26 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
     final double encRotation = 537.6;
 
     private void zeroRings() {
-        ForwardForDistance(0.5, 1.5);
+        //Go forward to launch line
+        ForwardForDistance(.5, 3.0);
+        sleep(1000);
+        //Shoot 3 rings
+        shootRing();
+        shootRing();
+        shootRing();
         sleep(2000);
         SHOOTER.setPower(0);
+        //Drop wobble goal in box 0
         dispenseWobble();
+        //Reverse to position to pick up wobble goal 2
+        ForwardForDistance(0.5,-2.0);
         sleep(2000);
-        WOBBLEBLOCK.setPosition(0);
-        sleep(2000);
-        ForwardForDistance(0.5,-.7);
-        sleep(2000);
-        WOBBLE.setDirection(DcMotorSimple.Direction.REVERSE);
-        WOBBLE.setPower(1); //position = placeholder --> replace later after testing
-        sleep(500);
-        ForwardForDistance(0.5,-3);
-        TurnForDistance(.5, 4);
-        WOBBLE.setDirection(DcMotorSimple.Direction.FORWARD);
-        WOBBLE.setPower(1); //position = placeholder --> replace later after testing
-        sleep(500);
-        sleep(2000);
-        ForwardForDistance(0.5,0.3);
-        sleep(2000);
-        WOBBLEBLOCK.setPosition(1);
-        WOBBLE.setDirection(DcMotorSimple.Direction.REVERSE);
-        WOBBLE.setPower(1); //position = placeholder --> replace later after testing
-        sleep(500);
-        TurnForDistance(.5, -4);
-        ForwardForDistance(0.5,4.7);
-        sleep(2000);
-        dispenseWobble();
+        //turnToAngle(225);
+        //intakeWobble()
+        //turnToAngle(-270)
+        //ForwardForDistance(0.5, 2.0)
+        //dispenseWobble()
+        //turnToAngle(-90)
     }
 
     private void oneRing() {
@@ -132,6 +150,16 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
         sleep(200);
         WOBBLE.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         WOBBLE.setPower(0);
+        //open wobble block and sleep so that it opens before it moves
+        WOBBLEBLOCK.setPosition(0);
+        sleep(1000);
+    }
+
+    private void intakeWobble() {
+        WOBBLEBLOCK.setPosition(1);
+        WOBBLE.setDirection(DcMotorSimple.Direction.REVERSE);
+        WOBBLE.setPower(1); //position = placeholder --> replace later after testing
+        sleep(500);
     }
 
     @Override
@@ -149,6 +177,8 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
         RIGHTBACK.setDirection(DcMotorSimple.Direction.REVERSE);
         initVuforia();
         initTfod();
+        //calibrate gyro and make sure its connected
+        initGyro();
 
         waitForStart();
 
@@ -220,22 +250,6 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
 
             SHOOTER.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             SHOOTER.setVelocity(1885);   // Ticks per second.
-
-            //get in position for shooting, crabAround the ring stack if there is one
-            if (numberRings.equals("Quad") || numberRings.equals("Single")) {
-                //crabAround();
-            }
-            else {
-                ForwardForDistance(.5, 3.0);
-            }
-
-            sleep(1000);
-            CrabForDistance(1, -.1);
-
-            //shoot 3 rings at the high goal
-            shootRing();
-            shootRing();
-            shootRing();
 
             if (numberRings.equals("None")) {
                 telemetry.addData("This is going to box A:", numberRings);
@@ -419,4 +433,125 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
         tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
         tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_FIRST_ELEMENT, LABEL_SECOND_ELEMENT);
     }
+    /**
+     * Resets the cumulative angle tracking to zero.
+     */
+    private void resetAngle()
+    {   // Are these values right?
+        // Maybe need to determine AxesOrder from Control Hub's orientation.
+        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        globalHeading = 0.0;
+    }
+
+    /**
+     * Get current cumulative angle rotation from last reset.
+     * @return Angle in degrees. + = left, - = right.
+     */
+    private double getAngle()
+    {
+        // We experimentally determined the Z axis is the axis we want to use for heading angle.
+        // We have to process the angle because the imu works in euler angles so the Z axis is
+        // returned as 0 to +180 or 0 to -180 rolling back to -179 or +179 when rotation passes
+        // 180 degrees. We detect this transition and track the total cumulative angle of rotation.
+
+        Orientation currentAngles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+
+        double deltaAngle = currentAngles.firstAngle - angles.firstAngle;
+
+        if (deltaAngle < -180)
+            deltaAngle += 360;
+        else if (deltaAngle > 180)
+            deltaAngle -= 360;
+
+        globalHeading += deltaAngle;
+
+        angles = currentAngles;
+
+        return globalHeading;
+    }
+
+    private void turnToAngle(double angle, double power) {
+        resetAngle();
+        telemetry.addData("TURNING FUNCTION angle degree", globalHeading);
+        telemetry.update();
+        telemetry.addData("get angle", getAngle());
+        telemetry.update();
+        sleep(2000);
+        while (getAngle() > (-1 * angle)) {
+            //set motor directions:
+            telemetry.addData("angle degree in loop", globalHeading);
+            telemetry.update();
+            RIGHTFRONT.setDirection(DcMotorSimple.Direction.REVERSE);
+            LEFTFRONT.setDirection(DcMotorSimple.Direction.FORWARD);
+            RIGHTBACK.setDirection(DcMotorSimple.Direction.REVERSE);
+            LEFTBACK.setDirection(DcMotorSimple.Direction.FORWARD);
+
+            //set motor powers:
+            LEFTFRONT.setPower(power);
+            LEFTBACK.setPower(power);
+            RIGHTFRONT.setPower(power);
+            RIGHTBACK.setPower(power);
+        }
+        telemetry.addData("Broke loop", "");
+        telemetry.update();
+        LEFTFRONT.setPower(0);
+        LEFTBACK.setPower(0);
+        RIGHTFRONT.setPower(0);
+        RIGHTBACK.setPower(0);
+    }
+
+    /*
+    This function is called at the beginning of the program to activate and calibrate
+    the IMU Integrated Gyro.
+     */
+    public void initGyro(){
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        // parameters.calibrationDataFile = "GyroCal.json"; // see the calibration sample opmode
+        parameters.loggingEnabled      = true;
+        parameters.loggingTag          = "IMU";
+        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
+        //
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        imu.initialize(parameters);
+
+        telemetry.addData("Mode", "Calibrating IMU...");
+        telemetry.update();
+
+        // make sure the imu gyro is calibrated before continuing.
+        while (!isStopRequested() && !imu.isGyroCalibrated())
+        {
+            sleep(50);
+            idle();
+        }
+
+        telemetry.addData("IMU calibration status", imu.getCalibrationStatus().toString());
+        telemetry.update();
+    }
+
+    //
+    /*
+    This function is used in the turnWithGyro function to set the
+    encoder mode and turn.
+     */
+    public void turnWithEncoder(double input){
+
+        RIGHTFRONT.setDirection(DcMotorSimple.Direction.REVERSE);
+        LEFTFRONT.setDirection(DcMotorSimple.Direction.FORWARD);
+        RIGHTBACK.setDirection(DcMotorSimple.Direction.REVERSE);
+        LEFTBACK.setDirection(DcMotorSimple.Direction.FORWARD);
+
+        LEFTFRONT.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        LEFTBACK.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        RIGHTFRONT.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        RIGHTBACK.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //
+        LEFTFRONT.setPower(input);
+        LEFTBACK.setPower(input);
+        RIGHTFRONT.setPower(input);
+        RIGHTBACK.setPower(input);
+    }
+
+
 }
