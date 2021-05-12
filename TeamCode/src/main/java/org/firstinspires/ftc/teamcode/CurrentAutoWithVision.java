@@ -27,6 +27,31 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 
+
+import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
+import com.qualcomm.robotcore.hardware.PIDCoefficients;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
+
+import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
+import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.robotcore.external.navigation.Position;
+import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
+
+import java.util.Locale;
+
+import static java.lang.Math.abs;
+
 //importing OpModes (linear and teleOp) and importing hardware (motors, sensors, servos)
 //importing servos, motors, touch sensors
 
@@ -43,6 +68,7 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
     private Servo FLICKER;
     private DcMotor WOBBLE;
     private Servo WOBBLEBLOCK;
+    private DcMotor INTAKE;
 
     //Vision
     private static final String TFOD_MODEL_ASSET = "UltimateGoal.tflite";
@@ -83,7 +109,7 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
 
     private void zeroRings() {
         //Go forward to launch line
-        ForwardForDistance(.5, 3.0);
+        ForwardForDistance(.5, 4.0);
         sleep(1000);
         //Shoot 3 rings
         shootRing();
@@ -91,29 +117,53 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
         shootRing();
         sleep(2000);
         SHOOTER.setPower(0);
+        //Get in position for wobble
+        ForwardForDistance(.5, .5);
         //Drop wobble goal in box 0
         dispenseWobble();
         //Reverse to position to pick up wobble goal 2
-        ForwardForDistance(0.5,-2.0);
-        sleep(2000);
-        //turnToAngle(225);
-        //intakeWobble()
-        //turnToAngle(-270)
-        //ForwardForDistance(0.5, 2.0)
-        //dispenseWobble()
-        //turnToAngle(-90)
+        ForwardForDistance(0.5,-4);
+        telemetry.addData("About to turn!", "");
+        telemetry.update();
+        turnToAngle(90, .5);
+        ForwardForDistance(.5, .5);
+        turnToAngle(100, .5);
+        sleep(1000);
+        intakeWobble();
+        turnToAngle(-180, .5);
+        ForwardForDistance(0.5, 4.5);
+        dispenseWobble();
+        WOBBLE.setDirection(DcMotorSimple.Direction.REVERSE);
+        WOBBLE.setPower(.7); //position = placeholder --> replace later after testing
     }
 
     private void oneRing() {
-        ForwardForDistance(0.5, 2.5);
-        TurnForDistance(1, -2);
+        turnToAngle(65, .5);
+        ForwardForDistance(.5, 2.5);
+        turnToAngle(-130, .5);
+        ForwardForDistance(.5, 2.5);
+        turnToAngle(65, .5);
+        sleep(1000);
+        //Shoot 3 rings
+        shootRing();
+        shootRing();
+        shootRing();
+        sleep(2000);
         SHOOTER.setPower(0);
+        INTAKE.setDirection(DcMotorSimple.Direction.REVERSE);
+        INTAKE.setPower(1);
+        ForwardForDistance(.5, -2);
+        sleep(1000);
+        ForwardForDistance(.5, 2);
+        sleep(1000);
+        //Shoot 1 ring
+        shootRing();
+        sleep(2000);
+        SHOOTER.setPower(0);
+        turnToAngle(35, .5);
+        ForwardForDistance(.5, 1);
         dispenseWobble();
-        sleep(2000);
-        WOBBLEBLOCK.setPosition(0);
-        sleep(2000);
-        ForwardForDistance(0.5, -1);
-        CrabForDistance(0.5,1);
+        ForwardForDistance(.5, -1);
     }
 
     private void fourRings() {
@@ -129,7 +179,7 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
         ForwardForDistance(0.3,-3.9);
     }
 
-    private void crabAround() {
+    private void turnAround() {
         TurnForDistance(1, 1);
         ForwardForDistance(.5, 1);
         TurnForDistance(1, -1);
@@ -157,8 +207,9 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
 
     private void intakeWobble() {
         WOBBLEBLOCK.setPosition(1);
+        sleep(1000);
         WOBBLE.setDirection(DcMotorSimple.Direction.REVERSE);
-        WOBBLE.setPower(1); //position = placeholder --> replace later after testing
+        WOBBLE.setPower(.7); //position = placeholder --> replace later after testing
         sleep(500);
     }
 
@@ -172,6 +223,7 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
         WOBBLE = hardwareMap.dcMotor.get("WOBBLE");
         WOBBLEBLOCK = hardwareMap.servo.get("WOBBLEBLOCK");
         FLICKER = hardwareMap.servo.get("FLICKER");
+        INTAKE = hardwareMap.dcMotor.get("INTAKE");
 
         RIGHTFRONT.setDirection(DcMotorSimple.Direction.REVERSE);
         RIGHTBACK.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -249,7 +301,7 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
             }
 
             SHOOTER.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            SHOOTER.setVelocity(1885);   // Ticks per second.
+            SHOOTER.setVelocity(1845);   // Ticks per second.
 
             if (numberRings.equals("None")) {
                 telemetry.addData("This is going to box A:", numberRings);
@@ -472,25 +524,55 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
 
     private void turnToAngle(double angle, double power) {
         resetAngle();
+        final double DISCREPANCY = angle / 9;
         telemetry.addData("TURNING FUNCTION angle degree", globalHeading);
         telemetry.update();
         telemetry.addData("get angle", getAngle());
         telemetry.update();
         sleep(2000);
-        while (getAngle() > (-1 * angle)) {
-            //set motor directions:
-            telemetry.addData("angle degree in loop", globalHeading);
-            telemetry.update();
-            RIGHTFRONT.setDirection(DcMotorSimple.Direction.REVERSE);
-            LEFTFRONT.setDirection(DcMotorSimple.Direction.FORWARD);
-            RIGHTBACK.setDirection(DcMotorSimple.Direction.REVERSE);
-            LEFTBACK.setDirection(DcMotorSimple.Direction.FORWARD);
+        RIGHTFRONT.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        LEFTBACK.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        LEFTFRONT.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        RIGHTBACK.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        //If turning to a negative angle, turn right
+        if (angle < 0) {
+            while (getAngle() > angle + DISCREPANCY) {
+                //set motor directions:
+                telemetry.addData("angle degree in right loop", globalHeading);
+                telemetry.update();
+                sleep(100);
+                // Turn right.
+                RIGHTFRONT.setDirection(DcMotorSimple.Direction.REVERSE);
+                LEFTFRONT.setDirection(DcMotorSimple.Direction.FORWARD);
+                RIGHTBACK.setDirection(DcMotorSimple.Direction.REVERSE);
+                LEFTBACK.setDirection(DcMotorSimple.Direction.FORWARD);
 
-            //set motor powers:
-            LEFTFRONT.setPower(power);
-            LEFTBACK.setPower(power);
-            RIGHTFRONT.setPower(power);
-            RIGHTBACK.setPower(power);
+                //set motor powers:
+                LEFTFRONT.setPower(power);
+                LEFTBACK.setPower(power);
+                RIGHTFRONT.setPower(power);
+                RIGHTBACK.setPower(power);
+            }
+        }
+        //If turning to a positive angle, turn left
+        else {
+            while (getAngle() < angle - DISCREPANCY) {
+                //set motor directions:
+                telemetry.addData("angle degree in left loop", globalHeading);
+                telemetry.update();
+                sleep(100);
+                // Turn left.
+                RIGHTFRONT.setDirection(DcMotorSimple.Direction.FORWARD);
+                LEFTFRONT.setDirection(DcMotorSimple.Direction.REVERSE);
+                RIGHTBACK.setDirection(DcMotorSimple.Direction.FORWARD);
+                LEFTBACK.setDirection(DcMotorSimple.Direction.REVERSE);
+
+                //set motor powers:
+                LEFTFRONT.setPower(power);
+                LEFTBACK.setPower(power);
+                RIGHTFRONT.setPower(power);
+                RIGHTBACK.setPower(power);
+            }
         }
         telemetry.addData("Broke loop", "");
         telemetry.update();
