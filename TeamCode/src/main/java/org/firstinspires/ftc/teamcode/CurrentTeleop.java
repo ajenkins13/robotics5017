@@ -72,10 +72,10 @@ public class CurrentTeleop extends LinearOpMode { //declaring class for whole pr
                     // The Y axis of a joystick ranges from -1 in its topmost position
                     // to +1 in its bottommost position. We negate this value so that
                     // the topmost position corresponds to maximum forward power.
-                    RIGHTFRONT.setPower(-gamepad1.right_trigger*.5);
-                    LEFTBACK.setPower(-gamepad1.right_trigger*.5);
-                    RIGHTBACK.setPower(gamepad1.right_trigger*.8);
-                    LEFTFRONT.setPower(gamepad1.right_trigger*.6);
+                    RIGHTFRONT.setPower(-gamepad1.right_trigger);
+                    LEFTBACK.setPower(-gamepad1.right_trigger);
+                    RIGHTBACK.setPower(gamepad1.right_trigger);
+                    LEFTFRONT.setPower(gamepad1.right_trigger);
                     //telemetry.addData("hi", "");
                    // telemetry.update();
                 }

@@ -123,8 +123,6 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
         dispenseWobble();
         //Reverse to position to pick up wobble goal 2
         ForwardForDistance(0.5,-4);
-        telemetry.addData("About to turn!", "");
-        telemetry.update();
         turnToAngle(90, .5);
         ForwardForDistance(.5, .5);
         turnToAngle(100, .5);
@@ -138,11 +136,20 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
     }
 
     private void oneRing() {
-        turnToAngle(65, .5);
-        ForwardForDistance(.5, 2.5);
-        turnToAngle(-130, .5);
-        ForwardForDistance(.5, 2.5);
-        turnToAngle(65, .5);
+        sleep(1000);
+        turnToAngle(40, .5);
+        sleep(1000);
+        ForwardForDistance(.5, 2.5);//17 in
+        sleep(1000);
+        turnToAngle(-80, .5);
+        sleep(1000);
+        ForwardForDistance(.5, 2.0);
+        sleep(1000);
+        turnToAngle(32, .5);
+        sleep(1000);
+        //ForwardForDistance(.5, .5);
+        //turnToAngle(5, .5);
+        ForwardForDistance(.5, .5);
         sleep(1000);
         //Shoot 3 rings
         shootRing();
@@ -161,9 +168,9 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
         sleep(2000);
         SHOOTER.setPower(0);
         turnToAngle(35, .5);
-        ForwardForDistance(.5, 1);
+        ForwardForDistance(.5, 1.5);
         dispenseWobble();
-        ForwardForDistance(.5, -1);
+        ForwardForDistance(.5, -1.5);
     }
 
     private void fourRings() {
@@ -264,7 +271,7 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
             telemetry.addData("right before opModeIsActive", "");
             if (opModeIsActive()) {
                 //goes forward before it looks for the rings
-                ForwardForDistance(0.5,1);
+                ForwardForDistance(0.5,1.2);
                 sleep(1000);
 
                 while (true) {
@@ -524,7 +531,6 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
 
     private void turnToAngle(double angle, double power) {
         resetAngle();
-        final double DISCREPANCY = angle / 9;
         telemetry.addData("TURNING FUNCTION angle degree", globalHeading);
         telemetry.update();
         telemetry.addData("get angle", getAngle());
@@ -536,7 +542,7 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
         RIGHTBACK.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         //If turning to a negative angle, turn right
         if (angle < 0) {
-            while (getAngle() > angle + DISCREPANCY) {
+            while (getAngle() > angle) {
                 //set motor directions:
                 telemetry.addData("angle degree in right loop", globalHeading);
                 telemetry.update();
@@ -556,7 +562,7 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
         }
         //If turning to a positive angle, turn left
         else {
-            while (getAngle() < angle - DISCREPANCY) {
+            while (getAngle() < angle) {
                 //set motor directions:
                 telemetry.addData("angle degree in left loop", globalHeading);
                 telemetry.update();
