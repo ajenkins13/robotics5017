@@ -121,13 +121,14 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
         ForwardForDistance(.5, .5);
         //Drop wobble goal in box 0
         dispenseWobble();
-        //Reverse to position to pick up wobble goal 2
+        //Reverse to position and turn to pick up wobble goal 2
         ForwardForDistance(0.5,-4);
         turnToAngle(90, .5);
         ForwardForDistance(.5, .5);
         turnToAngle(100, .5);
         sleep(1000);
         intakeWobble();
+        //Squae back up and go forward to box to dispense wobble
         turnToAngle(-180, .5);
         ForwardForDistance(0.5, 4.5);
         dispenseWobble();
@@ -136,37 +137,27 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
     }
 
     private void oneRing() {
-        sleep(1000);
-        turnToAngle(40, .5);
-        sleep(1000);
-        ForwardForDistance(.5, 2.5);//17 in
-        sleep(1000);
-        turnToAngle(-80, .5);
-        sleep(1000);
-        ForwardForDistance(.5, 2.0);
-        sleep(1000);
-        turnToAngle(32, .5);
-        sleep(1000);
-        //ForwardForDistance(.5, .5);
-        //turnToAngle(5, .5);
-        ForwardForDistance(.5, .5);
-        sleep(1000);
+        turnAround();
         //Shoot 3 rings
         shootRing();
         shootRing();
         shootRing();
         sleep(2000);
         SHOOTER.setPower(0);
+        //Turn on intake
         INTAKE.setDirection(DcMotorSimple.Direction.REVERSE);
         INTAKE.setPower(1);
+        //Move backwards to pick up lone ring
         ForwardForDistance(.5, -2);
         sleep(1000);
+        //Return to launch line
         ForwardForDistance(.5, 2);
         sleep(1000);
         //Shoot 1 ring
         shootRing();
         sleep(2000);
         SHOOTER.setPower(0);
+        //Turn and go forward to dispense wobble in box
         turnToAngle(35, .5);
         ForwardForDistance(.5, 1.5);
         dispenseWobble();
@@ -174,26 +165,45 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
     }
 
     private void fourRings() {
-        ForwardForDistance(0.5, 5.7);
-        CrabForDistance(1, -1.5);
-        TurnForDistance(1, -1);
+        turnAround();
+        //Shoot 3 rings
+        shootRing();
+        shootRing();
+        shootRing();
+        sleep(2000);
         SHOOTER.setPower(0);
+        //Go backwards to get near ring stack
+        ForwardForDistance(.5, -1.7);
+        sleep(1000);
+        //Knock off the fourth ring
+        INTAKE.setDirection(DcMotorSimple.Direction.REVERSE);
+        INTAKE.setPower(1);
+        sleep(2000);
+        ForwardForDistance(.5, -.3);
+        sleep(1000);
+        //Return to launch line
+        ForwardForDistance(.5, 2);
+        sleep(1000);
+        //Shoot 3 rings
+        shootRing();
+        shootRing();
+        shootRing();
+        sleep(2000);
+        SHOOTER.setPower(0);
+        //Go forward to dispense wobble
+        ForwardForDistance(.5, 2);
         dispenseWobble();
-        sleep(2000);
-        WOBBLEBLOCK.setPosition(0);
-        sleep(2000);
-        TurnForDistance(1, 1);
-        ForwardForDistance(0.3,-3.9);
+        ForwardForDistance(.5, -2);
     }
 
     private void turnAround() {
-        TurnForDistance(1, 1);
-        ForwardForDistance(.5, 1);
-        TurnForDistance(1, -1);
-        ForwardForDistance(.5, 3);
-        TurnForDistance(1, -1);
-        ForwardForDistance(.5, 1);
-        TurnForDistance(1, 1);
+        turnToAngle(40, .5);
+        ForwardForDistance(.5, 2.5);//17 in
+        turnToAngle(-80, .5);
+        ForwardForDistance(.5, 2.0);
+        turnToAngle(32, .5);
+        //Go up to launch line
+        ForwardForDistance(.5, .5);
     }
 
     private void dispenseWobble() {
