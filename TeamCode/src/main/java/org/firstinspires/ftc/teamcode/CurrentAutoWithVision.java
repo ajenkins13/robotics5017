@@ -148,6 +148,7 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
         INTAKE.setDirection(DcMotorSimple.Direction.REVERSE);
         INTAKE.setPower(1);
         //Move backwards to pick up lone ring
+        turnToAngle(-10, .5);
         ForwardForDistance(.5, -2);
         sleep(1000);
         //Return to launch line
@@ -173,7 +174,6 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
         sleep(2000);
         SHOOTER.setPower(0);
         //Go backwards to get near ring stack
-        turnToAngle(-10, .5);
         ForwardForDistance(.5, -1.7);
         sleep(1000);
         //Knock off the fourth ring
@@ -202,7 +202,7 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
         ForwardForDistance(.5, 2.5);//17 in
         turnToAngle(-80, .5);
         ForwardForDistance(.5, 2.5);
-        turnToAngle(30, .5);
+        turnToAngle(20, .5);
         //Go up to launch line
         ForwardForDistance(.5, .5);
     }
