@@ -70,6 +70,7 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
     private Servo WOBBLEBLOCK;
     private DcMotor INTAKE;
     private Servo SLICER;
+    private Servo MRFIXIT;
 
     //Vision
     private static final String TFOD_MODEL_ASSET = "UltimateGoal.tflite";
@@ -145,6 +146,8 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
         shootRing();
         sleep(2000);
         SHOOTER.setPower(0);
+        //Open Mr. Fixit
+        MRFIXIT.setPosition(0);
         //Turn on intake
         INTAKE.setDirection(DcMotorSimple.Direction.REVERSE);
         INTAKE.setPower(1);
@@ -153,6 +156,7 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
         sleep(1000);
         //Return to launch line
         ForwardForDistance(.5, 2);
+        MRFIXIT.setPosition(.5);
         sleep(1000);
         //Shoot 1 ring
         shootRing();
@@ -178,6 +182,7 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
         sleep(1000);
         //Knock off the fourth ring
         SLICER.setPosition(.5);
+        MRFIXIT.setPosition(0);
         INTAKE.setDirection(DcMotorSimple.Direction.REVERSE);
         INTAKE.setPower(1);
         sleep(2000);
@@ -185,6 +190,7 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
         sleep(1000);
         //Return to launch line
         ForwardForDistance(.5, 2);
+        MRFIXIT.setPosition(.5);
         sleep(1000);
         //Shoot 3 rings
         shootRing();
@@ -213,9 +219,9 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
         WOBBLE.setDirection(DcMotorSimple.Direction.FORWARD);
         WOBBLE.setPower(1); //position = placeholder --> replace later after testing
         sleep(500);
-        WOBBLE.setPower(0.5); //position = placeholder --> replace later after testing
-        sleep(200);
         WOBBLE.setPower(0.4); //position = placeholder --> replace later after testing
+        sleep(200);
+        WOBBLE.setPower(0.3); //position = placeholder --> replace later after testing
         sleep(200);
         WOBBLE.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         WOBBLE.setPower(0);
@@ -228,7 +234,7 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
         WOBBLEBLOCK.setPosition(1);
         sleep(1000);
         WOBBLE.setDirection(DcMotorSimple.Direction.REVERSE);
-        WOBBLE.setPower(.7); //position = placeholder --> replace later after testing
+        WOBBLE.setPower(.6); //position = placeholder --> replace later after testing
         sleep(500);
     }
 
@@ -244,6 +250,7 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
         FLICKER = hardwareMap.servo.get("FLICKER");
         INTAKE = hardwareMap.dcMotor.get("INTAKE");
         SLICER = hardwareMap.servo.get("SLICER");
+        MRFIXIT = hardwareMap.servo.get("MRFIXIT");
 
         RIGHTFRONT.setDirection(DcMotorSimple.Direction.REVERSE);
         RIGHTBACK.setDirection(DcMotorSimple.Direction.REVERSE);
