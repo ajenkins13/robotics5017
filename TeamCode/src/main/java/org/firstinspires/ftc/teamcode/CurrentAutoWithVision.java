@@ -202,8 +202,8 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
         turnToAngle(40, .5);
         ForwardForDistance(.5, 2.5);//17 in
         turnToAngle(-80, .5);
-        ForwardForDistance(.5, 2.0);
-        turnToAngle(32, .5);
+        ForwardForDistance(.5, 2.5);
+        turnToAngle(40, .5);
         //Go up to launch line
         ForwardForDistance(.5, .5);
     }
@@ -285,7 +285,6 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
             if (opModeIsActive()) {
                 //goes forward before it looks for the rings
                 ForwardForDistance(0.5,1.2);
-                sleep(1000);
 
                 while (true) {
 
