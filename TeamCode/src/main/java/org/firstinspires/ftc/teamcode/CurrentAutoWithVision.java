@@ -69,6 +69,7 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
     private DcMotor WOBBLE;
     private Servo WOBBLEBLOCK;
     private DcMotor INTAKE;
+    private Servo SLICER;
 
     //Vision
     private static final String TFOD_MODEL_ASSET = "UltimateGoal.tflite";
@@ -109,7 +110,7 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
 
     private void zeroRings() {
         //Go forward to launch line
-        ForwardForDistance(.5, 4.0);
+        ForwardForDistance(.5, 3.7);
         sleep(1000);
         //Shoot 3 rings
         shootRing();
@@ -118,18 +119,18 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
         sleep(2000);
         SHOOTER.setPower(0);
         //Get in position for wobble
-        ForwardForDistance(.5, .5);
+        ForwardForDistance(.5, .8);
         //Drop wobble goal in box 0
         dispenseWobble();
         //Reverse to position and turn to pick up wobble goal 2
         ForwardForDistance(0.5,-4);
         turnToAngle(90, .5);
         ForwardForDistance(.5, .5);
-        turnToAngle(100, .5);
+        turnToAngle(90, .5);
         sleep(1000);
         intakeWobble();
-        //Squae back up and go forward to box to dispense wobble
-        turnToAngle(-180, .5);
+        //Square back up and go forward to box to dispense wobble
+        turnToAngle(-210, .5);
         ForwardForDistance(0.5, 4.5);
         dispenseWobble();
         WOBBLE.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -176,6 +177,7 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
         ForwardForDistance(.5, -1.7);
         sleep(1000);
         //Knock off the fourth ring
+        SLICER.setPosition(.5);
         INTAKE.setDirection(DcMotorSimple.Direction.REVERSE);
         INTAKE.setPower(1);
         sleep(2000);
@@ -241,6 +243,7 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
         WOBBLEBLOCK = hardwareMap.servo.get("WOBBLEBLOCK");
         FLICKER = hardwareMap.servo.get("FLICKER");
         INTAKE = hardwareMap.dcMotor.get("INTAKE");
+        SLICER = hardwareMap.servo.get("SLICER");
 
         RIGHTFRONT.setDirection(DcMotorSimple.Direction.REVERSE);
         RIGHTBACK.setDirection(DcMotorSimple.Direction.REVERSE);
