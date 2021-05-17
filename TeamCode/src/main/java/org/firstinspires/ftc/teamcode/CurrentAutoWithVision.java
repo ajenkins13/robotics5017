@@ -152,12 +152,12 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
         INTAKE.setDirection(DcMotorSimple.Direction.REVERSE);
         INTAKE.setPower(1);
         //Move backwards to pick up lone ring
-        turnToAngle(-10, .5);
         ForwardForDistance(.5, -2);
+        SHOOTER.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        SHOOTER.setVelocity(1845);   // Ticks per second.
         sleep(1000);
         //Return to launch line
-        ForwardForDistance(.5, 2);
-        MRFIXIT.setPosition(.5);
+        ForwardForDistance(.5, 1.75);
         sleep(1000);
         //Shoot 1 ring
         shootRing();
@@ -191,7 +191,6 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
         sleep(1000);
         //Return to launch line
         ForwardForDistance(.5, 2);
-        MRFIXIT.setPosition(.5);
         sleep(1000);
         //Shoot 3 rings
         shootRing();
@@ -210,7 +209,7 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
         ForwardForDistance(.5, 2.5);//17 in
         turnToAngle(-80, .5);
         ForwardForDistance(.5, 2.5);
-        turnToAngle(20, .5);
+        turnToAngle(30, .5);
         //Go up to launch line
         ForwardForDistance(.5, .5);
     }
@@ -260,7 +259,22 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
         //calibrate gyro and make sure its connected
         initGyro();
 
+        if (tfod != null) {
+            tfod.activate();
+
+            // The TensorFlow software will scale the input images from the camera to a lower resolution.
+            // This can result in lower detection accuracy at longer distances (> 55cm or 22").
+            // If your target is at distance greater than 50 cm (20") you can adjust the magnification value
+            // to artificially zoom in to the center of image.  For best results, the "aspectRatio" argument
+            // should be set to the value of the images used to create the TensorFlow Object Detection model
+            // (typically 1.78 or 16/9).
+
+            // Uncomment the following line if you want to adjust the magnification and/or the aspect ratio of the input images.
+            //tfod.setZoom(2.5, 1.78);
+        }
+
         waitForStart();
+
 
         if (opModeIsActive()) {
 
@@ -272,19 +286,7 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
              * Activate TensorFlow Object Detection before we wait for the start command.
              * Do it here so that the Camera Stream window will have the TensorFlow annotations visible.
              **/
-            if (tfod != null) {
-                tfod.activate();
 
-                // The TensorFlow software will scale the input images from the camera to a lower resolution.
-                // This can result in lower detection accuracy at longer distances (> 55cm or 22").
-                // If your target is at distance greater than 50 cm (20") you can adjust the magnification value
-                // to artificially zoom in to the center of image.  For best results, the "aspectRatio" argument
-                // should be set to the value of the images used to create the TensorFlow Object Detection model
-                // (typically 1.78 or 16/9).
-
-                // Uncomment the following line if you want to adjust the magnification and/or the aspect ratio of the input images.
-                //tfod.setZoom(2.5, 1.78);
-            }
 
 
             String numberRings = "None";
