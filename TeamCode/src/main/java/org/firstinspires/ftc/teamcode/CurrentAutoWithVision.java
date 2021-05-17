@@ -285,6 +285,7 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
             if (opModeIsActive()) {
                 //goes forward before it looks for the rings
                 ForwardForDistance(0.5,1.2);
+                sleep(1000);
 
                 while (true) {
 
