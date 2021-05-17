@@ -542,11 +542,6 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
 
     private void turnToAngle(double angle, double power) {
         resetAngle();
-        telemetry.addData("TURNING FUNCTION angle degree", globalHeading);
-        telemetry.update();
-        telemetry.addData("get angle", getAngle());
-        telemetry.update();
-        sleep(2000);
         RIGHTFRONT.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         LEFTBACK.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         LEFTFRONT.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
