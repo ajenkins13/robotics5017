@@ -201,7 +201,7 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
         ForwardForDistance(.5, 2.5);//17 in
         turnToAngle(-80, .5);
         ForwardForDistance(.5, 2.5);
-        turnToAngle(40, .5);
+        turnToAngle(35, .5);
         //Go up to launch line
         ForwardForDistance(.5, .5);
     }
