@@ -111,28 +111,28 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
 
     private void zeroRings() {
         //Go forward to launch line
-        ForwardForDistance(.5, 3.7);
+        ForwardForDistance(0.7, 3.5);
         sleep(1000);
         //Shoot 3 rings
         shootRing();
         shootRing();
         shootRing();
-        sleep(2000);
+        sleep(1000);
         SHOOTER.setPower(0);
         //Get in position for wobble
-        ForwardForDistance(.5, .8);
+        ForwardForDistance(0.7, .8);
         //Drop wobble goal in box 0
         dispenseWobble();
         //Reverse to position and turn to pick up wobble goal 2
-        ForwardForDistance(0.5,-4);
-        turnToAngle(90, .5);
-        ForwardForDistance(.5, .5);
-        turnToAngle(90, .5);
+        ForwardForDistance(0.7,-4);
+        turnToAngle(90, 0.5);
+        ForwardForDistance(0.7, .5);
+        turnToAngle(90, 0.5);
         sleep(1000);
         intakeWobble();
         //Square back up and go forward to box to dispense wobble
         turnToAngle(-210, .5);
-        ForwardForDistance(0.5, 4.5);
+        ForwardForDistance(0.7, 4);
         dispenseWobble();
         WOBBLE.setDirection(DcMotorSimple.Direction.REVERSE);
         WOBBLE.setPower(.5); //position = placeholder --> replace later after testing
@@ -153,12 +153,12 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
         INTAKE.setDirection(DcMotorSimple.Direction.REVERSE);
         INTAKE.setPower(1);
         //Move backwards to pick up lone ring
-        ForwardForDistance(.5, -2);
+        ForwardForDistance(.7, -1.3);
         SHOOTER.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         SHOOTER.setVelocity(1845);   // Ticks per second.
         sleep(1000);
         //Return to launch line
-        ForwardForDistance(.5, 1.75);
+        ForwardForDistance(.7, 1.75);
         sleep(1000);
         //Shoot 1 ring
         shootRing();
@@ -166,9 +166,9 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
         SHOOTER.setPower(0);
         //Turn and go forward to dispense wobble in box
         turnToAngle(35, .5);
-        ForwardForDistance(.5, 1.5);
+        ForwardForDistance(.7, 1.5);
         dispenseWobble();
-        ForwardForDistance(.5, -1.5);
+        ForwardForDistance(.7, -1.5);
     }
 
     private void fourRings() {
@@ -177,39 +177,39 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
         shootRing();
         shootRing();
         shootRing();
-        sleep(2000);
+        sleep(1000);
         SHOOTER.setPower(0);
         //Go backwards to get near ring stack
-        ForwardForDistance(.5, -1.7);
-        sleep(1000);
+        ForwardForDistance(.7, -1);
         //Knock off the fourth ring
         SLICER.setPosition(.5);
+        sleep(1000);
+        ForwardForDistance(.7, -1);
         MRFIXIT.setPosition(0);
         INTAKE.setDirection(DcMotorSimple.Direction.REVERSE);
         INTAKE.setPower(1);
+        //wait for intake to take rings
         sleep(2000);
-        ForwardForDistance(.5, -.3);
-        sleep(1000);
         //Return to launch line
-        ForwardForDistance(.5, 2);
-        sleep(1000);
+        ForwardForDistance(.7, 1.2);
         //Shoot 3 rings
         shootRing();
         shootRing();
         shootRing();
-        sleep(2000);
         SHOOTER.setPower(0);
+        INTAKE.setPower(0);
         //Go forward to dispense wobble
-        ForwardForDistance(.5, 2);
+        ForwardForDistance(.7, 3.5);
         dispenseWobble();
-        ForwardForDistance(.5, -2);
+        ForwardForDistance(.7, -2.5);
+        SLICER.setPosition(1);
     }
 
     private void turnAround() {
         turnToAngle(40, .5);
         ForwardForDistance(.5, 2.5);//17 in
         turnToAngle(-80, .5);
-        ForwardForDistance(.5, 2.5);
+        ForwardForDistance(.5, 2.8);
         turnToAngle(30, .5);
         //Go up to launch line
         ForwardForDistance(.5, .5);
@@ -633,7 +633,7 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
             idle();
         }
 
-        telemetry.addData("IMU calibration status", imu.getCalibrationStatus().toString());
+        telemetry.addData("Gyro has finished init, ready to press play", "" );
         telemetry.update();
     }
 
