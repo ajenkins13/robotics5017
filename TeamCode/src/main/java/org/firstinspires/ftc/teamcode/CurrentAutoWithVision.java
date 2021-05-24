@@ -111,28 +111,28 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
 
     private void zeroRings() {
         //Go forward to launch line
-        ForwardForDistance(.5, 3.7);
+        ForwardForDistance(0.7, 3.7);
         sleep(1000);
         //Shoot 3 rings
         shootRing();
         shootRing();
         shootRing();
-        sleep(2000);
+        sleep(1000);
         SHOOTER.setPower(0);
         //Get in position for wobble
-        ForwardForDistance(.5, .8);
+        ForwardForDistance(0.7, .8);
         //Drop wobble goal in box 0
         dispenseWobble();
         //Reverse to position and turn to pick up wobble goal 2
-        ForwardForDistance(0.5,-4);
-        turnToAngle(90, .5);
-        ForwardForDistance(.5, .5);
-        turnToAngle(90, .5);
+        ForwardForDistance(0.7,-4);
+        turnToAngle(90, 0.7);
+        ForwardForDistance(0.7, .5);
+        turnToAngle(90, 0.7);
         sleep(1000);
         intakeWobble();
         //Square back up and go forward to box to dispense wobble
-        turnToAngle(-210, .5);
-        ForwardForDistance(0.5, 4.5);
+        turnToAngle(-210, .7);
+        ForwardForDistance(0.7, 4.5);
         dispenseWobble();
         WOBBLE.setDirection(DcMotorSimple.Direction.REVERSE);
         WOBBLE.setPower(.7); //position = placeholder --> replace later after testing
