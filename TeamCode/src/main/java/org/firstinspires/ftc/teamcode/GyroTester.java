@@ -60,6 +60,7 @@ public class GyroTester extends LinearOpMode { //creating public class, extensio
     private Servo FLICKER;
     private DcMotor WOBBLE;
     private Servo WOBBLEBLOCK;
+    private PIDController pidRotate;
 
     @Override
     public void runOpMode() {
@@ -68,7 +69,7 @@ public class GyroTester extends LinearOpMode { //creating public class, extensio
         RIGHTBACK = hardwareMap.dcMotor.get("RIGHTBACK");
         LEFTFRONT = hardwareMap.dcMotor.get("LEFTFRONT");
         LEFTBACK = hardwareMap.dcMotor.get("LEFTBACK");
-        SHOOTER = (DcMotorEx)(hardwareMap.dcMotor.get("SHOOTER"));
+        SHOOTER = (DcMotorEx) (hardwareMap.dcMotor.get("SHOOTER"));
         WOBBLE = hardwareMap.dcMotor.get("WOBBLE");
         WOBBLEBLOCK = hardwareMap.servo.get("WOBBLEBLOCK");
         FLICKER = hardwareMap.servo.get("FLICKER");
@@ -96,9 +97,52 @@ public class GyroTester extends LinearOpMode { //creating public class, extensio
             telemetry.addData("Angle measure:", "" + angleZ + "," + angleY + "," + angleX);
             telemetry.update();
 
-            turnToAngle(90,0.5);
+
+            BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+
+            parameters.mode = BNO055IMU.SensorMode.IMU;
+            parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+            parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+            parameters.loggingEnabled = false;
+
+            // Retrieve and initialize the IMU. We expect the IMU to be attached to an I2C port
+            // on a Core Device Interface Module, configured to be a sensor of type "AdaFruit IMU",
+            // and named "imu".
+            imu = hardwareMap.get(BNO055IMU.class, "imu");
+
+            imu.initialize(parameters);
+
+            // Set PID proportional value to start reducing power at about 50 degrees of rotation.
+            // P by itself may stall before turn completed so we add a bit of I (integral) which
+            // causes the PID controller to gently increase power if the turn is not completed.
+            pidRotate = new PIDController(.003, .00003, 0);
+
+            telemetry.addData("Mode", "calibrating...");
+            telemetry.update();
+
+            // make sure the imu gyro is calibrated before continuing.
+            while (!isStopRequested() && !imu.isGyroCalibrated()) {
+                sleep(50);
+                idle();
+            }
+
+            telemetry.addData("Mode", "waiting for start");
+            telemetry.addData("imu calib status", imu.getCalibrationStatus().toString());
+            telemetry.update();
+
+            // wait for start button.
+
+            waitForStart();
+
+            telemetry.addData("Mode", "running");
+            telemetry.update();
+
+            sleep(1000);
+
+            rotate(90, .5);
 
         }
+
     }
 
     /**
@@ -137,61 +181,6 @@ public class GyroTester extends LinearOpMode { //creating public class, extensio
         return globalHeading;
     }
 
-    private void turnToAngle(double angle, double power) {
-        resetAngle();
-        telemetry.addData("TURNING FUNCTION angle degree", globalHeading);
-        telemetry.update();
-        telemetry.addData("get angle", getAngle());
-        telemetry.update();
-        sleep(2000);
-        //If turning to a negative angle, turn right
-        if (angle < 0) {
-            while (getAngle() > angle) {
-                //set motor directions:
-                telemetry.addData("angle degree in right loop", globalHeading);
-                telemetry.update();
-                sleep(2000);
-                // Turn right.
-                RIGHTFRONT.setDirection(DcMotorSimple.Direction.REVERSE);
-                LEFTFRONT.setDirection(DcMotorSimple.Direction.FORWARD);
-                RIGHTBACK.setDirection(DcMotorSimple.Direction.REVERSE);
-                LEFTBACK.setDirection(DcMotorSimple.Direction.FORWARD);
-
-                //set motor powers:
-                LEFTFRONT.setPower(power);
-                LEFTBACK.setPower(power);
-                RIGHTFRONT.setPower(power);
-                RIGHTBACK.setPower(power);
-            }
-        }
-        //If turning to a positive angle, turn left
-        else {
-            while (getAngle() < angle) {
-                //set motor directions:
-                telemetry.addData("angle degree in left loop", globalHeading);
-                telemetry.update();
-                sleep(2000);
-                // Turn left.
-                RIGHTFRONT.setDirection(DcMotorSimple.Direction.FORWARD);
-                LEFTFRONT.setDirection(DcMotorSimple.Direction.REVERSE);
-                RIGHTBACK.setDirection(DcMotorSimple.Direction.FORWARD);
-                LEFTBACK.setDirection(DcMotorSimple.Direction.REVERSE);
-
-                //set motor powers:
-                LEFTFRONT.setPower(power);
-                LEFTBACK.setPower(power);
-                RIGHTFRONT.setPower(power);
-                RIGHTBACK.setPower(power);
-            }
-        }
-        telemetry.addData("Broke loop", "");
-        telemetry.update();
-        LEFTFRONT.setPower(0);
-        LEFTBACK.setPower(0);
-        RIGHTFRONT.setPower(0);
-        RIGHTBACK.setPower(0);
-    }
-
     /*
     This function is called at the beginning of the program to activate and calibrate
     the IMU Integrated Gyro.
@@ -205,7 +194,7 @@ public class GyroTester extends LinearOpMode { //creating public class, extensio
         parameters.loggingTag          = "IMU";
         parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
         //
-        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        imu = hardwareMap.get(BNO055IMU.class, "imu 1");
         imu.initialize(parameters);
 
         telemetry.addData("Mode", "Calibrating IMU...");
@@ -245,5 +234,121 @@ public class GyroTester extends LinearOpMode { //creating public class, extensio
         RIGHTBACK.setPower(input);
     }
 
+    /**
+     * Rotate left or right the number of degrees. Does not support turning more than 359 degrees.
+     * @param degrees Degrees to turn, + is left - is right
+     */
+    private void rotate(int degrees, double power)
+    {
+        telemetry.addData("Into the rotate function!", "");
+        telemetry.update();
+        // restart imu angle tracking.
+        resetAngle();
 
+        // if degrees > 359 we cap at 359 with same sign as original degrees.
+        if (Math.abs(degrees) > 359) degrees = (int) Math.copySign(359, degrees);
+
+        // start pid controller. PID controller will monitor the turn angle with respect to the
+        // target angle and reduce power as we approach the target angle. This is to prevent the
+        // robots momentum from overshooting the turn after we turn off the power. The PID controller
+        // reports onTarget() = true when the difference between turn angle and target angle is within
+        // 1% of target (tolerance) which is about 1 degree. This helps prevent overshoot. Overshoot is
+        // dependant on the motor and gearing configuration, starting power, weight of the robot and the
+        // on target tolerance. If the controller overshoots, it will reverse the sign of the output
+        // turning the robot back toward the setpoint value.
+
+        pidRotate.reset();
+        pidRotate.setSetpoint(degrees);
+        pidRotate.setInputRange(0, degrees);
+        pidRotate.setOutputRange(0, power);
+        pidRotate.setTolerance(1);
+        pidRotate.enable();
+
+        // getAngle() returns + when rotating counter clockwise (left) and - when rotating
+        // clockwise (right).
+
+        // rotate until turn is completed.
+
+        if (degrees < 0)
+        {
+            telemetry.addData("degrees are less than 0", "");
+            telemetry.update();
+            sleep(2000);
+            // On right turn we have to get off zero first.
+            while (opModeIsActive() && getAngle() == 0)
+            {
+                telemetry.addData("Getting off zero on right turn", "");
+                telemetry.update();
+                sleep(2000);
+                RIGHTFRONT.setDirection(DcMotorSimple.Direction.REVERSE);
+                LEFTFRONT.setDirection(DcMotorSimple.Direction.FORWARD);
+                RIGHTBACK.setDirection(DcMotorSimple.Direction.REVERSE);
+                LEFTBACK.setDirection(DcMotorSimple.Direction.FORWARD);
+
+                //set motor powers:
+                LEFTFRONT.setPower(.2);
+                LEFTBACK.setPower(.2);
+                RIGHTFRONT.setPower(.2);
+                RIGHTBACK.setPower(.2);
+
+                sleep(100);
+            }
+            telemetry.addData("angle = " + getAngle(),"");
+            telemetry.update();
+            sleep(2000);
+            do
+            {
+                telemetry.addData("In the do part of right turn while loop, m_error = " + pidRotate.m_error, "");
+                telemetry.update();
+                sleep(2000);
+                power = pidRotate.performPID(getAngle()); // power will be - on right turn.
+                telemetry.addData("power = " + power, "");
+                telemetry.update();
+                sleep(2000);
+                RIGHTFRONT.setDirection(DcMotorSimple.Direction.REVERSE);
+                LEFTFRONT.setDirection(DcMotorSimple.Direction.FORWARD);
+                RIGHTBACK.setDirection(DcMotorSimple.Direction.REVERSE);
+                LEFTBACK.setDirection(DcMotorSimple.Direction.FORWARD);
+
+                //set motor powers:
+                LEFTFRONT.setPower(power);
+                LEFTBACK.setPower(power);
+                RIGHTFRONT.setPower(power);
+                RIGHTBACK.setPower(power);
+            } while (opModeIsActive() && !pidRotate.onTarget());
+        }
+        else    // left turn.
+            do
+            {
+                telemetry.addData("degree is greater than 0, left turn, m_error = " + pidRotate.m_error + "angle = " + getAngle(), "");
+                telemetry.update();
+                sleep(2000);
+                power = pidRotate.performPID(getAngle()); // power will be + on left turn.
+                RIGHTFRONT.setDirection(DcMotorSimple.Direction.FORWARD);
+                LEFTFRONT.setDirection(DcMotorSimple.Direction.REVERSE);
+                RIGHTBACK.setDirection(DcMotorSimple.Direction.FORWARD);
+                LEFTBACK.setDirection(DcMotorSimple.Direction.REVERSE);
+
+                //set motor powers:
+                LEFTFRONT.setPower(power);
+                LEFTBACK.setPower(power);
+                RIGHTFRONT.setPower(power);
+                RIGHTBACK.setPower(power);
+            } while (opModeIsActive() && !pidRotate.onTarget());
+
+        // turn the motors off.
+        LEFTFRONT.setPower(0);
+        LEFTBACK.setPower(0);
+        RIGHTFRONT.setPower(0);
+        RIGHTBACK.setPower(0);
+
+        // wait for rotation to stop.
+        sleep(500);
+
+        // reset angle tracking on new heading.
+        resetAngle();
+        telemetry.addData("reset angle", "");
+        telemetry.update();
+        sleep(2000);
+    }
 }

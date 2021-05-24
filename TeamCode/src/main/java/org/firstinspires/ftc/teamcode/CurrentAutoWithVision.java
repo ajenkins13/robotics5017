@@ -135,7 +135,8 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
         ForwardForDistance(0.5, 4.5);
         dispenseWobble();
         WOBBLE.setDirection(DcMotorSimple.Direction.REVERSE);
-        WOBBLE.setPower(.7); //position = placeholder --> replace later after testing
+        WOBBLE.setPower(.5); //position = placeholder --> replace later after testing
+        turnToAngle(45, .5);
     }
 
     private void oneRing() {
