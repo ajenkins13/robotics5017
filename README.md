@@ -1,4 +1,5 @@
-All robot code for 5017 2020-
+All robot code for 5017 2019-2020.
+
 ## NOTICE
 
 This repository contains the public FTC SDK for the Ultimate Goal (2020-2021) competition season.
