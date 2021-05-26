@@ -79,7 +79,7 @@ public class GyroTester extends LinearOpMode { //creating public class, extensio
 
         waitForStart();
 
-        if (opModeIsActive()) {
+        while (opModeIsActive()) {
 
             //calibrate gyro and make sure its connected
             initGyro();
@@ -280,10 +280,10 @@ public class GyroTester extends LinearOpMode { //creating public class, extensio
                 telemetry.addData("Getting off zero on right turn", "");
                 telemetry.update();
                 sleep(2000);
-                RIGHTFRONT.setDirection(DcMotorSimple.Direction.REVERSE);
-                LEFTFRONT.setDirection(DcMotorSimple.Direction.FORWARD);
-                RIGHTBACK.setDirection(DcMotorSimple.Direction.REVERSE);
-                LEFTBACK.setDirection(DcMotorSimple.Direction.FORWARD);
+                RIGHTFRONT.setDirection(DcMotorSimple.Direction.FORWARD);
+                LEFTFRONT.setDirection(DcMotorSimple.Direction.REVERSE);
+                RIGHTBACK.setDirection(DcMotorSimple.Direction.FORWARD);
+                LEFTBACK.setDirection(DcMotorSimple.Direction.REVERSE);
 
                 //set motor powers:
                 LEFTFRONT.setPower(.2);
@@ -305,10 +305,10 @@ public class GyroTester extends LinearOpMode { //creating public class, extensio
                 telemetry.addData("power = " + power, "");
                 telemetry.update();
                 sleep(2000);
-                RIGHTFRONT.setDirection(DcMotorSimple.Direction.REVERSE);
-                LEFTFRONT.setDirection(DcMotorSimple.Direction.FORWARD);
-                RIGHTBACK.setDirection(DcMotorSimple.Direction.REVERSE);
-                LEFTBACK.setDirection(DcMotorSimple.Direction.FORWARD);
+                RIGHTFRONT.setDirection(DcMotorSimple.Direction.FORWARD);
+                LEFTFRONT.setDirection(DcMotorSimple.Direction.REVERSE);
+                RIGHTBACK.setDirection(DcMotorSimple.Direction.FORWARD);
+                LEFTBACK.setDirection(DcMotorSimple.Direction.REVERSE);
 
                 //set motor powers:
                 LEFTFRONT.setPower(power);

@@ -32,6 +32,7 @@ public class CurrentTeleop extends LinearOpMode { //declaring class for whole pr
     private Servo FLICKER;
     private Servo KICKOUT;
     private Servo MRFIXIT;
+    private Servo SLICER;
 
     @Override
     public void runOpMode() {
@@ -46,6 +47,7 @@ public class CurrentTeleop extends LinearOpMode { //declaring class for whole pr
         FLICKER = hardwareMap.servo.get("FLICKER");
         KICKOUT = hardwareMap.servo.get("KICKOUT");
         MRFIXIT = hardwareMap.servo.get("MRFIXIT");
+        SLICER = hardwareMap.servo.get("SLICER");
 
         sleep(1000);
 
@@ -136,6 +138,10 @@ public class CurrentTeleop extends LinearOpMode { //declaring class for whole pr
                     MRFIXIT.setPosition(.5);//trap it
                     sleep( 500);
                     MRFIXIT.setPosition(0);//trap it
+                }
+
+                if (gamepad1.right_bumper == true) {
+                    SLICER.setPosition(.5);
                 }
 
                 if (gamepad2.y) {

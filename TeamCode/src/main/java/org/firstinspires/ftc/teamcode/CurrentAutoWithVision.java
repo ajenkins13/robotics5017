@@ -111,13 +111,13 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
 
     private void zeroRings() {
         //Go forward to launch line
-        ForwardForDistance(0.7, 3.5);
+        ForwardForDistance(0.5, 3.4);
         sleep(1000);
         //Shoot 3 rings
         shootRing();
         shootRing();
         shootRing();
-        sleep(1000);
+        //sleep(500);
         SHOOTER.setPower(0);
         //Get in position for wobble
         ForwardForDistance(0.7, .8);
@@ -126,13 +126,13 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
         //Reverse to position and turn to pick up wobble goal 2
         ForwardForDistance(0.7,-4);
         turnToAngle(90, 0.5);
-        ForwardForDistance(0.7, .5);
+        ForwardForDistance(0.5, .45);
         turnToAngle(90, 0.5);
-        sleep(1000);
+        sleep(500);
         intakeWobble();
         //Square back up and go forward to box to dispense wobble
         turnToAngle(-210, .5);
-        ForwardForDistance(0.7, 4);
+        ForwardForDistance(0.7, 3.5);
         dispenseWobble();
         WOBBLE.setDirection(DcMotorSimple.Direction.REVERSE);
         WOBBLE.setPower(.5); //position = placeholder --> replace later after testing
@@ -145,7 +145,6 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
         shootRing();
         shootRing();
         shootRing();
-        sleep(2000);
         SHOOTER.setPower(0);
         //Open Mr. Fixit
         MRFIXIT.setPosition(0);
@@ -153,7 +152,7 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
         INTAKE.setDirection(DcMotorSimple.Direction.REVERSE);
         INTAKE.setPower(1);
         //Move backwards to pick up lone ring
-        ForwardForDistance(.7, -1.3);
+        ForwardForDistance(.7, -1.5);
         SHOOTER.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         SHOOTER.setVelocity(1845);   // Ticks per second.
         sleep(1000);
@@ -165,10 +164,10 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
         sleep(2000);
         SHOOTER.setPower(0);
         //Turn and go forward to dispense wobble in box
-        turnToAngle(35, .5);
+        turnToAngle(25, .5);
         ForwardForDistance(.7, 1.5);
         dispenseWobble();
-        ForwardForDistance(.7, -1.5);
+        ForwardForDistance(.7, -1);
     }
 
     private void fourRings() {
@@ -183,15 +182,18 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
         ForwardForDistance(.7, -1);
         //Knock off the fourth ring
         SLICER.setPosition(.5);
-        sleep(1000);
-        ForwardForDistance(.7, -1);
-        MRFIXIT.setPosition(0);
+        sleep(500);
         INTAKE.setDirection(DcMotorSimple.Direction.REVERSE);
         INTAKE.setPower(1);
+        MRFIXIT.setPosition(0);
+        ForwardForDistance(.7, -1.3);
+        ForwardForDistance(.3, -.4);
         //wait for intake to take rings
         sleep(2000);
+        SHOOTER.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        SHOOTER.setVelocity(1825);
         //Return to launch line
-        ForwardForDistance(.7, 1.2);
+        ForwardForDistance(.7, 1.8);
         //Shoot 3 rings
         shootRing();
         shootRing();
@@ -199,9 +201,9 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
         SHOOTER.setPower(0);
         INTAKE.setPower(0);
         //Go forward to dispense wobble
-        ForwardForDistance(.7, 3.5);
+        ForwardForDistance(.7, 4.5);
         dispenseWobble();
-        ForwardForDistance(.7, -2.5);
+        ForwardForDistance(.7, -3.5);
         SLICER.setPosition(1);
     }
 
@@ -235,7 +237,7 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
         WOBBLEBLOCK.setPosition(1);
         sleep(1000);
         WOBBLE.setDirection(DcMotorSimple.Direction.REVERSE);
-        WOBBLE.setPower(.6); //position = placeholder --> replace later after testing
+        WOBBLE.setPower(.5); //position = placeholder --> replace later after testing
         sleep(500);
     }
 
@@ -332,7 +334,7 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
             }
 
             SHOOTER.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            SHOOTER.setVelocity(1845);   // Ticks per second.
+            SHOOTER.setVelocity(1825);   // Ticks per second.
 
             if (numberRings.equals("None")) {
                 telemetry.addData("This is going to box A:", numberRings);
@@ -358,7 +360,7 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
         FLICKER.setPosition(.2);
         sleep(500);
         FLICKER.setPosition(.7);
-        sleep(2000);
+        sleep(750);
     }
 
     private void stopEverything() {
