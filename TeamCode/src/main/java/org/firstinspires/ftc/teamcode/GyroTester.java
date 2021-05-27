@@ -139,7 +139,7 @@ public class GyroTester extends LinearOpMode { //creating public class, extensio
 
             sleep(1000);
 
-            rotate(90, .5);
+            rotate(-90, 1);
 
         }
 
@@ -240,6 +240,11 @@ public class GyroTester extends LinearOpMode { //creating public class, extensio
      */
     private void rotate(int degrees, double power)
     {
+        LEFTFRONT.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        LEFTBACK.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        RIGHTFRONT.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        RIGHTBACK.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
         telemetry.addData("Into the rotate function!", "");
         telemetry.update();
         // restart imu angle tracking.
@@ -281,15 +286,15 @@ public class GyroTester extends LinearOpMode { //creating public class, extensio
                 telemetry.update();
                 sleep(2000);
                 RIGHTFRONT.setDirection(DcMotorSimple.Direction.FORWARD);
-                LEFTFRONT.setDirection(DcMotorSimple.Direction.REVERSE);
+                LEFTFRONT.setDirection(DcMotorSimple.Direction.FORWARD);
                 RIGHTBACK.setDirection(DcMotorSimple.Direction.FORWARD);
-                LEFTBACK.setDirection(DcMotorSimple.Direction.REVERSE);
+                LEFTBACK.setDirection(DcMotorSimple.Direction.FORWARD);
 
                 //set motor powers:
                 LEFTFRONT.setPower(.2);
                 LEFTBACK.setPower(.2);
-                RIGHTFRONT.setPower(.2);
-                RIGHTBACK.setPower(.2);
+                RIGHTFRONT.setPower(-.2);
+                RIGHTBACK.setPower(-.2);
 
                 sleep(100);
             }
