@@ -93,6 +93,7 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
     BNO055IMU imu;  // Reference to IMU device.
     Orientation angles;
     double globalHeading;
+    double totalAngle;
     Acceleration gravity;
 
     /**
@@ -113,6 +114,9 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
         //Go forward to launch line
         ForwardForDistance(0.5, 3.4);
         sleep(1000);
+        telemetry.addData("" + totalAngle, "");
+        telemetry.update();
+        turnToAngle(-totalAngle, .5);
         //Shoot 3 rings
         shootRing();
         shootRing();
@@ -215,6 +219,9 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
         turnToAngle(30, .5);
         //Go up to launch line
         ForwardForDistance(.5, .5);
+        telemetry.addData("" + totalAngle, "");
+        telemetry.update();
+        turnToAngle(-totalAngle, .5);
     }
 
     private void dispenseWobble() {
@@ -360,7 +367,7 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
         FLICKER.setPosition(.2);
         sleep(500);
         FLICKER.setPosition(.7);
-        sleep(750);
+        sleep(1000);
     }
 
     private void stopEverything() {
@@ -549,6 +556,7 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
             deltaAngle -= 360;
 
         globalHeading += deltaAngle;
+        totalAngle += deltaAngle;
 
         angles = currentAngles;
 
@@ -638,29 +646,4 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
         telemetry.addData("Gyro has finished init, ready to press play", "" );
         telemetry.update();
     }
-
-    //
-    /*
-    This function is used in the turnWithGyro function to set the
-    encoder mode and turn.
-     */
-    public void turnWithEncoder(double input){
-
-        RIGHTFRONT.setDirection(DcMotorSimple.Direction.REVERSE);
-        LEFTFRONT.setDirection(DcMotorSimple.Direction.FORWARD);
-        RIGHTBACK.setDirection(DcMotorSimple.Direction.REVERSE);
-        LEFTBACK.setDirection(DcMotorSimple.Direction.FORWARD);
-
-        LEFTFRONT.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        LEFTBACK.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        RIGHTFRONT.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        RIGHTBACK.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        //
-        LEFTFRONT.setPower(input);
-        LEFTBACK.setPower(input);
-        RIGHTFRONT.setPower(input);
-        RIGHTBACK.setPower(input);
-    }
-
-
 }
