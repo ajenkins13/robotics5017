@@ -221,7 +221,7 @@ public class CurrentAutoWithVision extends LinearOpMode { //creating public clas
         ForwardForDistance(.5, .5);
         telemetry.addData("" + totalAngle, "");
         telemetry.update();
-        turnToAngle(-totalAngle, .5);
+        //turnToAngle(-totalAngle, .5);
     }
 
     private void dispenseWobble() {
